@@ -31,7 +31,6 @@ def start():
    
    # main game loop (keyboard interaction for moving the tetromino) 
    while True:
-      print("MUVAFFAKIYET")
       # check user interactions via the keyboard
       if stddraw.hasNextKeyTyped():
          key_typed = stddraw.nextKeyTyped()
