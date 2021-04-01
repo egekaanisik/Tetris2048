@@ -47,6 +47,8 @@ def start():
             # move the tetromino down by one 
             # (causes the tetromino to fall down faster)
             current_tetromino.move(key_typed, grid)
+         elif key_typed == "space":
+            current_tetromino.rotate()
          # clear the queue that stores all the keys pressed/typed
          stddraw.clearKeysTyped()
 

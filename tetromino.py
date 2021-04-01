@@ -95,6 +95,19 @@ class Tetromino:
                position = self.tile_matrix[row][col].get_position()
                if position.y < self.grid_height:
                   self.tile_matrix[row][col].draw() 
+   
+   # IMPLEMENT CAN ROTATABLE
+   def rotate(self):
+      copy_matrix = np.rot90(self.tile_matrix.copy())
+      self.tile_matrix = np.full((len(copy_matrix), len(copy_matrix)), None)
+
+      for i in range(len(copy_matrix)):
+         for j in range(len(copy_matrix)):
+            if copy_matrix[i][j] != None:
+               position = Point()
+               position.x = self.bottom_left_corner.x + j
+               position.y = self.bottom_left_corner.y + (len(copy_matrix) - 1) - i
+               self.tile_matrix[i][j] = Tile(position)
 
    # Method for moving the tetromino in a given direction by 1 on the game grid
    def move(self, direction, game_grid):
