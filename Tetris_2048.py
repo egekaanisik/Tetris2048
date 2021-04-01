@@ -34,8 +34,10 @@ def start():
       # check user interactions via the keyboard
       if stddraw.hasNextKeyTyped():
          key_typed = stddraw.nextKeyTyped()
+         if key_typed == "space":
+            current_tetromino.rotate()
          # if the left arrow key has been pressed
-         if key_typed == "left":
+         elif key_typed == "left":
             # move the tetromino left by one
             current_tetromino.move(key_typed, grid) 
          # if the right arrow key has been pressed
@@ -47,8 +49,6 @@ def start():
             # move the tetromino down by one 
             # (causes the tetromino to fall down faster)
             current_tetromino.move(key_typed, grid)
-         elif key_typed == "space":
-            current_tetromino.rotate()
          # clear the queue that stores all the keys pressed/typed
          stddraw.clearKeysTyped()
 
