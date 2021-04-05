@@ -5,6 +5,7 @@ from tetromino import Tetromino # class for modeling the tetrominoes
 from picture import Picture # used representing images to display
 import os # used for file and directory operations
 from color import Color # used for coloring the game menu
+import time
 
 # MAIN FUNCTION OF THE PROGRAM
 #-------------------------------------------------------------------------------
@@ -29,8 +30,11 @@ def start():
    # display a simple menu before opening the game
    display_game_menu(grid_h, grid_w)
    
+   availability = time.time()*1000
+
    # main game loop (keyboard interaction for moving the tetromino) 
    while True:
+      currentMilis = time.time()*1000
       # check user interactions via the keyboard
       if stddraw.hasNextKeyTyped():
          key_typed = stddraw.nextKeyTyped()
@@ -53,7 +57,10 @@ def start():
          stddraw.clearKeysTyped()
 
       # move (drop) the tetromino down by 1 at each iteration 
-      success = current_tetromino.move("down", grid, 1)
+      success=True
+      if currentMilis>availability:
+         success = current_tetromino.move("down", grid, 1)
+         availability=currentMilis+300
 
       # place the tetromino on the game grid when it cannot go down anymore
       if not success:
