@@ -34,7 +34,7 @@ def start():
       # check user interactions via the keyboard
       if stddraw.hasNextKeyTyped():
          key_typed = stddraw.nextKeyTyped()
-         if key_typed == "space":
+         if key_typed == "up":
             current_tetromino.rotate(grid)
          # if the left arrow key has been pressed
          elif key_typed == "left":
