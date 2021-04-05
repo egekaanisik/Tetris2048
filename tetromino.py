@@ -69,7 +69,7 @@ class Tetromino:
       self.bottom_left_corner = Point()
       # upper side of the game grid
       self.bottom_left_corner.y = grid_height
-      # a random horizontal position 
+      # a random horizontal position
       self.bottom_left_corner.x = random.randint(0, grid_width - n)
       # create each tile by computing its position w.r.t. the game grid based on 
       # its bottom_left_corner
@@ -98,13 +98,16 @@ class Tetromino:
    
    """
    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-   CAN ROTATETABLE IMPLEMENTATION REQUIRED
+   LEFT RIGHT OK
+   BOTTOM NOT DONE
+   COLLISION NOT DONE
    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
    """
-   def rotate(self):
+   def rotate(self, grid):
       copy_matrix = np.rot90(self.tile_matrix.copy())
       new_tile_matrix = np.full((len(copy_matrix), len(copy_matrix)), None)
-
+      rightmost = 0
+      leftmost = 0
       for i in range(len(copy_matrix)):
          for j in range(len(copy_matrix)):
             if copy_matrix[i][j] != None:
@@ -112,33 +115,43 @@ class Tetromino:
                position.x = self.bottom_left_corner.x + j
                position.y = self.bottom_left_corner.y + (len(copy_matrix) - 1) - i
                new_tile_matrix[i][j] = Tile(position)
+               print(position.x)
+               if position.x > self.grid_width - 1 and position.x - (self.grid_width - 1) > rightmost:
+                  rightmost = position.x - (self.grid_width - 1)
+               elif position.x < 0 and -position.x > leftmost:
+                  leftmost = -position.x
 
       self.tile_matrix = new_tile_matrix
 
+      if rightmost != 0:
+         self.move("left", grid, rightmost)
+      elif leftmost != self.grid_width - 1:
+         self.move("right", grid, leftmost)
+      
    # Method for moving the tetromino in a given direction by 1 on the game grid
-   def move(self, direction, game_grid):
+   def move(self, direction, game_grid, amount):
       # check if the tetromino can be moved in the given direction by using the
       # can_be_moved method defined below
       if not(self.can_be_moved(direction, game_grid)):
          return False  # tetromino cannot be moved in the given direction
       # move the tetromino by first updating the position of the bottom left tile 
       if direction == "left":
-         self.bottom_left_corner.x -= 1
+         self.bottom_left_corner.x -= amount
       elif direction == "right":
-         self.bottom_left_corner.x += 1
+         self.bottom_left_corner.x += amount
       else:  # direction == "down"
-         self.bottom_left_corner.y -= 1
+         self.bottom_left_corner.y -= amount
       # then moving each occupied tile in the given direction by 1
       n = len(self.tile_matrix)  # n = number of rows = number of columns
       for row in range(n):
          for col in range(n):
             if self.tile_matrix[row][col] != None:
                if direction == "left":
-                  self.tile_matrix[row][col].move(-1, 0)
+                  self.tile_matrix[row][col].move(-amount, 0)
                elif direction == "right":
-                  self.tile_matrix[row][col].move(1, 0)
+                  self.tile_matrix[row][col].move(amount, 0)
                else: # direction == "down"
-                  self.tile_matrix[row][col].move(0, -1)
+                  self.tile_matrix[row][col].move(0, -amount)
       return True  # successful move in the given direction
    
    # Method to check if the tetromino can be moved in the given direction or not

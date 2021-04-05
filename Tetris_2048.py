@@ -35,25 +35,25 @@ def start():
       if stddraw.hasNextKeyTyped():
          key_typed = stddraw.nextKeyTyped()
          if key_typed == "space":
-            current_tetromino.rotate()
+            current_tetromino.rotate(grid)
          # if the left arrow key has been pressed
          elif key_typed == "left":
             # move the tetromino left by one
-            current_tetromino.move(key_typed, grid) 
+            current_tetromino.move(key_typed, grid, 1) 
          # if the right arrow key has been pressed
          elif key_typed == "right":
             # move the tetromino right by one
-            current_tetromino.move(key_typed, grid)
+            current_tetromino.move(key_typed, grid, 1)
          # if the down arrow key has been pressed
          elif key_typed == "down":
             # move the tetromino down by one 
             # (causes the tetromino to fall down faster)
-            current_tetromino.move(key_typed, grid)
+            current_tetromino.move(key_typed, grid, 1)
          # clear the queue that stores all the keys pressed/typed
          stddraw.clearKeysTyped()
 
       # move (drop) the tetromino down by 1 at each iteration 
-      success = current_tetromino.move("down", grid)
+      success = current_tetromino.move("down", grid, 1)
 
       # place the tetromino on the game grid when it cannot go down anymore
       if not success:
@@ -80,6 +80,7 @@ def create_tetromino(grid_height, grid_width):
    tetromino_types = [ 'I', 'O', 'Z', 'S', 'L', 'J', 'T' ]
    random_index = random.randint(0, len(tetromino_types) - 1)
    random_type = tetromino_types[random_index]
+
    # create and return the tetromino
    tetromino = Tetromino(random_type, grid_height, grid_width)
    return tetromino
