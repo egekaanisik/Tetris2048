@@ -14,13 +14,13 @@ class Tile:
    font_family, font_size = "Arial", 14
 
    # Constructor that creates a tile at a given position with 2 as its number 
-   def __init__(self, position = Point(0, 0)): # (0, 0) is the default position
+   def __init__(self, position = Point(0, 0), background_color = Color(151, 178, 199), foreground_color = Color(0, 100, 200), boundary_color = Color(0, 100, 200)): # (0, 0) is the default position
       # assign the number on the tile
       self.number = 2
       # set the colors of the tile
-      self.background_color = Color(151, 178, 199) # background (tile) color
-      self.foreground_color = Color(0, 100, 200) # foreground (number) color
-      self.boundary_color = Color(0, 100, 200) # boundary (box) color
+      self.background_color = background_color # background (tile) color
+      self.foreground_color = foreground_color # foreground (number) color
+      self.boundary_color = boundary_color # boundary (box) color
       # set the position of the tile as the given position
       self.position = Point(position.x, position.y)
 
@@ -52,4 +52,4 @@ class Tile:
       stddraw.setPenColor(self.foreground_color)
       stddraw.setFontFamily(Tile.font_family)
       stddraw.setFontSize(Tile.font_size)
-      stddraw.boldText(self.position.x, self.position.y, str(self.number))
+      stddraw.boldText(self.position.x, self.position.y, str(" "))
