@@ -112,12 +112,6 @@ class Tetromino:
                if position.y < self.grid_height:
                   self.tile_matrix[row][col].draw() 
    
-   """
-   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-   IF COLLISION, THEN MOVE THE TETRONIMO UP
-   IF THERE IS NO SPACE, THEN ABORT
-   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-   """
    def rotate(self, grid):
       not_rotated_copy_matrix = self.tile_matrix.copy()
       copy_matrix = np.rot90(self.tile_matrix.copy())

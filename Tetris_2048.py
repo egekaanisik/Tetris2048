@@ -90,7 +90,7 @@ def start():
       # display the game grid and as well the current tetromino      
       grid.display()
 
-   print("Game over")
+   print("Game Over! Score is " + str(score) + ".")
 
 # Function for creating random shaped tetrominoes to enter the game grid
 def create_tetromino(grid_height, grid_width):

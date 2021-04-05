@@ -1,6 +1,7 @@
 import stddraw # the stddraw module is used as a basic graphics library
 from color import Color # used for coloring the game grid
 import numpy as np # fundamental Python module for scientific computing
+import time
 
 # Class used for modelling the game grid
 class GameGrid:
@@ -39,13 +40,7 @@ class GameGrid:
       stddraw.show(0)
          
    # Method for drawing the cells and the lines of the grid
-   def draw_grid(self):
-      # draw each cell of the game grid
-      for row in range(self.grid_height):
-         for col in range(self.grid_width):
-            # draw the tile if the grid cell is occupied by a tile
-            if self.tile_matrix[row][col] != None:
-               self.tile_matrix[row][col].draw() 
+   def draw_grid(self): 
       # draw the inner lines of the grid
       stddraw.setPenColor(self.line_color)
       stddraw.setPenRadius(self.line_thickness)
@@ -56,6 +51,12 @@ class GameGrid:
          stddraw.line(x, start_y, x, end_y)
       for y in np.arange(start_y + 1, end_y, 1):  # horizontal inner lines
          stddraw.line(start_x, y, end_x, y)
+      # draw each cell of the game grid
+      for row in range(self.grid_height):
+         for col in range(self.grid_width):
+            # draw the tile if the grid cell is occupied by a tile
+            if self.tile_matrix[row][col] != None:
+               self.tile_matrix[row][col].draw()
       stddraw.setPenRadius()  # reset the pen radius to its default value            
       
    # Method for drawing the boundaries around the game grid 
@@ -95,20 +96,32 @@ class GameGrid:
       return False
 
    def delete_full_lines(self):
+      paint_indexes = []
       indexes = []
       for i in range(self.grid_height):
          if not self.is_line_empty(i):
+            paint_indexes.append(i)
             indexes.append(i - len(indexes))
 
       if len(indexes) != 0:
-         for i in indexes:
-            self.tile_matrix = np.delete(self.tile_matrix, (i), axis=0)
-            self.tile_matrix = np.append(self.tile_matrix, np.full((1, self.grid_width), None), axis=0)
+         for l in paint_indexes:
+            for k in range(self.grid_width):
+               self.tile_matrix[l][k].background_color = Color(255,255,255)
+               self.tile_matrix[l][k].boundary_color = Color(255,255,255)
+         
+         self.display()
+         time.sleep(0.25)
 
-         for i in range(self.grid_height):
-            for j in range(self.grid_width):
-               if self.tile_matrix[i][j] != None:
-                  self.tile_matrix[i][j].move(0, -len(indexes))
+         for r in indexes:
+            self.tile_matrix = np.delete(self.tile_matrix, (r), axis=0)
+            self.tile_matrix = np.append(self.tile_matrix, np.full((1, self.grid_width), None), axis=0)
+                     
+            for i in range(r, self.grid_height):
+               for j in range(self.grid_width):
+                  if self.tile_matrix[i][j] != None:
+                     self.tile_matrix[i][j].move(0, -1)
+
+         
 
       return len(indexes)
 
