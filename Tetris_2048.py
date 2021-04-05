@@ -33,7 +33,7 @@ def start():
    print("Next Tetromino: " + tetrominos[0].type)
    
    availability = time.time()*1000
-
+   score = 0
    # main game loop (keyboard interaction for moving the tetromino) 
    while True:
       currentMilis = time.time()*1000
@@ -73,6 +73,13 @@ def start():
          # end the main game loop if the game is over
          if game_over:
             break
+         
+         line_count = grid.delete_full_lines()
+
+         if line_count != 0:
+            score += (1200 if line_count == 4 else (300 if line_count == 3 else (100 if line_count == 2 else 40)))
+            print("New Score: " + str(score))
+
          # create the next tetromino to enter the game grid
          # by using the create_tetromino function defined below
          tetrominos.append(create_tetromino(grid_h, grid_w))
@@ -88,7 +95,8 @@ def start():
 # Function for creating random shaped tetrominoes to enter the game grid
 def create_tetromino(grid_height, grid_width):
    # type (shape) of the tetromino is determined randomly
-   tetromino_types = [ 'I', 'O', 'Z', 'S', 'L', 'J', 'T' ]
+   #tetromino_types = [ 'I', 'O', 'Z', 'S', 'L', 'J', 'T' ]
+   tetromino_types = ['O']
    random_index = random.randint(0, len(tetromino_types) - 1)
    random_type = tetromino_types[random_index]
 

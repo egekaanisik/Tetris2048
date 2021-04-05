@@ -88,6 +88,30 @@ class GameGrid:
          return False
       return True
 
+   def is_line_empty(self, line):
+      for j in range(self.grid_width):
+         if not self.is_occupied(line, j):
+            return True
+      return False
+
+   def delete_full_lines(self):
+      indexes = []
+      for i in range(self.grid_height):
+         if not self.is_line_empty(i):
+            indexes.append(i - len(indexes))
+
+      if len(indexes) != 0:
+         for i in indexes:
+            self.tile_matrix = np.delete(self.tile_matrix, (i), axis=0)
+            self.tile_matrix = np.append(self.tile_matrix, np.full((1, self.grid_width), None), axis=0)
+
+         for i in range(self.grid_height):
+            for j in range(self.grid_width):
+               if self.tile_matrix[i][j] != None:
+                  self.tile_matrix[i][j].move(0, -len(indexes))
+
+      return len(indexes)
+
    # Method for updating the game grid by placing the given tiles of a stopped 
    # tetromino and checking if the game is over due to having tiles above the 
    # topmost game grid row. The method returns True when the game is over and
