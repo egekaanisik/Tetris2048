@@ -12,6 +12,7 @@ class Tetromino:
       # set grid_height and grid_width from input parameters
       self.grid_height = grid_height
       self.grid_width = grid_width
+      self.type = type
       # set the shape of the tetromino based on the given type
       occupied_tiles = []
       if type == 'I':
@@ -118,6 +119,7 @@ class Tetromino:
    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
    """
    def rotate(self, grid):
+      not_rotated_copy_matrix = self.tile_matrix.copy()
       copy_matrix = np.rot90(self.tile_matrix.copy())
       new_tile_matrix = np.full((len(copy_matrix), len(copy_matrix)), None)
       rightmost = 0
@@ -129,6 +131,10 @@ class Tetromino:
                position = Point()
                position.x = self.bottom_left_corner.x + j
                position.y = self.bottom_left_corner.y + (len(copy_matrix) - 1) - i
+
+               if grid.is_occupied(position.y, position.x):
+                  return False
+
                new_tile_matrix[i][j] = Tile(position, background_color=self.background_color, boundary_color=self.boundary_color)
 
                if position.x > self.grid_width - 1 and position.x - (self.grid_width - 1) > rightmost:
@@ -141,13 +147,21 @@ class Tetromino:
       
       self.tile_matrix = new_tile_matrix
 
+      success = True
       if bottommost < 0:
-         self.move("up", grid, -bottommost)
+         success = self.move("up", grid, -bottommost)
+
+      if not success:
+         self.tile_matrix = not_rotated_copy_matrix
+         return
       
       if rightmost != 0:
-         self.move("left", grid, rightmost)
+         success = self.move("left", grid, rightmost)
       elif leftmost != 0:
-         self.move("right", grid, leftmost)
+         success = self.move("right", grid, leftmost)
+
+      if not success:
+         self.tile_matrix = not_rotated_copy_matrix
       
    # Method for moving the tetromino in a given direction by 1 on the game grid
    def move(self, direction, game_grid, amount):

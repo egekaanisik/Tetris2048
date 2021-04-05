@@ -24,11 +24,13 @@ def start():
    grid = GameGrid(grid_h, grid_w)
    # create the first tetromino to enter the game grid 
    # by using the create_tetromino function defined below
-   current_tetromino = create_tetromino(grid_h, grid_w)
+   tetrominos = [create_tetromino(grid_h, grid_w), create_tetromino(grid_h, grid_w)]
+   current_tetromino = tetrominos.pop(0)
    grid.current_tetromino = current_tetromino
 
    # display a simple menu before opening the game
    display_game_menu(grid_h, grid_w)
+   print("Next Tetromino: " + tetrominos[0].type)
    
    availability = time.time()*1000
 
@@ -73,8 +75,10 @@ def start():
             break
          # create the next tetromino to enter the game grid
          # by using the create_tetromino function defined below
-         current_tetromino = create_tetromino(grid_h, grid_w)
+         tetrominos.append(create_tetromino(grid_h, grid_w))
+         current_tetromino = tetrominos.pop(0)
          grid.current_tetromino = current_tetromino
+         print("Next Tetromino: " + tetrominos[0].type)
 
       # display the game grid and as well the current tetromino      
       grid.display()
@@ -84,8 +88,7 @@ def start():
 # Function for creating random shaped tetrominoes to enter the game grid
 def create_tetromino(grid_height, grid_width):
    # type (shape) of the tetromino is determined randomly
-   #tetromino_types = [ 'I', 'O', 'Z', 'S', 'L', 'J', 'T' ]
-   tetromino_types = [ 'S' ]
+   tetromino_types = [ 'I', 'O', 'Z', 'S', 'L', 'J', 'T' ]
    random_index = random.randint(0, len(tetromino_types) - 1)
    random_type = tetromino_types[random_index]
 
