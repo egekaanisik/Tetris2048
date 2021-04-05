@@ -644,7 +644,7 @@ def _checkForEvents():
     #-------------------------------------------------------------------
     
     _makeSureWindowCreated()
-
+    pygame.key.set_repeat(150)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             sys.exit()
