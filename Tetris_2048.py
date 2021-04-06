@@ -29,16 +29,34 @@ def start():
    tetrominos = [create_tetromino(grid_h, grid_w), create_tetromino(grid_h, grid_w)]
    current_tetromino = tetrominos.pop(0)
    grid.current_tetromino = current_tetromino
+
+   current_dir = os.path.dirname(os.path.realpath(__file__)) + "/sounds"
+   back_sound = current_dir + "/back.wav"
+   move_sound = current_dir + "/move.wav"
+   rotate_sound = current_dir + "/rotate.wav"
+   place_sound = current_dir + "/place.wav"
+   clear_sound = current_dir + "/clear.wav"
+
+   player = AudioPlayer(back_sound)
+   player.volume = 5
+
+   move = AudioPlayer(move_sound)
+   move.volume = 30
+
+   rotate = AudioPlayer(rotate_sound)
+   rotate.volume = 30
+
+   place = AudioPlayer(place_sound)
+   place.volume = 30
+
+   clear = AudioPlayer(clear_sound)
+   clear.volume = 30
+
+   player.play(loop=True)
    # display a simple menu before opening the game
    display_game_menu(grid_h, grid_w)
 
-   current_dir = os.path.dirname(os.path.realpath(__file__))
-   back_sound = current_dir + "/back.wav"
    
-   player = AudioPlayer(back_sound)
-   player.volume = 50
-   player.play(loop=True)
-
    print("Next Tetromino: " + tetrominos[0].type)
    last_mouse_pos = -1
    mouse = False
@@ -70,14 +88,17 @@ def start():
             
             if "up" in keys_typed:
                current_tetromino.rotate(grid)
+               rotate.play()
             # if the left arrow key has been pressed
             if "left" in keys_typed:
                # move the tetromino left by one
-               current_tetromino.move("left", grid, 1) 
+               current_tetromino.move("left", grid, 1)
+               move.play()
             # if the right arrow key has been pressed
             if "right" in keys_typed:
                # move the tetromino right by one
                current_tetromino.move("right", grid, 1)
+               move.play()
             # if the down arrow key has been pressed
             if "down" in keys_typed:
                # move the tetromino down by one 
@@ -94,18 +115,21 @@ def start():
          if diff < 0:
             for i in range(-diff):
                success_move = current_tetromino.move("left", grid, 1)
+               move.play()
 
                if not success_move:
                   break
          else:
             for i in range(diff):
                success_move = current_tetromino.move("right", grid, 1)
+               move.play()
 
                if not success_move:
                   break
 
          if stddraw.mouseRightPressed():
             current_tetromino.rotate(grid)
+            rotate.play()
 
          if stddraw.mouseLeftPressed():
             while True:
@@ -135,6 +159,7 @@ def start():
 
       # place the tetromino on the game grid when it cannot go down anymore
       if not success or dropped:
+         place.play()
          # get the tile matrix of the tetromino
          tiles_to_place = current_tetromino.tile_matrix
          # update the game grid by adding the tiles of the tetromino
@@ -144,7 +169,7 @@ def start():
          if game_over:
             break
 
-         line_count = grid.delete_full_lines()
+         line_count = grid.delete_full_lines(clear)
 
          if line_count != 0:
             score += (1200 if line_count == 4 else (300 if line_count == 3 else (100 if line_count == 2 else 40)))

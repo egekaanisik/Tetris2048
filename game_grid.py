@@ -98,7 +98,7 @@ class GameGrid:
             return True
       return False
 
-   def delete_full_lines(self):
+   def delete_full_lines(self, clear):
       paint_indexes = []
       indexes = []
       for i in range(self.grid_height):
@@ -107,6 +107,7 @@ class GameGrid:
             indexes.append(i - len(indexes))
 
       if len(indexes) != 0:
+         clear.play()
          for color in reversed(range(0, 256, 15)):
             for l in paint_indexes:
                for k in range(self.grid_width):
