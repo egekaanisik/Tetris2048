@@ -31,32 +31,66 @@ def start():
    # display a simple menu before opening the game
    display_game_menu(grid_h, grid_w)
    print("Next Tetromino: " + tetrominos[0].type)
-   
+   last_mouse_pos = -1
+   mouse = False
    availability = time.time()*1000
    score = 0
    # main game loop (keyboard interaction for moving the tetromino) 
    while True:
       currentMilis = time.time()*1000
-      # check user interactions via the keyboard
-      if stddraw.hasNextKeyTyped():
-         keys_typed = stddraw._keysTyped
-         if "up" in keys_typed:
+      pos = round(stddraw.mouseMotionX())
+
+      if (pos != last_mouse_pos):
+         mouse = True
+         last_mouse_pos = pos
+      elif stddraw.hasNextKeyTyped():
+         mouse = False
+
+      if not mouse:
+         # check user interactions via the keyboard
+         if stddraw.hasNextKeyTyped():
+            keys_typed = stddraw._keysTyped
+            if "up" in keys_typed:
+               current_tetromino.rotate(grid)
+            # if the left arrow key has been pressed
+            if "left" in keys_typed:
+               # move the tetromino left by one
+               current_tetromino.move("left", grid, 1) 
+            # if the right arrow key has been pressed
+            if "right" in keys_typed:
+               # move the tetromino right by one
+               current_tetromino.move("right", grid, 1)
+            # if the down arrow key has been pressed
+            if "down" in keys_typed:
+               # move the tetromino down by one 
+               # (causes the tetromino to fall down faster)
+               current_tetromino.move("down", grid, 1)
+            # clear the queue that stores all the keys pressed/typed
+            stddraw.clearKeysTyped()
+      else:         
+         if (pos + current_tetromino.column_count) > grid.grid_width:
+            pos = grid.grid_width - current_tetromino.column_count
+         
+         diff = pos - current_tetromino.leftmost
+
+         if diff < 0:
+            for i in range(-diff):
+               success_move = current_tetromino.move("left", grid, 1)
+
+               if not success_move:
+                  break
+         else:
+            for i in range(diff):
+               success_move = current_tetromino.move("right", grid, 1)
+
+               if not success_move:
+                  break
+
+         if stddraw.mouseRightPressed():
             current_tetromino.rotate(grid)
-         # if the left arrow key has been pressed
-         if "left" in keys_typed:
-            # move the tetromino left by one
-            current_tetromino.move("left", grid, 1) 
-         # if the right arrow key has been pressed
-         if "right" in keys_typed:
-            # move the tetromino right by one
-            current_tetromino.move("right", grid, 1)
-         # if the down arrow key has been pressed
-         if "down" in keys_typed:
-            # move the tetromino down by one 
-            # (causes the tetromino to fall down faster)
+         
+         if stddraw.mouseLeftPressed(150):
             current_tetromino.move("down", grid, 1)
-         # clear the queue that stores all the keys pressed/typed
-         stddraw.clearKeysTyped()
          
       # move (drop) the tetromino down by 1 at each iteration 
       success=True
@@ -88,7 +122,7 @@ def start():
          print("Next Tetromino: " + tetrominos[0].type)
 
       # display the game grid and as well the current tetromino      
-      grid.display()
+      grid.display(0)
 
    print("Game Over! Score is " + str(score) + ".")
 
@@ -96,6 +130,7 @@ def start():
 def create_tetromino(grid_height, grid_width):
    # type (shape) of the tetromino is determined randomly
    tetromino_types = [ 'I', 'O', 'Z', 'S', 'L', 'J', 'T' ]
+   #tetromino_types = [ 'I' ]
    random_index = random.randint(0, len(tetromino_types) - 1)
    random_type = tetromino_types[random_index]
 
@@ -139,7 +174,7 @@ def display_game_menu(grid_height, grid_width):
       # display the menu and wait for a short time (50 ms)
       stddraw.show(50)
       # check if the mouse has been left-clicked
-      if stddraw.mousePressed():
+      if stddraw.mouseLeftPressed(0):
          # get the x and y coordinates of the location at which the mouse has 
          # most recently been left-clicked  
          mouse_x, mouse_y = stddraw.mouseX(), stddraw.mouseY()

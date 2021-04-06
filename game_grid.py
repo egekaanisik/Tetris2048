@@ -1,7 +1,6 @@
 import stddraw # the stddraw module is used as a basic graphics library
 from color import Color # used for coloring the game grid
 import numpy as np # fundamental Python module for scientific computing
-import time
 
 # Class used for modelling the game grid
 class GameGrid:
@@ -26,7 +25,7 @@ class GameGrid:
       self.box_thickness = 8 * self.line_thickness
 
    # Method used for displaying the game grid
-   def display(self):
+   def display(self, delay):
       # clear the background canvas to empty_cell_color
       stddraw.clear(self.empty_cell_color)
       # draw the game grid
@@ -37,7 +36,7 @@ class GameGrid:
       # draw a box around the game grid 
       self.draw_boundaries()
       # show the resulting drawing with a pause duration = 250 ms
-      stddraw.show(0)
+      stddraw.show(delay)
          
    # Method for drawing the cells and the lines of the grid
    def draw_grid(self): 
@@ -104,13 +103,12 @@ class GameGrid:
             indexes.append(i - len(indexes))
 
       if len(indexes) != 0:
-         for l in paint_indexes:
-            for k in range(self.grid_width):
-               self.tile_matrix[l][k].background_color = Color(255,255,255)
-               self.tile_matrix[l][k].boundary_color = Color(255,255,255)
-         
-         self.display()
-         time.sleep(0.25)
+         for color in reversed(range(0, 256, 15)):
+            for l in paint_indexes:
+               for k in range(self.grid_width):
+                  self.tile_matrix[l][k].background_color = Color(color, color, color)
+                  self.tile_matrix[l][k].boundary_color = Color(color, color, color)
+            self.display(0)
 
          for r in indexes:
             self.tile_matrix = np.delete(self.tile_matrix, (r), axis=0)

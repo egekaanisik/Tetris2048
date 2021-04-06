@@ -88,10 +88,13 @@ _windowCreated = False
 # Keep track of mouse status
 
 # Has the mouse been left-clicked since the last time we checked?
-_mousePressed = False
+_mouseLeftPressed = False
+_mouseRightPressed = False
 
 # The position of the mouse as of the most recent mouse click
 _mousePos = None
+_mouseTrack = None
+_left_availability = time.time()*1000
  
 #-----------------------------------------------------------------------
 # End added by Alan J. Broder
@@ -162,7 +165,7 @@ def setCanvasSize(w=_DEFAULT_CANVAS_SIZE, h=_DEFAULT_CANVAS_SIZE):
     _canvasWidth = w
     _canvasHeight = h
     _background = pygame.display.set_mode([w, h])
-    pygame.display.set_caption('stddraw window (r-click to save)')
+    pygame.display.set_caption('stddraw window (scroll-click to save)')
     _surface = pygame.Surface((w, h))
     _surface.fill(_pygameColor(WHITE))
     _windowCreated = True
@@ -638,20 +641,23 @@ def _checkForEvents():
     # Begin added by Alan J. Broder
     #-------------------------------------------------------------------
     global _mousePos
-    global _mousePressed
+    global _mouseLeftPressed
+    global _mouseRightPressed
+    global _mouseTrack
     #-------------------------------------------------------------------
     # End added by Alan J. Broder
     #-------------------------------------------------------------------
     
     _makeSureWindowCreated()
     pygame.key.set_repeat(150)
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             sys.exit()
         elif event.type == pygame.KEYDOWN:
             _keysTyped = [pygame.key.name(event.key)] + _keysTyped
         elif (event.type == pygame.MOUSEBUTTONUP) and \
-            (event.button == 3):
+            (event.button == 2):
             _saveToFile()
             
         #---------------------------------------------------------------
@@ -661,8 +667,18 @@ def _checkForEvents():
         # the mouse position as of that press.
         elif (event.type == pygame.MOUSEBUTTONDOWN) and \
             (event.button == 1): 
-            _mousePressed = True
+            _mouseLeftPressed = True
             _mousePos = event.pos                      
+        elif (event.type == pygame.MOUSEBUTTONUP) and \
+            (event.button == 1): 
+            _mouseLeftPressed = False
+            _mousePos = event.pos  
+        elif (event.type == pygame.MOUSEBUTTONDOWN) and \
+            (event.button == 3): 
+            _mouseRightPressed = True
+        elif (event.type == pygame.MOUSEMOTION):
+            _mouseTrack = event.pos
+        
         #---------------------------------------------------------------
         # End added by Alan J. Broder
         #---------------------------------------------------------------
@@ -700,14 +716,22 @@ def clearKeysTyped():
 
 # Functions for dealing with mouse clicks 
 
-def mousePressed():
+def mouseLeftPressed(delay):
     """
     Return True if the mouse has been left-clicked since the 
     last time mousePressed was called, and False otherwise.
     """
-    global _mousePressed
-    if _mousePressed:
-        _mousePressed = False
+    global _mouseLeftPressed
+    global _left_availability
+    currentMilis = time.time()*1000
+    if currentMilis>_left_availability:
+        _left_availability=currentMilis+delay
+        return _mouseLeftPressed
+
+def mouseRightPressed():
+    global _mouseRightPressed
+    if _mouseRightPressed:
+        _mouseRightPressed = False
         return True
     return False
     
@@ -736,6 +760,14 @@ def mouseY():
         return _userY(_mousePos[1]) 
     raise Exception(
         "Can't determine mouse position if a click hasn't happened")
+
+def mouseMotionX():
+    global _mouseTrack
+    return _userX(_mouseTrack[0])
+
+def mouseMotionY():
+    global _mouseTrack
+    return _userY(_mouseTrack[1])
     
 #-----------------------------------------------------------------------
 # End added by Alan J. Broder
@@ -893,7 +925,7 @@ def _regressionTest():
     setPenColor(BLACK)
     print('Left click with the mouse or type a key')
     while True:
-        if mousePressed():
+        if mouseLeftPressed():
             filledCircle(mouseX(), mouseY(), .02)
         if hasNextKeyTyped():
             print(nextKeyTyped())
