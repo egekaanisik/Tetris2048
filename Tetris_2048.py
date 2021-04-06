@@ -37,18 +37,6 @@ def start():
    score = 0
    # main game loop (keyboard interaction for moving the tetromino) 
    while True:
-      current_ghost = Tetromino(current_tetromino.type, grid_h, grid_w, current_tetromino.bottom_left_corner.x, current_tetromino.bottom_left_corner.y, ghost=True)
-
-      if current_tetromino.rotation_multiplier != 0:
-         for i in range(current_tetromino.rotation_multiplier):
-            current_ghost.rotate(grid)
-      grid.current_ghost = current_ghost
-      while True:
-         sc = current_ghost.move("down", grid, 1)
-
-         if not sc:
-            break
-
       currentMilis = time.time()*1000
       pos = round(stddraw.mouseMotionX())
 
@@ -64,7 +52,6 @@ def start():
             keys_typed = stddraw._keysTyped
             if "up" in keys_typed:
                current_tetromino.rotate(grid)
-               current_tetromino.rotation_multiplier = (current_tetromino.rotation_multiplier + 1 if (current_tetromino.rotation_multiplier + 1) < 4 else 0)
             # if the left arrow key has been pressed
             if "left" in keys_typed:
                # move the tetromino left by one
@@ -101,10 +88,18 @@ def start():
 
          if stddraw.mouseRightPressed():
             current_tetromino.rotate(grid)
-            current_tetromino.rotation_multiplier = (current_tetromino.rotation_multiplier + 1 if (current_tetromino.rotation_multiplier + 1) < 4 else 0)
-         
+
          if stddraw.mouseLeftPressed(150):
             current_tetromino.move("down", grid, 1)
+
+      current_ghost = current_tetromino.copy(ghost=True)
+      grid.current_ghost = current_ghost
+
+      while True:
+         sc = current_ghost.move("down", grid, 1)
+
+         if not sc:
+            break
          
       # move (drop) the tetromino down by 1 at each iteration 
       success=True
@@ -147,7 +142,7 @@ def start():
 def create_tetromino(grid_height, grid_width):
    # type (shape) of the tetromino is determined randomly
    tetromino_types = [ 'I', 'O', 'Z', 'S', 'L', 'J', 'T' ]
-   #tetromino_types = [ 'L' ]
+   #tetromino_types = [ 'Z' ]
    random_index = random.randint(0, len(tetromino_types) - 1)
    random_type = tetromino_types[random_index]
    n = (4 if random_type == 'I' else (2 if random_type == 'O' else 3))
