@@ -30,6 +30,9 @@ def start():
    current_tetromino = tetrominos.pop(0)
    grid.current_tetromino = current_tetromino
 
+   music_volume = 5
+   effects_volume = 30
+
    current_dir = os.path.dirname(os.path.realpath(__file__)) + "/sounds"
    back_sound = current_dir + "/back.wav"
    move_sound = current_dir + "/move.wav"
@@ -38,24 +41,23 @@ def start():
    clear_sound = current_dir + "/clear.wav"
 
    player = AudioPlayer(back_sound)
-   player.volume = 5
+   player.volume = music_volume
 
    move = AudioPlayer(move_sound)
-   move.volume = 30
+   move.volume = effects_volume
 
    rotate = AudioPlayer(rotate_sound)
-   rotate.volume = 30
+   rotate.volume = effects_volume
 
    place = AudioPlayer(place_sound)
-   place.volume = 30
+   place.volume = effects_volume
 
    clear = AudioPlayer(clear_sound)
-   clear.volume = 30
+   clear.volume = effects_volume
 
    player.play(loop=True)
    # display a simple menu before opening the game
    display_game_menu(grid_h, grid_w)
-
    
    print("Next Tetromino: " + tetrominos[0].type)
    last_mouse_pos = -1
@@ -246,7 +248,7 @@ def display_game_menu(grid_height, grid_width):
    stddraw.text(img_center_x/2-0.2,2,"Settings")
    stddraw.text(img_center_x+(img_center_x/2),5,"Start Tetris 2048")
    stddraw.text(img_center_x+(img_center_x/2),2,"Quit")
-   stddraw.picture(start1,img_center_x/2-0.22, 5)
+   stddraw.picture(start2,img_center_x/2-0.22, 5)
    availability = 0
    # menu interaction loop
    while True:
