@@ -90,6 +90,7 @@ _windowCreated = False
 # Has the mouse been left-clicked since the last time we checked?
 _mouseLeftPressed = False
 _mouseRightPressed = False
+_mouseScrollPressed = False
 
 # The position of the mouse as of the most recent mouse click
 _mousePos = None
@@ -165,7 +166,7 @@ def setCanvasSize(w=_DEFAULT_CANVAS_SIZE, h=_DEFAULT_CANVAS_SIZE):
     _canvasWidth = w
     _canvasHeight = h
     _background = pygame.display.set_mode([w, h])
-    pygame.display.set_caption('stddraw window (scroll-click to save)')
+    pygame.display.set_caption('stddraw window (press s to save)')
     _surface = pygame.Surface((w, h))
     _surface.fill(_pygameColor(WHITE))
     _windowCreated = True
@@ -643,6 +644,7 @@ def _checkForEvents():
     global _mousePos
     global _mouseLeftPressed
     global _mouseRightPressed
+    global _mouseScrollPressed
     global _mouseTrack
     #-------------------------------------------------------------------
     # End added by Alan J. Broder
@@ -654,11 +656,11 @@ def _checkForEvents():
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             sys.exit()
+        elif (event.type == pygame.KEYUP) and \
+            (pygame.key.name(event.key) == 's'):
+            _saveToFile()
         elif event.type == pygame.KEYDOWN:
             _keysTyped = [pygame.key.name(event.key)] + _keysTyped
-        elif (event.type == pygame.MOUSEBUTTONUP) and \
-            (event.button == 2):
-            _saveToFile()
             
         #---------------------------------------------------------------
         # Begin added by Alan J. Broder
@@ -676,6 +678,9 @@ def _checkForEvents():
         elif (event.type == pygame.MOUSEBUTTONDOWN) and \
             (event.button == 3): 
             _mouseRightPressed = True
+        elif (event.type == pygame.MOUSEBUTTONDOWN) and \
+            (event.button == 2): 
+            _mouseScrollPressed = True
         elif (event.type == pygame.MOUSEMOTION):
             _mouseTrack = event.pos
         
@@ -732,6 +737,13 @@ def mouseRightPressed():
     global _mouseRightPressed
     if _mouseRightPressed:
         _mouseRightPressed = False
+        return True
+    return False
+
+def mouseScrollPressed():
+    global _mouseScrollPressed
+    if _mouseScrollPressed:
+        _mouseScrollPressed = False
         return True
     return False
     

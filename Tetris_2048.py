@@ -39,6 +39,7 @@ def start():
    while True:
       currentMilis = time.time()*1000
       pos = round(stddraw.mouseMotionX())
+      dropped = False
 
       if (pos != last_mouse_pos):
          mouse = True
@@ -50,6 +51,14 @@ def start():
          # check user interactions via the keyboard
          if stddraw.hasNextKeyTyped():
             keys_typed = stddraw._keysTyped
+            if "space" in keys_typed:
+               while True:
+                  sc = current_tetromino.move("down", grid, 1)
+
+                  if not sc:
+                     break
+               dropped = True
+            
             if "up" in keys_typed:
                current_tetromino.rotate(grid)
             # if the left arrow key has been pressed
@@ -92,6 +101,14 @@ def start():
          if stddraw.mouseLeftPressed(150):
             current_tetromino.move("down", grid, 1)
 
+         if stddraw.mouseScrollPressed():
+            while True:
+               sc = current_tetromino.move("down", grid, 1)
+
+               if not sc:
+                  break
+            dropped = True
+
       current_ghost = current_tetromino.copy(ghost=True)
       grid.current_ghost = current_ghost
 
@@ -108,7 +125,7 @@ def start():
          availability=currentMilis+300
 
       # place the tetromino on the game grid when it cannot go down anymore
-      if not success:
+      if not success or dropped:
          # get the tile matrix of the tetromino
          tiles_to_place = current_tetromino.tile_matrix
          # update the game grid by adding the tiles of the tetromino
