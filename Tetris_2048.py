@@ -7,7 +7,7 @@ import os # used for file and directory operations
 from color import Color # used for coloring the game menu
 import time
 import sys
-import simpleaudio as sa
+from audioplayer import AudioPlayer
 
 # MAIN FUNCTION OF THE PROGRAM
 #-------------------------------------------------------------------------------
@@ -34,8 +34,10 @@ def start():
 
    current_dir = os.path.dirname(os.path.realpath(__file__))
    back_sound = current_dir + "/back.wav"
-   back_obj = sa.WaveObject.from_wave_file(back_sound)
-   play_obj = back_obj.play()
+   
+   player = AudioPlayer(back_sound)
+   player.volume = 50
+   player.play(loop=True)
 
    print("Next Tetromino: " + tetrominos[0].type)
    last_mouse_pos = -1
@@ -44,9 +46,6 @@ def start():
    score = 0
    # main game loop (keyboard interaction for moving the tetromino) 
    while True:
-      if not play_obj.is_playing():
-         play_obj = back_obj.play()
-
       currentMilis = time.time()*1000
       pos = round(stddraw.mouseMotionX())
       dropped = False
