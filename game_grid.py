@@ -26,7 +26,7 @@ class GameGrid:
       self.box_thickness = 8 * self.line_thickness
 
    # Method used for displaying the game grid
-   def display(self, delay):
+   def display(self, score):
       # clear the background canvas to empty_cell_color
       stddraw.clear(self.empty_cell_color)
       # draw the game grid
@@ -39,8 +39,15 @@ class GameGrid:
          self.current_tetromino.draw()
       # draw a box around the game grid 
       self.draw_boundaries()
-      # show the resulting drawing with a pause duration = 250 ms
-      stddraw.show(delay)
+
+      stddraw.setPenColor(stddraw.WHITE)
+      stddraw.setFontFamily("Arial")
+      stddraw.setFontSize(30)
+      stddraw.text(13.75, 18.5, "Score")
+      stddraw.text(13.75, 17, str(score))
+      stddraw.text(13.75, 8, "Next")
+      stddraw.text(13.75, 7, "Tetromino")
+      stddraw.show(0)
          
    # Method for drawing the cells and the lines of the grid
    def draw_grid(self): 
@@ -92,28 +99,29 @@ class GameGrid:
          return False
       return True
 
-   def is_line_empty(self, line):
-      for j in range(self.grid_width):
-         if not self.is_occupied(line, j):
-            return True
-      return False
+   def has_line_empty_cell(self, line):
+      if None in self.tile_matrix[line]:
+         return True
+      else:
+         False
 
-   def delete_full_lines(self, clear):
+   def delete_full_lines(self, clear, score):
       paint_indexes = []
       indexes = []
       for i in range(self.grid_height):
-         if not self.is_line_empty(i):
+         if not self.has_line_empty_cell(i):
             paint_indexes.append(i)
             indexes.append(i - len(indexes))
 
       if len(indexes) != 0:
          clear.play()
+         score += (1200 if len(indexes) == 4 else (300 if len(indexes) == 3 else (100 if len(indexes) == 2 else 40)))
          for color in reversed(range(0, 256, 15)):
             for l in paint_indexes:
                for k in range(self.grid_width):
                   self.tile_matrix[l][k].background_color = Color(color, color, color)
                   self.tile_matrix[l][k].boundary_color = Color(color, color, color)
-            self.display(0)
+            self.display(score)
 
          for r in indexes:
             self.tile_matrix = np.delete(self.tile_matrix, (r), axis=0)
@@ -124,9 +132,7 @@ class GameGrid:
                   if self.tile_matrix[i][j] != None:
                      self.tile_matrix[i][j].move(0, -1)
 
-         
-
-      return len(indexes)
+      return score
 
    # Method for updating the game grid by placing the given tiles of a stopped 
    # tetromino and checking if the game is over due to having tiles above the 
@@ -147,12 +153,3 @@ class GameGrid:
                   self.game_over = True
       # return the game_over flag
       return self.game_over
-
-   def delete_from_grid(self, tiles_to_delete):
-      n_rows, n_cols = len(tiles_to_delete), len(tiles_to_delete[0])
-      for col in range(n_cols):
-         for row in range(n_rows):            
-            # place each occupied tile onto the game grid
-            if tiles_to_delete[row][col] != None:
-               pos = tiles_to_delete[row][col].get_position()
-               self.tile_matrix[pos.y][pos.x] = None

@@ -81,31 +81,39 @@ def start():
          if stddraw.hasNextKeyTyped():
             keys_typed = stddraw._keysTyped
             if "space" in keys_typed:
+               count = 0
                while True:
                   sc = current_tetromino.move("down", grid, 1)
 
                   if not sc:
                      break
+                  else:
+                     count += 1
                dropped = True
-            
+               score += count * 2
             if "up" in keys_typed:
-               current_tetromino.rotate(grid)
-               rotate.play()
+               can_rotate = current_tetromino.rotate(grid)
+               if can_rotate:
+                  rotate.play()
             # if the left arrow key has been pressed
             if "left" in keys_typed:
                # move the tetromino left by one
-               current_tetromino.move("left", grid, 1)
-               move.play()
+               can_left = current_tetromino.move("left", grid, 1)
+               if can_left:
+                  move.play()
             # if the right arrow key has been pressed
             if "right" in keys_typed:
                # move the tetromino right by one
-               current_tetromino.move("right", grid, 1)
-               move.play()
+               can_right = current_tetromino.move("right", grid, 1)
+               if can_right:
+                  move.play()
             # if the down arrow key has been pressed
             if "down" in keys_typed:
                # move the tetromino down by one 
                # (causes the tetromino to fall down faster)
-               current_tetromino.move("down", grid, 1)
+               succ = current_tetromino.move("down", grid, 1)
+               if succ:
+                  score += 1
             # clear the queue that stores all the keys pressed/typed
             stddraw.clearKeysTyped()
       else:         
@@ -117,32 +125,40 @@ def start():
          if diff < 0:
             for i in range(-diff):
                success_move = current_tetromino.move("left", grid, 1)
-               move.play()
-
+               
                if not success_move:
                   break
+               else:
+                  move.play()
          else:
             for i in range(diff):
                success_move = current_tetromino.move("right", grid, 1)
-               move.play()
-
+               
                if not success_move:
                   break
+               else:
+                  move.play()
 
          if stddraw.mouseRightPressed():
-            current_tetromino.rotate(grid)
-            rotate.play()
+            success_rotate = current_tetromino.rotate(grid)
+            if success_rotate:
+               rotate.play()
 
          if stddraw.mouseLeftPressed():
+            count = 0
             while True:
                sc = current_tetromino.move("down", grid, 1)
 
                if not sc:
                   break
+               else:
+                  count += 1
             dropped = True
-
+            score += count * 2
          if stddraw.mouseScrollPressed(150):
-            current_tetromino.move("down", grid, 1)
+            succ = current_tetromino.move("down", grid, 1)
+            if succ:
+               score += 1
             
       current_ghost = current_tetromino.copy(ghost=True)
       grid.current_ghost = current_ghost
@@ -171,11 +187,7 @@ def start():
          if game_over:
             break
 
-         line_count = grid.delete_full_lines(clear)
-
-         if line_count != 0:
-            score += (1200 if line_count == 4 else (300 if line_count == 3 else (100 if line_count == 2 else 40)))
-            print("New Score: " + str(score))
+         score = grid.delete_full_lines(clear, score)
 
          # create the next tetromino to enter the game grid
          # by using the create_tetromino function defined below
@@ -186,8 +198,8 @@ def start():
          grid.current_tetromino = current_tetromino
          print("Next Tetromino: " + tetrominos[0].type)
 
-      # display the game grid and as well the current tetromino  
-      grid.display(0)
+      # display the game grid and as well the current tetromino 
+      grid.display(score)
 
    print("Game Over! Score is " + str(score) + ".")
 
@@ -246,11 +258,8 @@ def display_game_menu(grid_height, grid_width):
       currentMilis = time.time()*1000
 
       # mouse_x, mouse_y = float(stddraw.mouseMotionX()), float(stddraw.mouseMotionY())
-      mouse_x = stddraw.mouseMotionX()
-      mouse_y = stddraw.mouseMotionY()
-
-      mouse_x = (round(mouse_x) if mouse_x is not None else -1)
-      mouse_y = (round(mouse_y) if mouse_y is not None else -1)
+      mouse_x = stddraw.mouseMotionX() if stddraw.mouseMotionX() is not None else -1
+      mouse_y = stddraw.mouseMotionY() if stddraw.mouseMotionY() is not None else -1
 
       # MOUSE CLICKS ON BUTTONS
       if stddraw.mouseLeftPressed():
@@ -262,7 +271,7 @@ def display_game_menu(grid_height, grid_width):
                print("Work in Progress, Tetris 2048")
       
       # MOUSE LISTENERS ON BUTTONS
-      if mouse_x >= button_blc_x and mouse_x <= button_blc_x + button_w/2:
+      if mouse_x >= button_blc_x and mouse_x <= button_blc_x + button_w:
          if mouse_y >= button_blc_y and mouse_y <= button_blc_y + button_h: 
             if currentMilis > availability:
                print("Mouse is on Tetris")
@@ -287,17 +296,10 @@ def display_game_menu(grid_height, grid_width):
       # stddraw.picture(tetrisButtonPicture,img_center_x/2, 5)
       stddraw.text(img_center_x,5,"Start Tetris")
       stddraw.text(img_center_x,2,"Start 2048")
-      
-      stddraw.setPenColor(RED)
-      stddraw.point(button_blc_x, button_blc_y)
 
       stddraw.show(50)
       stddraw.clear(background_color)
       
-               
-
-
-
 # start() function is specified as the entry point (main function) from which 
 # the program starts execution
 if __name__== '__main__':
