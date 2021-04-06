@@ -4,7 +4,7 @@ from game_grid import GameGrid # class for modeling the game grid
 from tetromino import Tetromino # class for modeling the tetrominoes
 from picture import Picture # used representing images to display
 import os # used for file and directory operations
-from color import Color, WHITE # used for coloring the game menu
+from color import Color, RED, WHITE # used for coloring the game menu
 import time
 import sys
 from audioplayer import AudioPlayer
@@ -16,11 +16,11 @@ def start():
    # set the dimensions of the game grid
    grid_h, grid_w = 20, 12
    # set the size of the drawing canvas
-   canvas_h, canvas_w = 40 * grid_h+1, 40 * grid_w+120+1
+   canvas_h, canvas_w = 40 * grid_h+1, 40 * grid_w+160
    stddraw.setCanvasSize(canvas_w, canvas_h) 
    # set the scale of the coordinate system
-   stddraw.setXscale(-0.75, grid_w + 3)
-   stddraw.setYscale(-0.75, grid_h-0.25)
+   stddraw.setXscale(-1, grid_w + 4) # 17
+   stddraw.setYscale(-1, grid_h) # 21
    
    # create the game grid
    grid = GameGrid(grid_h, grid_w)
@@ -223,18 +223,17 @@ def display_game_menu(grid_height, grid_width):
    img_file = current_dir + "/images/tetris.png"
    tetris= Picture(img_file)
    # center coordinates to display the image
-   img_center_x, img_center_y = (grid_width - 1) / 2, grid_height - 7
+   img_center_x, img_center_y = (17/2)-1,(21/2)-1
    # image is represented using the Picture class
    # display the image
    
    # dimensions of the start game button
-# dimensions of the start game button
-   button_w, button_h = (grid_width - 1.5)/2, 2
+   # dimensions of the start game button
+   button_w, button_h = (grid_width - 1.5), 2
    # coordinates of the bottom left corner of the start game button 
-   button_blc_x, button_blc_y = img_center_x/2-0.2 - button_w / 2, 4 # Tetris Button 
-   button2_blc_x, button2_blc_y = img_center_x/2-0.2 - button_w / 2 , 1 #Settings Button
-   button3_blc_x, button3_blc_y = img_center_x+(img_center_x/2)-button_w/2 , 4 # Tetris 2048 Button
-   button4_blc_x, button4_blc_y = img_center_x+(img_center_x/2)-button_w/2 , 1 # Settings Button
+   button_blc_x, button_blc_y = img_center_x-button_w/2, 4 # Tetris Button 
+   button3_blc_x, button3_blc_y = img_center_x-button_w/2 , 1 # Tetris 2048 Button
+
 
    availability = 0
    # menu interaction loop
@@ -258,54 +257,40 @@ def display_game_menu(grid_height, grid_width):
          if mouse_x >= button_blc_x and mouse_x <= button_blc_x + button_w:
             if mouse_y >= button_blc_y and mouse_y <= button_blc_y + button_h: 
                break # break the loop to end the method and start the game
-         if mouse_x >= button2_blc_x and mouse_x <= button2_blc_x + button_w:
-            if mouse_y >= button2_blc_y and mouse_y <= button2_blc_y + button_h: 
-               print("Work in Progress, Settings")
          if mouse_x >= button3_blc_x and mouse_x <= button3_blc_x + button_w:
             if mouse_y >= button3_blc_y and mouse_y <= button3_blc_y + button_h: 
                print("Work in Progress, Tetris 2048")
-         if mouse_x >= button4_blc_x and mouse_x <= button4_blc_x + button_w:
-            if mouse_y >= button4_blc_y and mouse_y <= button4_blc_y + button_h: 
-               print("Work in Progress, Quit")
-               sys.exit()
       
       # MOUSE LISTENERS ON BUTTONS
-      if mouse_x >= button_blc_x and mouse_x <= button_blc_x + button_w:
+      if mouse_x >= button_blc_x and mouse_x <= button_blc_x + button_w/2:
          if mouse_y >= button_blc_y and mouse_y <= button_blc_y + button_h: 
-               tetrisButtonPicture=start
-      if mouse_x >= button2_blc_x and mouse_x <= button2_blc_x + button_w:
-         if mouse_y >= button2_blc_y and mouse_y <= button2_blc_y + button_h: 
             if currentMilis > availability:
-               print("Mouse is on Settings")
-               availability=currentMilis+500
+               print("Mouse is on Tetris")
+               availability=currentMilis+50
       if mouse_x >= button3_blc_x and mouse_x <= button3_blc_x + button_w:
          if mouse_y >= button3_blc_y and mouse_y <= button3_blc_y + button_h: 
             if currentMilis > availability:
-               print("Mouse is on Tetris 2048")
-               availability=currentMilis+500
-      if mouse_x >= button4_blc_x and mouse_x <= button4_blc_x + button_w:
-         if mouse_y >= button4_blc_y and mouse_y <= button4_blc_y + button_h: 
-            if currentMilis > availability:
-               print("Mouse is on Quit")
-               availability=currentMilis+500
+               print("Mouse is on 2048")
+               availability=currentMilis+50
 
       # LOGO IMAGE
-      stddraw.picture(image_to_display, img_center_x, img_center_y)
+      stddraw.picture(image_to_display, img_center_x, img_center_y+3.5)
       # display the start game button as a filled rectangle
       stddraw.setPenColor(button_color)
-      # stddraw.filledRectangle(button_blc_x, button_blc_y, button_w, button_h)
-      stddraw.filledRectangle(button2_blc_x,button2_blc_y,button_w,button_h)
+
+      stddraw.filledRectangle(button_blc_x, button_blc_y, button_w, button_h)
       stddraw.filledRectangle(button3_blc_x,button3_blc_y,button_w,button_h)
-      stddraw.filledRectangle(button4_blc_x,button4_blc_y,button_w,button_h)
       # display the text on the start game button
       stddraw.setFontFamily("Arial")
       stddraw.setFontSize(25)
       stddraw.setPenColor(text_color)
-      stddraw.picture(tetrisButtonPicture,img_center_x/2-0.22, 5)
-      stddraw.text(img_center_x/2-0.2,2,"Settings")
-      stddraw.text(img_center_x+(img_center_x/2),5,"Start Tetris 2048")
-      stddraw.text(img_center_x+(img_center_x/2),2,"Quit")
+      # stddraw.picture(tetrisButtonPicture,img_center_x/2, 5)
+      stddraw.text(img_center_x,5,"Start Tetris")
+      stddraw.text(img_center_x,2,"Start 2048")
       
+      stddraw.setPenColor(RED)
+      stddraw.point(button_blc_x, button_blc_y)
+
       stddraw.show(50)
       stddraw.clear(background_color)
       
