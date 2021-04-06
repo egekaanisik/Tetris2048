@@ -7,6 +7,7 @@ from picture import Picture # used representing images to display
 import os # used for file and directory operations
 from color import Color # used for coloring the game menu
 import time
+import sys
 
 # MAIN FUNCTION OF THE PROGRAM
 #-------------------------------------------------------------------------------
@@ -188,30 +189,78 @@ def display_game_menu(grid_height, grid_width):
    # display the image
    stddraw.picture(image_to_display, img_center_x, img_center_y)
    # dimensions of the start game button
-   button_w, button_h = grid_width - 1.5, 2
+# dimensions of the start game button
+   button_w, button_h = (grid_width - 1.5)/2, 2
    # coordinates of the bottom left corner of the start game button 
-   button_blc_x, button_blc_y = img_center_x - button_w / 2, 4
+   button_blc_x, button_blc_y = img_center_x/2-0.2 - button_w / 2, 4 # Tetris Button 
+   button2_blc_x, button2_blc_y = img_center_x/2-0.2 - button_w / 2 , 1 #Settings Button
+   button3_blc_x, button3_blc_y = img_center_x+(img_center_x/2)-button_w/2 , 4 # Tetris 2048 Button
+   button4_blc_x, button4_blc_y = img_center_x+(img_center_x/2)-button_w/2 , 1 #Settings Button
    # display the start game button as a filled rectangle
    stddraw.setPenColor(button_color)
    stddraw.filledRectangle(button_blc_x, button_blc_y, button_w, button_h)
+   stddraw.filledRectangle(button2_blc_x,button2_blc_y,button_w,button_h)
+   stddraw.filledRectangle(button3_blc_x,button3_blc_y,button_w,button_h)
+   stddraw.filledRectangle(button4_blc_x,button4_blc_y,button_w,button_h)
    # display the text on the start game button
    stddraw.setFontFamily("Arial")
    stddraw.setFontSize(25)
    stddraw.setPenColor(text_color)
-   text_to_display = "Click Here to Start the Game"
-   stddraw.text(img_center_x, 5, text_to_display)
+   stddraw.text(img_center_x/2-0.2, 5, "Start Tetris")
+   stddraw.text(img_center_x/2-0.2,2,"Settings")
+   stddraw.text(img_center_x+(img_center_x/2),5,"Start Tetris 2048")
+   stddraw.text(img_center_x+(img_center_x/2),2,"Quit")
+   availability = 0
    # menu interaction loop
    while True:
       # display the menu and wait for a short time (50 ms)
+      currentMilis = time.time()*1000
       stddraw.show(50)
+      # mouse_x, mouse_y = float(stddraw.mouseMotionX()), float(stddraw.mouseMotionY())
+      mouse_x = stddraw.mouseMotionX()
+      mouse_y = stddraw.mouseMotionY()
+
+      mouse_x = (round(mouse_x) if mouse_x is not None else -1)
+      mouse_y = (round(mouse_y) if mouse_y is not None else -1)
+
       # check if the mouse has been left-clicked
       if stddraw.mouseLeftPressed(0):
-         # get the x and y coordinates of the location at which the mouse has 
-         # most recently been left-clicked  
-         mouse_x, mouse_y = stddraw.mouseX(), stddraw.mouseY()
          if mouse_x >= button_blc_x and mouse_x <= button_blc_x + button_w:
             if mouse_y >= button_blc_y and mouse_y <= button_blc_y + button_h: 
                break # break the loop to end the method and start the game
+         if mouse_x >= button2_blc_x and mouse_x <= button2_blc_x + button_w:
+            if mouse_y >= button2_blc_y and mouse_y <= button2_blc_y + button_h: 
+               print("Work in Progress, Settings")
+         if mouse_x >= button3_blc_x and mouse_x <= button3_blc_x + button_w:
+            if mouse_y >= button3_blc_y and mouse_y <= button3_blc_y + button_h: 
+               print("Work in Progress, Tetris 2048")
+         if mouse_x >= button4_blc_x and mouse_x <= button4_blc_x + button_w:
+            if mouse_y >= button4_blc_y and mouse_y <= button4_blc_y + button_h: 
+               print("Work in Progress, Quit")
+               sys.exit()
+      
+      if mouse_x >= button_blc_x and mouse_x <= button_blc_x + button_w:
+         if mouse_y >= button_blc_y and mouse_y <= button_blc_y + button_h: 
+            if currentMilis>availability:
+               print("Mouse is on Tetris")
+               availability=currentMilis+500
+      if mouse_x >= button2_blc_x and mouse_x <= button2_blc_x + button_w:
+         if mouse_y >= button2_blc_y and mouse_y <= button2_blc_y + button_h: 
+            if currentMilis > availability:
+               print("Mouse is on Settings")
+               availability=currentMilis+500
+      if mouse_x >= button3_blc_x and mouse_x <= button3_blc_x + button_w:
+         if mouse_y >= button3_blc_y and mouse_y <= button3_blc_y + button_h: 
+            if currentMilis > availability:
+               print("Mouse is on Tetris 2048")
+               availability=currentMilis+500
+      if mouse_x >= button4_blc_x and mouse_x <= button4_blc_x + button_w:
+         if mouse_y >= button4_blc_y and mouse_y <= button4_blc_y + button_h: 
+            if currentMilis > availability:
+               print("Mouse is on Quit")
+               availability=currentMilis+500
+      
+               
 
 
 

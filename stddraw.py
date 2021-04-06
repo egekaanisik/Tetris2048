@@ -775,11 +775,15 @@ def mouseY():
 
 def mouseMotionX():
     global _mouseTrack
-    return _userX(_mouseTrack[0])
+    if _mouseTrack is not None:
+        return _userX(_mouseTrack[0])
+    else: return None
 
 def mouseMotionY():
     global _mouseTrack
-    return _userY(_mouseTrack[1])
+    if _mouseTrack is not None:
+        return _userY(_mouseTrack[1])
+    else: return None
     
 #-----------------------------------------------------------------------
 # End added by Alan J. Broder
