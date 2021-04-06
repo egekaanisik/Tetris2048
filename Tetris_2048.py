@@ -214,11 +214,15 @@ def display_game_menu(grid_height, grid_width):
    # get the directory in which this python code file is placed
    current_dir = os.path.dirname(os.path.realpath(__file__))
    # path of the image file
-   img_file = current_dir + "/menu_image.png"
+   img_file = current_dir + "/images/menu_image.png"
+   image_to_display = Picture(img_file)
+   img_file = current_dir + "/images/start1.png"
+   start1 = Picture(img_file)
+   img_file = current_dir + "/images/start2.png"
+   start2= Picture(img_file)
    # center coordinates to display the image
    img_center_x, img_center_y = (grid_width - 1) / 2, grid_height - 7
    # image is represented using the Picture class
-   image_to_display = Picture(img_file)
    # display the image
    stddraw.picture(image_to_display, img_center_x, img_center_y)
    # dimensions of the start game button
@@ -231,7 +235,7 @@ def display_game_menu(grid_height, grid_width):
    button4_blc_x, button4_blc_y = img_center_x+(img_center_x/2)-button_w/2 , 1 #Settings Button
    # display the start game button as a filled rectangle
    stddraw.setPenColor(button_color)
-   stddraw.filledRectangle(button_blc_x, button_blc_y, button_w, button_h)
+   # stddraw.filledRectangle(button_blc_x, button_blc_y, button_w, button_h)
    stddraw.filledRectangle(button2_blc_x,button2_blc_y,button_w,button_h)
    stddraw.filledRectangle(button3_blc_x,button3_blc_y,button_w,button_h)
    stddraw.filledRectangle(button4_blc_x,button4_blc_y,button_w,button_h)
@@ -239,10 +243,10 @@ def display_game_menu(grid_height, grid_width):
    stddraw.setFontFamily("Arial")
    stddraw.setFontSize(25)
    stddraw.setPenColor(text_color)
-   stddraw.text(img_center_x/2-0.2, 5, "Start Tetris")
    stddraw.text(img_center_x/2-0.2,2,"Settings")
    stddraw.text(img_center_x+(img_center_x/2),5,"Start Tetris 2048")
    stddraw.text(img_center_x+(img_center_x/2),2,"Quit")
+   stddraw.picture(start1,img_center_x/2-0.22, 5)
    availability = 0
    # menu interaction loop
    while True:
@@ -276,6 +280,7 @@ def display_game_menu(grid_height, grid_width):
          if mouse_y >= button_blc_y and mouse_y <= button_blc_y + button_h: 
             if currentMilis>availability:
                print("Mouse is on Tetris")
+               # stddraw.picture(start2,img_center_x/2-0.22, 5)
                availability=currentMilis+500
       if mouse_x >= button2_blc_x and mouse_x <= button2_blc_x + button_w:
          if mouse_y >= button2_blc_y and mouse_y <= button2_blc_y + button_h: 
