@@ -13,6 +13,7 @@ class GameGrid:
       self.tile_matrix = np.full((grid_h, grid_w), None)
       # the tetromino that is currently being moved on the game grid
       self.current_tetromino = None
+      self.current_ghost = None
       # game_over flag shows whether the game is over/completed or not
       self.game_over = False
       # set the color used for the empty grid cells
@@ -31,6 +32,9 @@ class GameGrid:
       # draw the game grid
       self.draw_grid()
       # draw the current (active) tetromino
+      if self.current_ghost != None:
+         self.current_ghost.draw()
+         
       if self.current_tetromino != None:
          self.current_tetromino.draw()
       # draw a box around the game grid 
@@ -142,3 +146,12 @@ class GameGrid:
                   self.game_over = True
       # return the game_over flag
       return self.game_over
+
+   def delete_from_grid(self, tiles_to_delete):
+      n_rows, n_cols = len(tiles_to_delete), len(tiles_to_delete[0])
+      for col in range(n_cols):
+         for row in range(n_rows):            
+            # place each occupied tile onto the game grid
+            if tiles_to_delete[row][col] != None:
+               pos = tiles_to_delete[row][col].get_position()
+               self.tile_matrix[pos.y][pos.x] = None
