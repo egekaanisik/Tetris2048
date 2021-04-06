@@ -95,7 +95,7 @@ _mouseScrollPressed = False
 # The position of the mouse as of the most recent mouse click
 _mousePos = None
 _mouseTrack = None
-_left_availability = time.time()*1000
+_scroll_availability = time.time()*1000
  
 #-----------------------------------------------------------------------
 # End added by Alan J. Broder
@@ -671,16 +671,15 @@ def _checkForEvents():
             (event.button == 1): 
             _mouseLeftPressed = True
             _mousePos = event.pos                      
-        elif (event.type == pygame.MOUSEBUTTONUP) and \
-            (event.button == 1): 
-            _mouseLeftPressed = False
-            _mousePos = event.pos  
         elif (event.type == pygame.MOUSEBUTTONDOWN) and \
             (event.button == 3): 
             _mouseRightPressed = True
         elif (event.type == pygame.MOUSEBUTTONDOWN) and \
             (event.button == 2): 
             _mouseScrollPressed = True
+        elif (event.type == pygame.MOUSEBUTTONUP) and \
+            (event.button == 2): 
+            _mouseScrollPressed = False
         elif (event.type == pygame.MOUSEMOTION):
             _mouseTrack = event.pos
         
@@ -721,17 +720,17 @@ def clearKeysTyped():
 
 # Functions for dealing with mouse clicks 
 
-def mouseLeftPressed(delay):
+def mouseScrollPressed(delay):
     """
     Return True if the mouse has been left-clicked since the 
     last time mousePressed was called, and False otherwise.
     """
-    global _mouseLeftPressed
-    global _left_availability
+    global _mouseScrollPressed
+    global _scroll_availability
     currentMilis = time.time()*1000
-    if currentMilis>_left_availability:
-        _left_availability=currentMilis+delay
-        return _mouseLeftPressed
+    if currentMilis>_scroll_availability:
+        _scroll_availability=currentMilis+delay
+        return _mouseScrollPressed
 
 def mouseRightPressed():
     global _mouseRightPressed
@@ -740,10 +739,10 @@ def mouseRightPressed():
         return True
     return False
 
-def mouseScrollPressed():
-    global _mouseScrollPressed
-    if _mouseScrollPressed:
-        _mouseScrollPressed = False
+def mouseLeftPressed():
+    global _mouseLeftPressed
+    if _mouseLeftPressed:
+        _mouseLeftPressed = False
         return True
     return False
     

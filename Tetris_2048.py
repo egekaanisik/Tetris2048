@@ -1,4 +1,3 @@
-from pygame.transform import rotate
 import stddraw # the stddraw module is used as a basic graphics library
 import random # used for creating tetrominoes with random types/shapes
 from game_grid import GameGrid # class for modeling the game grid
@@ -8,6 +7,7 @@ import os # used for file and directory operations
 from color import Color # used for coloring the game menu
 import time
 import sys
+import simpleaudio as sa
 
 # MAIN FUNCTION OF THE PROGRAM
 #-------------------------------------------------------------------------------
@@ -31,6 +31,12 @@ def start():
    grid.current_tetromino = current_tetromino
    # display a simple menu before opening the game
    display_game_menu(grid_h, grid_w)
+
+   current_dir = os.path.dirname(os.path.realpath(__file__))
+   back_sound = current_dir + "/back.wav"
+   back_obj = sa.WaveObject.from_wave_file(back_sound)
+   play_obj = back_obj.play()
+
    print("Next Tetromino: " + tetrominos[0].type)
    last_mouse_pos = -1
    mouse = False
@@ -38,6 +44,9 @@ def start():
    score = 0
    # main game loop (keyboard interaction for moving the tetromino) 
    while True:
+      if not play_obj.is_playing():
+         play_obj = back_obj.play()
+
       currentMilis = time.time()*1000
       pos = round(stddraw.mouseMotionX())
       dropped = False
@@ -99,10 +108,7 @@ def start():
          if stddraw.mouseRightPressed():
             current_tetromino.rotate(grid)
 
-         if stddraw.mouseLeftPressed(150):
-            current_tetromino.move("down", grid, 1)
-
-         if stddraw.mouseScrollPressed():
+         if stddraw.mouseLeftPressed():
             while True:
                sc = current_tetromino.move("down", grid, 1)
 
@@ -110,6 +116,9 @@ def start():
                   break
             dropped = True
 
+         if stddraw.mouseScrollPressed(150):
+            current_tetromino.move("down", grid, 1)
+            
       current_ghost = current_tetromino.copy(ghost=True)
       grid.current_ghost = current_ghost
 
@@ -224,7 +233,7 @@ def display_game_menu(grid_height, grid_width):
       mouse_y = (round(mouse_y) if mouse_y is not None else -1)
 
       # check if the mouse has been left-clicked
-      if stddraw.mouseLeftPressed(0):
+      if stddraw.mouseLeftPressed():
          if mouse_x >= button_blc_x and mouse_x <= button_blc_x + button_w:
             if mouse_y >= button_blc_y and mouse_y <= button_blc_y + button_h: 
                break # break the loop to end the method and start the game
