@@ -57,7 +57,8 @@ def start():
 
    player.play(loop=True)
    # display a simple menu before opening the game
-   display_game_menu(grid_h, grid_w,player,rotate,move,place,clear)
+   diff = display_game_menu(grid_h, grid_w,player,rotate,move,place,clear)
+   print(diff)
    
    last_mouse_pos = -1
    mouse = False
@@ -262,15 +263,16 @@ def display_game_menu(grid_height, grid_width,player,rotate,move,place,clear):
 
    slider_start = button3_blc_x+((button_w-slider_w)/2)
    slider_end = slider_start+slider_w
-   slider1location = button_blc_x+(slider_w/20)
-   slider2location = button_blc_x+(slider_w/4)
-   slider3location = button_blc_x+(slider_w/3)
+   slider1location = slider_start + (slider_w/20)
+   slider2location = slider_start + (slider_w/4)
+   slider3location = slider_start + (slider_w / 6) * 2
    volume_percent = 5
    sound_percent = 25
-   speed_percent = 33.3
+   diff = 1
    menu.volume = sound_percent
    musicHold = False
    soundHold = False
+   diffHold = False
    played = False
    # menu interaction loop
    while True:
@@ -293,6 +295,8 @@ def display_game_menu(grid_height, grid_width,player,rotate,move,place,clear):
             musicHold = True
          elif mouse_y >= 8.5 and mouse_y < 8.55 + slider_h:
             soundHold = True
+         elif mouse_y >= 7 and mouse_y < 7.05 + slider_h:
+            diffHold = True
          if musicHold:
             if mouse_x >= slider_start and mouse_x <= slider_end:
                slider1location = mouse_x
@@ -320,16 +324,39 @@ def display_game_menu(grid_height, grid_width,player,rotate,move,place,clear):
             place.volume = round(sound_percent)
             clear.volume = round(sound_percent)
             menu.volume = round(sound_percent)
-         
+         elif diffHold:
+            if mouse_x >= slider_start and mouse_x <= slider_end:
+               if mouse_x < slider_start + (slider_w / 6) * 1:
+                  slider3location = slider_start
+                  diff = 0
+               elif mouse_x >= slider_start + (slider_w / 6) * 1 and mouse_x < slider_start + (slider_w / 6) * 3:
+                  slider3location = slider_start + (slider_w / 6) * 2
+                  diff = 1
+               elif mouse_x >= slider_start + (slider_w / 6) * 3 and mouse_x < slider_start + (slider_w / 6) * 5:
+                  slider3location = slider_start + (slider_w / 6) * 4
+                  diff = 2
+               elif mouse_x >= slider_start + (slider_w / 6) * 5:
+                  slider3location = slider_end
+                  diff = 3
+            elif mouse_x < slider_start:
+               slider3location = slider_start
+               diff = 0
+            else:
+               slider3location = slider_end
+               diff = 3
+
       else:
          musicHold = False
          soundHold = False
+         diffHold = False
+
+      diffStr = "Easy" if diff == 0 else ("Medium" if diff == 1 else ("Hard" if diff == 2 else "Extreme"))
 
       # MOUSE CLICKS ON BUTTONS
       if stddraw.mouseLeftPressed():
          if mouse_x >= button_blc_x and mouse_x <= button_blc_x + button_w:
             if mouse_y >= button_blc_y and mouse_y <= button_blc_y + button_h: 
-               break # break the loop to end the method and start the game
+               return diff
          if mouse_x >= button3_blc_x and mouse_x <= button3_blc_x + button_w:
             if mouse_y >= button3_blc_y and mouse_y <= button3_blc_y + button_h: 
                print("Work in Progress, Tetris 2048")    
@@ -383,7 +410,7 @@ def display_game_menu(grid_height, grid_width,player,rotate,move,place,clear):
       stddraw.setPenColor(WHITE)
       stddraw.filledCircle(slider3location,7+(slider_h/2),0.3)
       stddraw.setPenColor(text_color)
-      stddraw.text(slider3location-0.03,6.5,str(round(speed_percent)))
+      stddraw.text(slider3location-0.03,6.5,diffStr)
       stddraw.picture(speedButtonPicture,slider3location,7+(slider_h/2)+0.02)
 
       # stddraw.picture(tetrisButtonPicture,img_center_x/2, 5)
