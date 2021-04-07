@@ -237,7 +237,8 @@ def display_game_menu(grid_height, grid_width):
    img_center_x, img_center_y = (17/2)-1,(21/2)-1
    # image is represented using the Picture class
    # display the image
-   
+   stddraw.setFontFamily("Arial")
+   stddraw.setFontSize(25)
    # dimensions of the start game button
    # dimensions of the start game button
    button_w, button_h = (grid_width - 1.5), 2
@@ -248,8 +249,8 @@ def display_game_menu(grid_height, grid_width):
 
    slider_start = button3_blc_x+((button_w-slider_w)/2)
    slider_end = slider_start+slider_w
-   slider1location = button_blc_x
-
+   slider1location = button_blc_x+(slider_w/2)
+   volume_percent = 0.5
    availability = 0
    # menu interaction loop
    while True:
@@ -266,17 +267,18 @@ def display_game_menu(grid_height, grid_width):
       mouse_y = stddraw.mouseMotionY() if stddraw.mouseMotionY() is not None else -1
 
       # MOUSE CLICKS ON BUTTONS
-      if stddraw.mouseLeftPressed():
+      if stddraw._mouseLeftPressed():
          if mouse_x >= button_blc_x and mouse_x <= button_blc_x + button_w:
             if mouse_y >= button_blc_y and mouse_y <= button_blc_y + button_h: 
                break # break the loop to end the method and start the game
          if mouse_x >= button3_blc_x and mouse_x <= button3_blc_x + button_w:
             if mouse_y >= button3_blc_y and mouse_y <= button3_blc_y + button_h: 
                print("Work in Progress, Tetris 2048")
-         if mouse_x >= slider_start and mouse_x <= slider_start + slider_w:
+         if mouse_x >= slider_start and mouse_x <= slider_end:
             if mouse_y >= 7 and mouse_y < 7.05 + slider_h:
                slider1location = mouse_x
-               # HENÜZ HİÇBİŞEY YAPMIYO EGE
+               volume_percent = (slider1location-slider_start)/(slider_end-slider_start)
+               print(volume_percent)
 
       
       # MOUSE LISTENERS ON BUTTONS
@@ -290,17 +292,18 @@ def display_game_menu(grid_height, grid_width):
       # LOGO IMAGE
       stddraw.picture(image_to_display, img_center_x, img_center_y+6)
       # display the start game button as a filled rectangle
+      # FIRST SLIDER
       stddraw.setPenColor(button_color)
       stddraw.filledRectangle(slider_start,7,slider_w,slider_h)
       stddraw.setPenColor(RED)
       stddraw.filledCircle(slider1location,7.15,0.3)
+      stddraw.setPenColor(text_color)
+      stddraw.text(slider1location,6.5,str(round(volume_percent*100)))
 
       # stddraw.filledRectangle(button_blc_x, button_blc_y, button_w, button_h)
       # stddraw.filledRectangle(button3_blc_x,button3_blc_y,button_w,button_h)
       # display the text on the start game button
-      stddraw.setFontFamily("Arial")
-      stddraw.setFontSize(25)
-      stddraw.setPenColor(text_color)
+
       # stddraw.picture(tetrisButtonPicture,img_center_x/2, 5)
       #stddraw.text(img_center_x,5,"Start Tetris")
       stddraw.picture(tetrisButtonPicture,img_center_x,5)
