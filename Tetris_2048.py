@@ -88,7 +88,7 @@ def start():
    music_volume = 5
    effects_volume = 25
 
-   back_sound = current_dir + "/sounds/back.wav"
+   back_sound = current_dir + "/sounds/back.mp3"
    move_sound = current_dir + "/sounds/move.wav"
    rotate_sound = current_dir + "/sounds/rotate.wav"
    place_sound = current_dir + "/sounds/place.wav"
