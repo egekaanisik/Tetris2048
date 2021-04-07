@@ -1,6 +1,7 @@
 import stddraw # the stddraw module is used as a basic graphics library
 from color import Color # used for coloring the game grid
 import numpy as np # fundamental Python module for scientific computing
+from tile import Tile
 
 # Class used for modelling the game grid
 class GameGrid:
@@ -26,7 +27,7 @@ class GameGrid:
       self.box_thickness = 8 * self.line_thickness
 
    # Method used for displaying the game grid
-   def display(self, score):
+   def display(self, score, next_tetromino, game_over):
       # clear the background canvas to empty_cell_color
       stddraw.clear(self.empty_cell_color)
       # draw the game grid
@@ -40,14 +41,102 @@ class GameGrid:
       # draw a box around the game grid 
       self.draw_boundaries()
 
-      stddraw.setPenColor(stddraw.WHITE)
-      stddraw.setFontFamily("Arial")
-      stddraw.setFontSize(30)
-      stddraw.text(13.75, 18.5, "Score")
-      stddraw.text(13.75, 17, str(score))
-      stddraw.text(13.75, 8, "Next")
-      stddraw.text(13.75, 7, "Tetromino")
-      stddraw.show(0)
+      if not game_over:
+         stddraw.setPenColor(stddraw.WHITE)
+         stddraw.setFontFamily("Arial")
+         stddraw.setFontSize(30)
+         stddraw.text(13.75, 18.5, "Score")
+         stddraw.text(13.75, 17, str(score))
+         stddraw.text(13.75, 7, "Next")
+         stddraw.text(13.75, 6, "Tetromino")
+
+         stddraw.setPenColor(Tile.boundary_thickness)
+         if next_tetromino.type == 'I':
+            stddraw.setPenColor(next_tetromino.background_color)
+            stddraw.filledSquare(13.75, 4.5, 0.5)
+            stddraw.filledSquare(13.75, 3.5, 0.5)
+            stddraw.filledSquare(13.75, 2.5, 0.5)
+            stddraw.filledSquare(13.75, 1.5, 0.5)
+            stddraw.setPenColor(next_tetromino.boundary_color)
+            stddraw.square(13.75, 4.5, 0.5)
+            stddraw.square(13.75, 3.5, 0.5)
+            stddraw.square(13.75, 2.5, 0.5)
+            stddraw.square(13.75, 1.5, 0.5)
+         elif next_tetromino.type == 'O':
+            stddraw.setPenColor(next_tetromino.background_color)
+            stddraw.filledSquare(13.25, 2.5, 0.5)
+            stddraw.filledSquare(13.25, 1.5, 0.5)
+            stddraw.filledSquare(14.25, 2.5, 0.5)
+            stddraw.filledSquare(14.25, 1.5, 0.5)
+            stddraw.setPenColor(next_tetromino.boundary_color)
+            stddraw.square(13.25, 2.5, 0.5)
+            stddraw.square(13.25, 1.5, 0.5)
+            stddraw.square(14.25, 2.5, 0.5)
+            stddraw.square(14.25, 1.5, 0.5)
+         elif next_tetromino.type == 'Z':
+            stddraw.setPenColor(next_tetromino.background_color)
+            stddraw.filledSquare(12.75, 2.5, 0.5)
+            stddraw.filledSquare(13.75, 2.5, 0.5)
+            stddraw.filledSquare(13.75, 1.5, 0.5)
+            stddraw.filledSquare(14.75, 1.5, 0.5)
+            stddraw.setPenColor(next_tetromino.boundary_color)
+            stddraw.square(12.75, 2.5, 0.5)
+            stddraw.square(13.75, 2.5, 0.5)
+            stddraw.square(13.75, 1.5, 0.5)
+            stddraw.square(14.75, 1.5, 0.5)
+         elif next_tetromino.type == 'S':
+            stddraw.setPenColor(next_tetromino.background_color)
+            stddraw.filledSquare(12.75, 1.5, 0.5)
+            stddraw.filledSquare(13.75, 1.5, 0.5)
+            stddraw.filledSquare(13.75, 2.5, 0.5)
+            stddraw.filledSquare(14.75, 2.5, 0.5)
+            stddraw.setPenColor(next_tetromino.boundary_color)
+            stddraw.square(12.75, 1.5, 0.5)
+            stddraw.square(13.75, 1.5, 0.5)
+            stddraw.square(13.75, 2.5, 0.5)
+            stddraw.square(14.75, 2.5, 0.5)
+         elif next_tetromino.type == 'L':
+            stddraw.setPenColor(next_tetromino.background_color)
+            stddraw.filledSquare(12.75, 2.5, 0.5)
+            stddraw.filledSquare(13.75, 2.5, 0.5)
+            stddraw.filledSquare(14.75, 2.5, 0.5)
+            stddraw.filledSquare(12.75, 1.5, 0.5)
+            stddraw.setPenColor(next_tetromino.boundary_color)
+            stddraw.square(12.75, 2.5, 0.5)
+            stddraw.square(13.75, 2.5, 0.5)
+            stddraw.square(14.75, 2.5, 0.5)
+            stddraw.square(12.75, 1.5, 0.5)
+         elif next_tetromino.type == 'J':
+            stddraw.setPenColor(next_tetromino.background_color)
+            stddraw.filledSquare(12.75, 2.5, 0.5)
+            stddraw.filledSquare(13.75, 2.5, 0.5)
+            stddraw.filledSquare(14.75, 2.5, 0.5)
+            stddraw.filledSquare(14.75, 1.5, 0.5)
+            stddraw.setPenColor(next_tetromino.boundary_color)
+            stddraw.square(12.75, 2.5, 0.5)
+            stddraw.square(13.75, 2.5, 0.5)
+            stddraw.square(14.75, 2.5, 0.5)
+            stddraw.square(14.75, 1.5, 0.5)
+         elif next_tetromino.type == 'T':
+            stddraw.setPenColor(next_tetromino.background_color)
+            stddraw.filledSquare(12.75, 2.5, 0.5)
+            stddraw.filledSquare(13.75, 2.5, 0.5)
+            stddraw.filledSquare(14.75, 2.5, 0.5)
+            stddraw.filledSquare(13.75, 1.5, 0.5)
+            stddraw.setPenColor(next_tetromino.boundary_color)
+            stddraw.square(12.75, 2.5, 0.5)
+            stddraw.square(13.75, 2.5, 0.5)
+            stddraw.square(14.75, 2.5, 0.5)
+            stddraw.square(13.75, 1.5, 0.5)
+         stddraw.show(0)
+      else:
+         stddraw.setPenColor(stddraw.WHITE)
+         stddraw.setFontFamily("Arial")
+         stddraw.setFontSize(30)
+         stddraw.text(13.75, 11.5, "Game Over!")
+         stddraw.text(13.75, 9.5, "Final Score:")
+         stddraw.text(13.75, 8.5, str(score))
+         stddraw.show()
          
    # Method for drawing the cells and the lines of the grid
    def draw_grid(self): 
@@ -105,7 +194,7 @@ class GameGrid:
       else:
          False
 
-   def delete_full_lines(self, clear, score):
+   def delete_full_lines(self, clear, score, next_tetromino, game_over):
       paint_indexes = []
       indexes = []
       for i in range(self.grid_height):
@@ -121,7 +210,7 @@ class GameGrid:
                for k in range(self.grid_width):
                   self.tile_matrix[l][k].background_color = Color(color, color, color)
                   self.tile_matrix[l][k].boundary_color = Color(color, color, color)
-            self.display(score)
+            self.display(score, next_tetromino, game_over)
 
          for r in indexes:
             self.tile_matrix = np.delete(self.tile_matrix, (r), axis=0)

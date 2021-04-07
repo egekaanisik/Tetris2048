@@ -59,7 +59,6 @@ def start():
    # display a simple menu before opening the game
    display_game_menu(grid_h, grid_w)
    
-   print("Next Tetromino: " + tetrominos[0].type)
    last_mouse_pos = -1
    mouse = False
    availability = time.time()*1000
@@ -159,7 +158,7 @@ def start():
             succ = current_tetromino.move("down", grid, 1)
             if succ:
                score += 1
-            
+      
       current_ghost = current_tetromino.copy(ghost=True)
       grid.current_ghost = current_ghost
 
@@ -176,6 +175,7 @@ def start():
          availability=currentMilis+300
 
       # place the tetromino on the game grid when it cannot go down anymore
+      game_over = False
       if not success or dropped:
          place.play()
          # get the tile matrix of the tetromino
@@ -184,10 +184,8 @@ def start():
          grid.current_ghost = None
          game_over = grid.update_grid(tiles_to_place)
          # end the main game loop if the game is over
-         if game_over:
-            break
-
-         score = grid.delete_full_lines(clear, score)
+         
+         score = grid.delete_full_lines(clear, score, tetrominos[0], game_over)
 
          # create the next tetromino to enter the game grid
          # by using the create_tetromino function defined below
@@ -196,12 +194,9 @@ def start():
 
          current_tetromino = tetrominos.pop(0)
          grid.current_tetromino = current_tetromino
-         print("Next Tetromino: " + tetrominos[0].type)
 
-      # display the game grid and as well the current tetromino 
-      grid.display(score)
-
-   print("Game Over! Score is " + str(score) + ".")
+      # display the game grid and as well the current tetromino
+      grid.display(score, tetrominos[0], game_over)
 
 # Function for creating random shaped tetrominoes to enter the game grid
 def create_tetromino(grid_height, grid_width):
