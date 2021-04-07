@@ -46,7 +46,7 @@ class GameGrid:
          stddraw.setFontFamily("Arial")
          stddraw.setFontSize(30)
          stddraw.text(13.75, 19, "Score")
-         stddraw.text(13.75, 17.75, str(score))
+         stddraw.boldText(13.75, 17.75, str(score))
          stddraw.text(13.75, 15, "Next")
          stddraw.text(13.75, 14, "Tetrominoes")
 
@@ -67,7 +67,7 @@ class GameGrid:
          stddraw.setFontSize(30)
          stddraw.text(13.75, 11.5, "Game Over!")
          stddraw.text(13.75, 9.5, "Final Score:")
-         stddraw.text(13.75, 8.5, str(score))
+         stddraw.boldText(13.75, 8.5, str(score))
          stddraw.show()
          
    # Method for drawing the cells and the lines of the grid
