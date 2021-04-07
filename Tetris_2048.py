@@ -4,7 +4,7 @@ from game_grid import GameGrid # class for modeling the game grid
 from tetromino import Tetromino # class for modeling the tetrominoes
 from picture import Picture # used representing images to display
 import os # used for file and directory operations
-from color import Color, WHITE # used for coloring the game menu
+from color import Color # used for coloring the game menu
 import time
 from audioplayer import AudioPlayer
 
@@ -23,6 +23,7 @@ def start():
    stddraw.setYscale(-1, grid_h) # 21
    stddraw.setWindowTitle("OUR PROJECT")
    stddraw.setWindowIcon(current_dir + "/images/icon.png")
+   stddraw.setKeyRepeat(70)
    
    # create the game grid
    grid = GameGrid(grid_h, grid_w)
@@ -67,22 +68,23 @@ def start():
    availability = time.time()*1000
    scroll_availability = time.time()*1000
    score = 0
+   rotated = False
    # main game loop (keyboard interaction for moving the tetromino) 
    while True:
       currentMilis = time.time()*1000
       pos = round(stddraw.mouseMotionX())
       dropped = False
 
-      if (pos != last_mouse_pos):
+      if (pos != last_mouse_pos) or stddraw.mouseLeftHeldDown() or stddraw.mouseRightHeldDown() or stddraw.mouseScrollHeldDown():
          mouse = True
          last_mouse_pos = pos
-      elif stddraw.hasNextKeyTyped():
+      elif stddraw.hasNextKeyTyped() and ("up" in stddraw._keysTyped or "down" in stddraw._keysTyped or "right" in stddraw._keysTyped or "left" in stddraw._keysTyped or "space" in stddraw._keysTyped):
          mouse = False
 
       if not mouse:
          # check user interactions via the keyboard
          if stddraw.hasNextKeyTyped():
-            keys_typed = stddraw._keysTyped
+            keys_typed = stddraw.getKeysTyped()
             if "space" in keys_typed:
                count = 0
                while True:
@@ -95,9 +97,11 @@ def start():
                dropped = True
                score += count * 2
             if "up" in keys_typed:
-               can_rotate = current_tetromino.rotate(grid)
-               if can_rotate:
-                  rotate.play()
+               if not rotated:
+                  can_rotate = current_tetromino.rotate(grid)
+                  if can_rotate:
+                     rotate.play()
+                     rotated = True
             # if the left arrow key has been pressed
             if "left" in keys_typed:
                # move the tetromino left by one
@@ -119,6 +123,11 @@ def start():
                   score += 1
             # clear the queue that stores all the keys pressed/typed
             stddraw.clearKeysTyped()
+         if stddraw.hasNextKeyReleased():
+            keys_released = stddraw.getKeysReleased()
+            if "up" in keys_released:
+               rotated = False
+            stddraw.clearKeysReleased()
       else:         
          if (pos + current_tetromino.column_count) > grid.grid_width:
             pos = grid.grid_width - current_tetromino.column_count
@@ -132,7 +141,8 @@ def start():
                if not success_move:
                   break
                else:
-                  move.play()
+                  if not rotated:
+                     move.play()
          else:
             for i in range(diff):
                success_move = current_tetromino.move("right", grid, 1)
@@ -140,12 +150,16 @@ def start():
                if not success_move:
                   break
                else:
-                  move.play()
+                  if not rotated:
+                     move.play()
+         
+         rotated = False
 
          if stddraw.mouseRightPressed():
             success_rotate = current_tetromino.rotate(grid)
             if success_rotate:
                rotate.play()
+               rotated = True
 
          if stddraw.mouseLeftPressed():
             count = 0
@@ -161,7 +175,7 @@ def start():
          if stddraw.mouseScrollHeldDown():
             if currentMilis > scroll_availability:
                succ = current_tetromino.move("down", grid, 1)
-               scroll_availability = currentMilis + 50
+               scroll_availability = currentMilis + 70
                if succ:
                   score += 1
       
@@ -391,7 +405,7 @@ def display_game_menu(grid_height, grid_width,player,rotate,move,place,clear):
       # MUSIC SLIDER
       stddraw.setPenColor(button_color)
       stddraw.filledRectangle(slider_start,10,slider_w,slider_h)
-      stddraw.setPenColor(WHITE)
+      stddraw.setPenColor(stddraw.WHITE)
       stddraw.filledCircle(slider1location,10+(slider_h/2),0.3)
       stddraw.setPenColor(text_color)
       stddraw.boldText(slider1location-0.03,9.5,str(round(volume_percent)))
@@ -400,7 +414,7 @@ def display_game_menu(grid_height, grid_width,player,rotate,move,place,clear):
       # SOUND SLIDER
       stddraw.setPenColor(button_color)
       stddraw.filledRectangle(slider_start,8.5,slider_w,slider_h)
-      stddraw.setPenColor(WHITE)
+      stddraw.setPenColor(stddraw.WHITE)
       stddraw.filledCircle(slider2location,8.5+(slider_h/2),0.3)
       stddraw.setPenColor(text_color)
       stddraw.boldText(slider2location-0.03,8,str(round(sound_percent)))
@@ -409,7 +423,7 @@ def display_game_menu(grid_height, grid_width,player,rotate,move,place,clear):
       # DIFFICULTY SLIDER
       stddraw.setPenColor(button_color)
       stddraw.filledRectangle(slider_start,7,slider_w,slider_h)
-      stddraw.setPenColor(WHITE)
+      stddraw.setPenColor(stddraw.WHITE)
       stddraw.filledCircle(slider3location,7+(slider_h/2),0.3)
       stddraw.setPenColor(text_color)
       stddraw.boldText(slider3location-0.03,6.5,diffStr)

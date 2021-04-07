@@ -60,7 +60,7 @@ _DEFAULT_YMAX = 1.0
 _DEFAULT_CANVAS_SIZE = 512
 _DEFAULT_PEN_RADIUS = .005  # Maybe change this to 0.0 in the future.
 _DEFAULT_PEN_COLOR = color.BLACK
-_DEFAULT_WINDOW_TITLE = 'stddraw window (r-click to save)'
+_DEFAULT_WINDOW_TITLE = 'stddraw window (press s to save)'
 
 _DEFAULT_FONT_FAMILY = 'Helvetica'
 _DEFAULT_FONT_SIZE = 12
@@ -77,7 +77,9 @@ _canvasWidth = float(_DEFAULT_CANVAS_SIZE)
 _canvasHeight = float(_DEFAULT_CANVAS_SIZE)
 _penRadius = None
 _penColor = _DEFAULT_PEN_COLOR
+_save_key = 's'
 _keysTyped = []
+_keysReleased = []
 
 # Has the window been created?
 _windowCreated = False
@@ -647,6 +649,8 @@ def _checkForEvents():
     """
     global _surface
     global _keysTyped
+    global _keysReleased
+    global _save_key
     
     #-------------------------------------------------------------------
     # Begin added by Alan J. Broder
@@ -664,16 +668,16 @@ def _checkForEvents():
     #-------------------------------------------------------------------
     
     _makeSureWindowCreated()
-    pygame.key.set_repeat(150)
-
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             sys.exit()
         elif (event.type == pygame.KEYUP) and \
-            (pygame.key.name(event.key) == 's'):
+            (pygame.key.name(event.key) == _save_key):
             _saveToFile()
         elif event.type == pygame.KEYDOWN:
             _keysTyped = [pygame.key.name(event.key)] + _keysTyped
+        elif event.type == pygame.KEYUP:
+            _keysReleased = [pygame.key.name(event.key)] + _keysReleased
             
         #---------------------------------------------------------------
         # Begin added by Alan J. Broder
@@ -713,6 +717,13 @@ def _checkForEvents():
 
 # Functions for retrieving keys
 
+def setKeyRepeat(delay=0):
+    pygame.key.set_repeat(delay)
+
+def setSaveKey(key="s"):
+    global _save_key
+    _save_key = key
+
 def hasNextKeyTyped():
     """
     Return True if the queue of the keys the user typed is not empty.
@@ -720,6 +731,10 @@ def hasNextKeyTyped():
     """
     global _keysTyped
     return _keysTyped != []
+
+def hasNextKeyReleased():
+    global _keysReleased
+    return _keysReleased != []
 
 def nextKeyTyped():
     """
@@ -729,12 +744,35 @@ def nextKeyTyped():
     global _keysTyped
     return _keysTyped.pop()
 
+def nextKeyReleased():
+    """
+    Remove the first key from the queue of the keys that the user typed,
+    and return that key.
+    """
+    global _keysReleased
+    return _keysReleased.pop()
+
 def clearKeysTyped():
     """
     Clear all the keys in the queue of the keys that the user typed.
     """
     global _keysTyped
     _keysTyped = []
+
+def clearKeysReleased():
+    """
+    Clear all the keys in the queue of the keys that the user typed.
+    """
+    global _keysReleased
+    _keysReleased = []
+
+def getKeysTyped():
+    global _keysTyped
+    return _keysTyped
+
+def getKeysReleased():
+    global _keysReleased
+    return _keysReleased
 
 #-----------------------------------------------------------------------
 # Begin added by Alan J. Broder
