@@ -31,7 +31,7 @@ def start():
    grid.current_tetromino = current_tetromino
 
    music_volume = 5
-   effects_volume = 30
+   effects_volume = 25
 
    current_dir = os.path.dirname(os.path.realpath(__file__)) + "/sounds"
    back_sound = current_dir + "/back.wav"
@@ -57,7 +57,7 @@ def start():
 
    player.play(loop=True)
    # display a simple menu before opening the game
-   display_game_menu(grid_h, grid_w,player)
+   display_game_menu(grid_h, grid_w,player,rotate,move,place,clear)
    
    last_mouse_pos = -1
    mouse = False
@@ -213,10 +213,10 @@ def create_tetromino(grid_height, grid_width):
    return tetromino
 
 # Function for displaying a simple menu before starting the game
-def display_game_menu(grid_height, grid_width,player):
+def display_game_menu(grid_height, grid_width,player,rotate,move,place,clear):
    # colors used for the menu
    background_color = Color(25, 49, 90)
-   button_color = Color(25, 255, 228)
+   button_color = Color(132, 132, 132)
    text_color = Color(31, 160, 239)
    # clear the background canvas to background_color
    stddraw.clear(background_color)
@@ -233,6 +233,14 @@ def display_game_menu(grid_height, grid_width,player):
    i2048 = Picture(img_file)
    img_file = current_dir + "/images/2048L.png"
    i2048L = Picture(img_file)
+   img_file = current_dir + "/images/musicOn.png"
+   musicOn = Picture(img_file)
+   img_file = current_dir + "/images/musicOff.png"
+   musicOff = Picture(img_file)
+   img_file = current_dir + "/images/soundOff.png"
+   soundOff = Picture(img_file)
+   img_file = current_dir + "/images/soundOn.png"
+   soundOn = Picture(img_file)
    # center coordinates to display the image
    img_center_x, img_center_y = (17/2)-1,(21/2)-1
    # image is represented using the Picture class
@@ -242,7 +250,7 @@ def display_game_menu(grid_height, grid_width,player):
    # dimensions of the start game button
    # dimensions of the start game button
    button_w, button_h = (grid_width - 1.5), 2
-   slider_w, slider_h = (grid_width - 2), 0.3
+   slider_w, slider_h = (grid_width - 2), 0.2
    # coordinates of the bottom left corner of the start game button 
    button_blc_x, button_blc_y = img_center_x-button_w/2, 4 # Tetris Button 
    button3_blc_x, button3_blc_y = img_center_x-button_w/2 , 1 # Tetris 2048 Button
@@ -250,12 +258,17 @@ def display_game_menu(grid_height, grid_width,player):
    slider_start = button3_blc_x+((button_w-slider_w)/2)
    slider_end = slider_start+slider_w
    slider1location = button_blc_x+(slider_w/20)
+   slider2location = button_blc_x+(slider_w/4)
    volume_percent = 5
+   sound_percent = 25
    availability = 0
-   hold = False
+   musicHold = False
+   soundHold = False
    # menu interaction loop
    while True:
 
+      soundButtonPicture = soundOn
+      musicButtonPicture = musicOn
       tetrisButtonPicture = tetris
       i2048Picture = i2048
       
@@ -267,10 +280,13 @@ def display_game_menu(grid_height, grid_width,player):
       mouse_x = stddraw.mouseMotionX() if stddraw.mouseMotionX() is not None else -1
       mouse_y = stddraw.mouseMotionY() if stddraw.mouseMotionY() is not None else -1
       
+      
       if stddraw.mouseLeftHeldDown():
-         if mouse_y >= 7 and mouse_y < 7.05 + slider_h:
-            hold = True
-         if hold:
+         if mouse_y >= 8.5 and mouse_y < 8.55 + slider_h:
+            musicHold = True
+         elif mouse_y >= 7 and mouse_y < 7.05 + slider_h:
+            soundHold = True
+         if musicHold:
             if mouse_x >= slider_start and mouse_x <= slider_end:
                slider1location = mouse_x
                volume_percent = (slider1location-slider_start)/(slider_end-slider_start)*100
@@ -282,10 +298,26 @@ def display_game_menu(grid_height, grid_width,player):
                volume_percent = 100
 
             player.volume = round(volume_percent)
-            print(volume_percent)
+         elif soundHold:
+            if mouse_x >= slider_start and mouse_x <= slider_end:
+               slider2location = mouse_x
+               sound_percent = (slider2location-slider_start)/(slider_end-slider_start)*100
+            elif mouse_x < slider_start:
+               slider2location = slider_start
+               sound_percent = 0
+            else:
+               slider2location = slider_end
+               sound_percent = 100
+            rotate.volume = round(sound_percent)
+            move.volume = round(sound_percent)
+            place.volume = round(sound_percent)
+            clear.volume = round(sound_percent)
+         
+
                
       else:
-         hold = False
+         musicHold = False
+         soundHold = False
 
       # MOUSE CLICKS ON BUTTONS
       if stddraw.mouseLeftPressed():
@@ -303,17 +335,33 @@ def display_game_menu(grid_height, grid_width,player):
       if mouse_x >= button3_blc_x and mouse_x <= button3_blc_x + button_w:
          if mouse_y >= button3_blc_y and mouse_y <= button3_blc_y + button_h: 
             i2048Picture = i2048L
+      
+
+      if volume_percent is 0:
+         musicButtonPicture=musicOff
+      if sound_percent is 0:
+         soundButtonPicture=soundOff
 
       # LOGO IMAGE
       stddraw.picture(image_to_display, img_center_x, img_center_y+6)
       # display the start game button as a filled rectangle
-      # FIRST SLIDER
+      # MUSIC SLIDER
+      stddraw.setPenColor(button_color)
+      stddraw.filledRectangle(slider_start,8.5,slider_w,slider_h)
+      stddraw.setPenColor(WHITE)
+      stddraw.filledCircle(slider1location,8.5+(slider_h/2),0.3)
+      stddraw.setPenColor(text_color)
+      stddraw.text(slider1location-0.03,8,str(round(volume_percent)))
+      stddraw.picture(musicButtonPicture,slider1location-0.03,8.5+(slider_h/2))
+
+      # SOUND SLIDER
       stddraw.setPenColor(button_color)
       stddraw.filledRectangle(slider_start,7,slider_w,slider_h)
-      stddraw.setPenColor(RED)
-      stddraw.filledCircle(slider1location,7.15,0.3)
+      stddraw.setPenColor(WHITE)
+      stddraw.filledCircle(slider2location,7+(slider_h/2),0.3)
       stddraw.setPenColor(text_color)
-      stddraw.text(slider1location,6.5,str(round(volume_percent)))
+      stddraw.text(slider2location-0.03,6.5,str(round(sound_percent)))
+      stddraw.picture(soundButtonPicture,slider2location-0.03,7+(slider_h/2))
 
       # stddraw.filledRectangle(button_blc_x, button_blc_y, button_w, button_h)
       # stddraw.filledRectangle(button3_blc_x,button3_blc_y,button_w,button_h)
@@ -325,7 +373,7 @@ def display_game_menu(grid_height, grid_width,player):
       #stddraw.text(img_center_x,2,"Start 2048")
       stddraw.picture(i2048Picture,img_center_x,2)
 
-      stddraw.show(50)
+      stddraw.show(0)
       stddraw.clear(background_color)
       
 # start() function is specified as the entry point (main function) from which 
