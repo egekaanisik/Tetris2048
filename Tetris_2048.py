@@ -243,8 +243,14 @@ def display_game_menu(grid_height, grid_width,player,rotate,move,place,clear):
    soundOff = Picture(img_file)
    img_file = current_dir + "/images/soundOn.png"
    soundOn = Picture(img_file)
-   img_file = current_dir + "/images/speed.png"
-   speed = Picture(img_file)
+   img_file = current_dir + "/images/easy.png"
+   easy = Picture(img_file)
+   img_file = current_dir + "/images/medium.png"
+   medium = Picture(img_file)
+   img_file = current_dir + "/images/hard.png"
+   hard = Picture(img_file)
+   img_file = current_dir + "/images/extreme.png"
+   extreme = Picture(img_file)
    menu_sound = current_dir + "/sounds/menu.wav"
    menu = AudioPlayer(menu_sound)
 
@@ -253,7 +259,7 @@ def display_game_menu(grid_height, grid_width,player,rotate,move,place,clear):
    # image is represented using the Picture class
    # display the image
    stddraw.setFontFamily("Arial")
-   stddraw.setFontSize(25)
+   stddraw.setFontSize(20)
    # dimensions of the start game button
    # dimensions of the start game button
    button_w, button_h = (grid_width - 1.5), 2
@@ -277,16 +283,12 @@ def display_game_menu(grid_height, grid_width,player,rotate,move,place,clear):
    played = False
    # menu interaction loop
    while True:
-      speedButtonPicture = speed
+      speedButtonPicture = medium
       soundButtonPicture = soundOn
       musicButtonPicture = musicOn
       tetrisButtonPicture = tetris
       i2048Picture = i2048
-      
-      
-      # display the menu and wait for a short time (50 ms)
 
-      # mouse_x, mouse_y = float(stddraw.mouseMotionX()), float(stddraw.mouseMotionY())
       mouse_x = stddraw.mouseMotionX() if stddraw.mouseMotionX() is not None else -1
       mouse_y = stddraw.mouseMotionY() if stddraw.mouseMotionY() is not None else -1
       
@@ -352,6 +354,7 @@ def display_game_menu(grid_height, grid_width,player,rotate,move,place,clear):
          diffHold = False
 
       diffStr = "Easy" if diff == 0 else ("Medium" if diff == 1 else ("Hard" if diff == 2 else "Extreme"))
+      speedButtonPicture = easy if diff == 0 else (medium if diff == 1 else (hard if diff == 2 else extreme))
 
       # MOUSE CLICKS ON BUTTONS
       if stddraw.mouseLeftPressed():
@@ -375,16 +378,11 @@ def display_game_menu(grid_height, grid_width,player,rotate,move,place,clear):
                played = True
       else:
          played = False
-      
 
       if volume_percent == 0:
          musicButtonPicture=musicOff
       if sound_percent == 0:
          soundButtonPicture=soundOff
-
-      # LOGO IMAGE
-      stddraw.picture(image_to_display, img_center_x, img_center_y+6)
-      # display the start game button as a filled rectangle
 
       # MUSIC SLIDER
       stddraw.setPenColor(button_color)
@@ -392,7 +390,7 @@ def display_game_menu(grid_height, grid_width,player,rotate,move,place,clear):
       stddraw.setPenColor(WHITE)
       stddraw.filledCircle(slider1location,10+(slider_h/2),0.3)
       stddraw.setPenColor(text_color)
-      stddraw.text(slider1location-0.03,9.5,str(round(volume_percent)))
+      stddraw.boldText(slider1location-0.03,9.5,str(round(volume_percent)))
       stddraw.picture(musicButtonPicture,slider1location-0.03,10+(slider_h/2))
 
       # SOUND SLIDER
@@ -401,23 +399,22 @@ def display_game_menu(grid_height, grid_width,player,rotate,move,place,clear):
       stddraw.setPenColor(WHITE)
       stddraw.filledCircle(slider2location,8.5+(slider_h/2),0.3)
       stddraw.setPenColor(text_color)
-      stddraw.text(slider2location-0.03,8,str(round(sound_percent)))
+      stddraw.boldText(slider2location-0.03,8,str(round(sound_percent)))
       stddraw.picture(soundButtonPicture,slider2location-0.01,8.5+(slider_h/2))
 
       # DIFFICULTY SLIDER
-
       stddraw.setPenColor(button_color)
       stddraw.filledRectangle(slider_start,7,slider_w,slider_h)
       stddraw.setPenColor(WHITE)
       stddraw.filledCircle(slider3location,7+(slider_h/2),0.3)
       stddraw.setPenColor(text_color)
-      stddraw.text(slider3location-0.03,6.5,diffStr)
-      stddraw.picture(speedButtonPicture,slider3location,7+(slider_h/2)+0.02)
+      stddraw.boldText(slider3location-0.03,6.5,diffStr)
+      gap = -0.025 if diff == 3 or diff == 1 else(0.025 if diff == 0 else 0) 
+      stddraw.picture(speedButtonPicture,slider3location+gap,7+(slider_h/2)+0.02)
 
-      # stddraw.picture(tetrisButtonPicture,img_center_x/2, 5)
-      #stddraw.text(img_center_x,5,"Start Tetris")
+      # Draw Buttons and Logo
+      stddraw.picture(image_to_display, img_center_x, img_center_y+6)
       stddraw.picture(tetrisButtonPicture,img_center_x,5)
-      #stddraw.text(img_center_x,2,"Start 2048")
       stddraw.picture(i2048Picture,img_center_x,2)
 
       stddraw.show(0)
