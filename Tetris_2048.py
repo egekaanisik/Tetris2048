@@ -4,15 +4,15 @@ from game_grid import GameGrid # class for modeling the game grid
 from tetromino import Tetromino # class for modeling the tetrominoes
 from picture import Picture # used representing images to display
 import os # used for file and directory operations
-from color import Color, RED, WHITE # used for coloring the game menu
+from color import Color, WHITE # used for coloring the game menu
 import time
-import sys
 from audioplayer import AudioPlayer
 
 # MAIN FUNCTION OF THE PROGRAM
 #-------------------------------------------------------------------------------
 # Main function where this program starts execution
 def start():
+   current_dir = os.path.dirname(os.path.realpath(__file__))
    # set the dimensions of the game grid
    grid_h, grid_w = 20, 12
    # set the size of the drawing canvas
@@ -21,6 +21,8 @@ def start():
    # set the scale of the coordinate system
    stddraw.setXscale(-1, grid_w + 4) # 17
    stddraw.setYscale(-1, grid_h) # 21
+   stddraw.setWindowTitle("OUR PROJECT")
+   stddraw.setWindowIcon(current_dir + "/images/icon.png")
    
    # create the game grid
    grid = GameGrid(grid_h, grid_w)
@@ -33,12 +35,11 @@ def start():
    music_volume = 5
    effects_volume = 25
 
-   current_dir = os.path.dirname(os.path.realpath(__file__)) + "/sounds"
-   back_sound = current_dir + "/back.wav"
-   move_sound = current_dir + "/move.wav"
-   rotate_sound = current_dir + "/rotate.wav"
-   place_sound = current_dir + "/place.wav"
-   clear_sound = current_dir + "/clear.wav"
+   back_sound = current_dir + "/sounds/back.wav"
+   move_sound = current_dir + "/sounds/move.wav"
+   rotate_sound = current_dir + "/sounds/rotate.wav"
+   place_sound = current_dir + "/sounds/place.wav"
+   clear_sound = current_dir + "/sounds/clear.wav"
 
    player = AudioPlayer(back_sound)
    player.volume = music_volume
@@ -64,6 +65,7 @@ def start():
    last_mouse_pos = -1
    mouse = False
    availability = time.time()*1000
+   scroll_availability = time.time()*1000
    score = 0
    # main game loop (keyboard interaction for moving the tetromino) 
    while True:
@@ -156,10 +158,12 @@ def start():
                   count += 1
             dropped = True
             score += count * 2
-         if stddraw.mouseScrollPressed(150):
-            succ = current_tetromino.move("down", grid, 1)
-            if succ:
-               score += 1
+         if stddraw.mouseScrollHeldDown():
+            if currentMilis > scroll_availability:
+               succ = current_tetromino.move("down", grid, 1)
+               scroll_availability = currentMilis + 50
+               if succ:
+                  score += 1
       
       current_ghost = current_tetromino.copy(ghost=True)
       grid.current_ghost = current_ghost

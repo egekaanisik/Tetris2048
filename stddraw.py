@@ -60,6 +60,7 @@ _DEFAULT_YMAX = 1.0
 _DEFAULT_CANVAS_SIZE = 512
 _DEFAULT_PEN_RADIUS = .005  # Maybe change this to 0.0 in the future.
 _DEFAULT_PEN_COLOR = color.BLACK
+_DEFAULT_WINDOW_TITLE = 'stddraw window (r-click to save)'
 
 _DEFAULT_FONT_FAMILY = 'Helvetica'
 _DEFAULT_FONT_SIZE = 12
@@ -89,14 +90,15 @@ _windowCreated = False
 
 # Has the mouse been left-clicked since the last time we checked?
 _mouseLeftPressed = False
-_mouseHeld = False
 _mouseRightPressed = False
 _mouseScrollPressed = False
+_mouseLeftHeld = False
+_mouseRightHeld = False
+_mouseScrollHeld = False
 
 # The position of the mouse as of the most recent mouse click
 _mousePos = None
 _mouseTrack = None
-_scroll_availability = time.time()*1000
  
 #-----------------------------------------------------------------------
 # End added by Alan J. Broder
@@ -167,9 +169,7 @@ def setCanvasSize(w=_DEFAULT_CANVAS_SIZE, h=_DEFAULT_CANVAS_SIZE):
     _canvasWidth = w
     _canvasHeight = h
     _background = pygame.display.set_mode([w, h])
-    pygame.display.set_caption('OUR PROJECT')
-    programIcon = pygame.image.load(os.path.dirname(os.path.realpath(__file__)) + "/images/icon.png")
-    pygame.display.set_icon(programIcon)
+    pygame.display.set_caption(_DEFAULT_WINDOW_TITLE)
     _surface = pygame.Surface((w, h))
     _surface.fill(_pygameColor(WHITE))
     _windowCreated = True
@@ -203,6 +203,13 @@ def setYscale(min=_DEFAULT_YMIN, max=_DEFAULT_YMAX):
     size = max - min
     _ymin = min - _BORDER * size
     _ymax = max + _BORDER * size
+
+def setWindowTitle(title=_DEFAULT_WINDOW_TITLE):
+    pygame.display.set_caption(title)
+
+def setWindowIcon(path=None):
+    programIcon = pygame.image.load(path)
+    pygame.display.set_icon(programIcon)
 
 def setPenRadius(r=_DEFAULT_PEN_RADIUS):
     """
@@ -617,13 +624,13 @@ def _saveToFile():
         fileName = fileName.decode('utf-8')
 
     if fileName == '':
+        childProcess = subprocess.Popen(
+            [sys.executable, stddrawPath, 'reportFileSaveError',
+            'Please specify a file name.'])
         return
 
     if not fileName.endswith(('.jpg', '.png')):
-        childProcess = subprocess.Popen(
-            [sys.executable, stddrawPath, 'reportFileSaveError',
-            'File name must end with ".jpg" or ".png".'])
-        return
+        fileName += ".png"
 
     try:
         save(fileName)
@@ -646,9 +653,11 @@ def _checkForEvents():
     #-------------------------------------------------------------------
     global _mousePos
     global _mouseLeftPressed
-    global _mouseHeld
     global _mouseRightPressed
     global _mouseScrollPressed
+    global _mouseLeftHeld
+    global _mouseRightHeld
+    global _mouseScrollHeld
     global _mouseTrack
     #-------------------------------------------------------------------
     # End added by Alan J. Broder
@@ -674,20 +683,25 @@ def _checkForEvents():
         elif (event.type == pygame.MOUSEBUTTONDOWN) and \
             (event.button == 1): 
             _mouseLeftPressed = True
-            _mouseHeld = True
+            _mouseLeftHeld = True
             _mousePos = event.pos
         elif (event.type == pygame.MOUSEBUTTONUP) and \
             (event.button == 1): 
-            _mouseHeld = False                   
+            _mouseLeftHeld = False                   
         elif (event.type == pygame.MOUSEBUTTONDOWN) and \
             (event.button == 3): 
             _mouseRightPressed = True
+            _mouseRightHeld = True
+        elif (event.type == pygame.MOUSEBUTTONUP) and \
+            (event.button == 3): 
+            _mouseRightHeld = False
         elif (event.type == pygame.MOUSEBUTTONDOWN) and \
             (event.button == 2): 
             _mouseScrollPressed = True
+            _mouseScrollHeld = True
         elif (event.type == pygame.MOUSEBUTTONUP) and \
             (event.button == 2): 
-            _mouseScrollPressed = False
+            _mouseScrollHeld = False
         elif (event.type == pygame.MOUSEMOTION):
             _mouseTrack = event.pos
         
@@ -726,26 +740,7 @@ def clearKeysTyped():
 # Begin added by Alan J. Broder
 #-----------------------------------------------------------------------
 
-# Functions for dealing with mouse clicks 
-
-def mouseScrollPressed(delay):
-    """
-    Return True if the mouse has been left-clicked since the 
-    last time mousePressed was called, and False otherwise.
-    """
-    global _mouseScrollPressed
-    global _scroll_availability
-    currentMilis = time.time()*1000
-    if currentMilis>_scroll_availability:
-        _scroll_availability=currentMilis+delay
-        return _mouseScrollPressed
-
-def mouseRightPressed():
-    global _mouseRightPressed
-    if _mouseRightPressed:
-        _mouseRightPressed = False
-        return True
-    return False
+# Functions for dealing with mouse clicks
 
 def mouseLeftPressed():
     global _mouseLeftPressed
@@ -754,11 +749,32 @@ def mouseLeftPressed():
         return True
     return False
 
-def mouseLeftHeldDown():
-    global _mouseHeld
-    return _mouseHeld
+def mouseRightPressed():
+    global _mouseRightPressed
+    if _mouseRightPressed:
+        _mouseRightPressed = False
+        return True
+    return False
 
-    
+def mouseScrollPressed():
+    global _mouseScrollPressed
+    if _mouseScrollPressed:
+        _mouseScrollPressed = False
+        return True
+    return False
+
+def mouseLeftHeldDown():
+    global _mouseLeftHeld
+    return _mouseLeftHeld
+
+def mouseRightHeldDown():
+    global _mouseRightHeld
+    return _mouseRightHeld
+
+def mouseScrollHeldDown():
+    global _mouseScrollHeld
+    return _mouseScrollHeld
+
 def mouseX():
     """
     Return the x coordinate in user space of the location at
@@ -820,7 +836,7 @@ def _getFileName():
     """
     root = Tkinter.Tk()
     root.withdraw()
-    reply = tkFileDialog.asksaveasfilename(initialdir='.')
+    reply = tkFileDialog.asksaveasfilename(filetypes=[('PNG File', '*.png')], initialdir='.')
     sys.stdout.write(reply)
     sys.stdout.flush()
     sys.exit()
