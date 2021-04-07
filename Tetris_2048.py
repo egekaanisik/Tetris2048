@@ -52,12 +52,12 @@ if len(not_installed) != 0:
 import ctypes
 ctypes.windll.user32.ShowWindow(ctypes.windll.kernel32.GetConsoleWindow(), 0)
 
-import stddraw # the stddraw module is used as a basic graphics library
+import modules.stddraw as stddraw # the stddraw module is used as a basic graphics library
 import random # used for creating tetrominoes with random types/shapes
-from game_grid import GameGrid # class for modeling the game grid
-from tetromino import Tetromino # class for modeling the tetrominoes
-from picture import Picture # used representing images to display
-from color import Color # used for coloring the game menu
+from modules.game_grid import GameGrid # class for modeling the game grid
+from modules.tetromino import Tetromino # class for modeling the tetrominoes
+from modules.picture import Picture # used representing images to display
+from modules.color import Color # used for coloring the game menu
 from audioplayer import AudioPlayer
 
 # MAIN FUNCTION OF THE PROGRAM

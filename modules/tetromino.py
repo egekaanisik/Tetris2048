@@ -1,8 +1,8 @@
 import time
-from tile import Tile # used for representing each tile on the tetromino
-from point import Point # used for tile positions
+from modules.tile import Tile # used for representing each tile on the tetromino
+from modules.point import Point # used for tile positions
 import numpy as np # fundamental Python module for scientific computing
-from color import Color
+from modules.color import Color
 
 AVAILABILITY = time.time()*1000
 

@@ -1,7 +1,7 @@
-import stddraw # the stddraw module is used as a basic graphics library
-from color import Color # used for coloring the game grid
+import modules.stddraw as stddraw # the stddraw module is used as a basic graphics library
+from modules.color import Color # used for coloring the game grid
 import numpy as np # fundamental Python module for scientific computing
-from tile import Tile
+from modules.tile import Tile
 
 # Class used for modelling the game grid
 class GameGrid:

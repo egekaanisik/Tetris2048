@@ -1,6 +1,6 @@
-import stddraw # the stddraw module is used as a basic graphics library
-from color import Color # used for coloring the tile and the number on it
-from point import Point # used for representing the position of the tile
+import modules.stddraw as stddraw # the stddraw module is used as a basic graphics library
+from modules.color import Color # used for coloring the tile and the number on it
+from modules.point import Point # used for representing the position of the tile
 import copy as cp # the copy module is used for copying tile positions
 import math # math module that provides mathematical functions
 
