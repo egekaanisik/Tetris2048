@@ -1,19 +1,27 @@
-import random
-from stddraw import point # each tetromino is created with a random x value above the grid
+import time
 from tile import Tile # used for representing each tile on the tetromino
 from point import Point # used for tile positions
 import numpy as np # fundamental Python module for scientific computing
 from color import Color
 
+AVAILABILITY = time.time()*1000
+
 # Class used for representing tetrominoes with 3 out of 7 different types/shapes 
 # as (I, O and Z)
 class Tetromino:
+   
    # Constructor to create a tetromino with a given type (shape)
    def __init__(self, type, grid_height, grid_width, bottom_x, bottom_y=None, ghost=False, grid=None):
       # set grid_height and grid_width from input parameters
       self.grid_height = grid_height
       self.grid_width = grid_width
       self.type = type
+
+      self._standart_availability = AVAILABILITY
+      self._left_availability = AVAILABILITY
+      self._right_availability = AVAILABILITY
+      self._down_availability = AVAILABILITY
+      
       # initial position of the bottom-left tile in the tile matrix just before 
       # the tetromino enters the game grid
       self.bottom_left_corner = Point()
@@ -245,34 +253,73 @@ class Tetromino:
       return True
       
    # Method for moving the tetromino in a given direction by 1 on the game grid
-   def move(self, direction, game_grid, amount):
-      # check if the tetromino can be moved in the given direction by using the
-      # can_be_moved method defined below
-      if not(self.can_be_moved(direction, game_grid, amount)):
-         return False  # tetromino cannot be moved in the given direction
-      # move the tetromino by first updating the position of the bottom left tile 
-      if direction == "left":
-         self.bottom_left_corner.x -= amount
-         self.leftmost -= amount
-      elif direction == "right":
-         self.bottom_left_corner.x += amount
-         self.leftmost += amount
-      elif direction == "down":  
-         self.bottom_left_corner.y -= amount
-      else: # direction == "up"
-         self.bottom_left_corner.y += amount
-      # then moving each occupied tile in the given direction by 1
+   def move(self, direction, game_grid, amount, delay=None, standart=False):
       n = len(self.tile_matrix)  # n = number of rows = number of columns
-      for row in range(n):
-         for col in range(n):
-            if self.tile_matrix[row][col] != None:
-               if direction == "left":
-                  self.tile_matrix[row][col].move(-amount, 0)
-               elif direction == "right":
-                  self.tile_matrix[row][col].move(amount, 0)
-               elif direction == "down": 
-                  self.tile_matrix[row][col].move(0, -amount)
-               else: # direction == "up"
+      current_mil = time.time()*1000
+      if direction == "left":
+         if current_mil > self._left_availability or delay is None:
+            # check if the tetromino can be moved in the given direction by using the
+            # can_be_moved method defined below
+            if not(self.can_be_moved(direction, game_grid, amount)):
+               return False  # tetromino cannot be moved in the given direction
+            self.bottom_left_corner.x -= amount
+            self.leftmost -= amount
+
+            for row in range(n):
+               for col in range(n):
+                  if self.tile_matrix[row][col] != None:
+                        self.tile_matrix[row][col].move(-amount, 0)
+            if delay is not None:
+               self._left_availability = current_mil + delay
+            return True
+         else:
+            return None
+      elif direction == "right":
+         if current_mil > self._right_availability or delay is None:
+            # check if the tetromino can be moved in the given direction by using the
+            # can_be_moved method defined below
+            if not(self.can_be_moved(direction, game_grid, amount)):
+               return False  # tetromino cannot be moved in the given direction
+            self.bottom_left_corner.x += amount
+            self.leftmost += amount
+
+            for row in range(n):
+               for col in range(n):
+                  if self.tile_matrix[row][col] != None:
+                     self.tile_matrix[row][col].move(amount, 0)
+            if delay is not None:
+               self._right_availability = current_mil + delay
+            return True
+         else:
+            return None
+      elif direction == "down":
+         if current_mil > (self._standart_availability if standart else self._down_availability) or delay is None:
+            # check if the tetromino can be moved in the given direction by using the
+            # can_be_moved method defined below
+            if not(self.can_be_moved(direction, game_grid, amount)):
+               return False  # tetromino cannot be moved in the given direction
+            self.bottom_left_corner.y -= amount
+            for row in range(n):
+               for col in range(n):
+                  if self.tile_matrix[row][col] != None:
+                     self.tile_matrix[row][col].move(0, -amount)
+            if delay is not None:
+               if standart:
+                  self._standart_availability = current_mil + delay
+               else:
+                  self._down_availability = current_mil + delay
+            return True
+         else:
+            return None
+      else:
+         # check if the tetromino can be moved in the given direction by using the
+         # can_be_moved method defined below
+         if not(self.can_be_moved(direction, game_grid, amount)):
+            return False  # tetromino cannot be moved in the given direction
+         self.bottom_left_corner.y += amount
+         for row in range(n):
+            for col in range(n):
+               if self.tile_matrix[row][col] != None:
                   self.tile_matrix[row][col].move(0, amount)
       return True  # successful move in the given direction
    

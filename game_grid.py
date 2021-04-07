@@ -31,6 +31,7 @@ class GameGrid:
       # clear the background canvas to empty_cell_color
       stddraw.clear(self.empty_cell_color)
       # draw the game grid
+      self.draw_boundaries()
       self.draw_grid()
       # draw the current (active) tetromino
       if self.current_ghost != None:
@@ -39,7 +40,7 @@ class GameGrid:
       if self.current_tetromino != None:
          self.current_tetromino.draw()
       # draw a box around the game grid 
-      self.draw_boundaries()
+      
 
       if not game_over:
          stddraw.setPenColor(stddraw.WHITE)
@@ -96,10 +97,13 @@ class GameGrid:
       stddraw.setPenColor(self.boundary_color)  # using boundary_color
       # set the pen radius as box_thickness (half of this thickness is visible 
       # for the bounding box as its lines lie on the boundaries of the canvas)
-      stddraw.setPenRadius(self.box_thickness)
+      #stddraw.setPenRadius(self.box_thickness)
       # coordinates of the bottom left corner of the game grid
+      pos_x, pos_y = -0.75, -0.75
+      stddraw.filledRectangle(pos_x, pos_y, self.grid_width+0.50, self.grid_height+0.50)
+      stddraw.setPenColor(self.empty_cell_color)
       pos_x, pos_y = -0.5, -0.5
-      stddraw.rectangle(pos_x, pos_y, self.grid_width, self.grid_height)
+      stddraw.filledRectangle(pos_x, pos_y, self.grid_width, self.grid_height)
       stddraw.setPenRadius()  # reset the pen radius to its default value
 
    # Method used for checking whether the grid cell with given row and column 

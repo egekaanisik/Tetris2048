@@ -5,7 +5,6 @@ from tetromino import Tetromino # class for modeling the tetrominoes
 from picture import Picture # used representing images to display
 import os # used for file and directory operations
 from color import Color # used for coloring the game menu
-import time
 from audioplayer import AudioPlayer
 
 # MAIN FUNCTION OF THE PROGRAM
@@ -65,17 +64,11 @@ def start():
    
    last_mouse_pos = -1
    mouse = False
-   availability = time.time()*1000
-   scroll_availability = time.time()*1000
-   left_availability = time.time()*1000
-   right_availability = time.time()*1000
-   down_availability = time.time()*1000
    score = 0
    rotated = False
    already_dropped = False
    # main game loop (keyboard interaction for moving the tetromino) 
    while True:
-      currentMilis = time.time()*1000
       pos = round(stddraw.mouseMotionX())
       dropped = False
 
@@ -94,7 +87,6 @@ def start():
                   count = 0
                   while True:
                      sc = current_tetromino.move("down", grid, 1)
-
                      if not sc:
                         break
                      else:
@@ -110,29 +102,23 @@ def start():
                      rotated = True
             # if the left arrow key has been pressed
             if "left" in keys_typed:
-               if currentMilis > left_availability:
-                  # move the tetromino left by one
-                  can_left = current_tetromino.move("left", grid, 1)
-                  left_availability = currentMilis + 100
-                  if can_left:
-                     move.play()
+               # move the tetromino left by one
+               can_left = current_tetromino.move("left", grid, 1, delay=100)
+               if can_left:
+                  move.play()
             # if the right arrow key has been pressed
             if "right" in keys_typed:
-               if currentMilis > right_availability:
-                  # move the tetromino right by one
-                  can_right = current_tetromino.move("right", grid, 1)
-                  right_availability = currentMilis + 100
-                  if can_right:
-                     move.play()
+               # move the tetromino right by one
+               can_right = current_tetromino.move("right", grid, 1, delay=100)
+               if can_right:
+                  move.play()
             # if the down arrow key has been pressed
             if "down" in keys_typed:
-               if currentMilis > down_availability:
-                  # move the tetromino down by one 
-                  # (causes the tetromino to fall down faster)
-                  succ = current_tetromino.move("down", grid, 1)
-                  down_availability = currentMilis + 50
-                  if succ:
-                     score += 1
+               # move the tetromino down by one 
+               # (causes the tetromino to fall down faster)
+               succ = current_tetromino.move("down", grid, 1, delay=50)
+               if succ:
+                  score += 1
             # clear the queue that stores all the keys pressed/typed
             stddraw.clearKeysTyped()
          if stddraw.hasNextKeyReleased():
@@ -151,7 +137,6 @@ def start():
          if diff < 0:
             for i in range(-diff):
                success_move = current_tetromino.move("left", grid, 1)
-               
                if not success_move:
                   break
                else:
@@ -160,7 +145,6 @@ def start():
          else:
             for i in range(diff):
                success_move = current_tetromino.move("right", grid, 1)
-               
                if not success_move:
                   break
                else:
@@ -179,7 +163,6 @@ def start():
             count = 0
             while True:
                sc = current_tetromino.move("down", grid, 1)
-
                if not sc:
                   break
                else:
@@ -187,30 +170,25 @@ def start():
             dropped = True
             score += count * 2
          if stddraw.mouseScrollHeldDown():
-            if currentMilis > scroll_availability:
-               succ = current_tetromino.move("down", grid, 1)
-               scroll_availability = currentMilis + 50
-               if succ:
-                  score += 1
+            succ = current_tetromino.move("down", grid, 1, delay=50)
+            if succ:
+               score += 1
       
       current_ghost = current_tetromino.copy(ghost=True)
       grid.current_ghost = current_ghost
       
       while True:
          sc = current_ghost.move("down", grid, 1)
-
          if not sc:
             break
          
       # move (drop) the tetromino down by 1 at each iteration 
       success=True
-      if currentMilis > availability:
-         success = current_tetromino.move("down", grid, 1)
-         availability = currentMilis + ms
+      success = current_tetromino.move("down", grid, 1, delay=ms, standart=True)
 
       # place the tetromino on the game grid when it cannot go down anymore
       game_over = False
-      if not success or dropped:
+      if success == False or dropped:
          place.play()
          # get the tile matrix of the tetromino
          tiles_to_place = current_tetromino.tile_matrix
