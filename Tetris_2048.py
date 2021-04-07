@@ -23,7 +23,7 @@ def start():
    stddraw.setYscale(-1, grid_h) # 21
    stddraw.setWindowTitle("OUR PROJECT")
    stddraw.setWindowIcon(current_dir + "/images/icon.png")
-   stddraw.setKeyRepeat(70)
+   stddraw.setKeyRepeat(1)
    
    # create the game grid
    grid = GameGrid(grid_h, grid_w)
@@ -67,8 +67,12 @@ def start():
    mouse = False
    availability = time.time()*1000
    scroll_availability = time.time()*1000
+   left_availability = time.time()*1000
+   right_availability = time.time()*1000
+   down_availability = time.time()*1000
    score = 0
    rotated = False
+   already_dropped = False
    # main game loop (keyboard interaction for moving the tetromino) 
    while True:
       currentMilis = time.time()*1000
@@ -86,16 +90,18 @@ def start():
          if stddraw.hasNextKeyTyped():
             keys_typed = stddraw.getKeysTyped()
             if "space" in keys_typed:
-               count = 0
-               while True:
-                  sc = current_tetromino.move("down", grid, 1)
+               if not already_dropped:
+                  count = 0
+                  while True:
+                     sc = current_tetromino.move("down", grid, 1)
 
-                  if not sc:
-                     break
-                  else:
-                     count += 1
-               dropped = True
-               score += count * 2
+                     if not sc:
+                        break
+                     else:
+                        count += 1
+                  dropped = True
+                  already_dropped = True
+                  score += count * 2
             if "up" in keys_typed:
                if not rotated:
                   can_rotate = current_tetromino.rotate(grid)
@@ -104,29 +110,37 @@ def start():
                      rotated = True
             # if the left arrow key has been pressed
             if "left" in keys_typed:
-               # move the tetromino left by one
-               can_left = current_tetromino.move("left", grid, 1)
-               if can_left:
-                  move.play()
+               if currentMilis > left_availability:
+                  # move the tetromino left by one
+                  can_left = current_tetromino.move("left", grid, 1)
+                  left_availability = currentMilis + 100
+                  if can_left:
+                     move.play()
             # if the right arrow key has been pressed
             if "right" in keys_typed:
-               # move the tetromino right by one
-               can_right = current_tetromino.move("right", grid, 1)
-               if can_right:
-                  move.play()
+               if currentMilis > right_availability:
+                  # move the tetromino right by one
+                  can_right = current_tetromino.move("right", grid, 1)
+                  right_availability = currentMilis + 100
+                  if can_right:
+                     move.play()
             # if the down arrow key has been pressed
             if "down" in keys_typed:
-               # move the tetromino down by one 
-               # (causes the tetromino to fall down faster)
-               succ = current_tetromino.move("down", grid, 1)
-               if succ:
-                  score += 1
+               if currentMilis > down_availability:
+                  # move the tetromino down by one 
+                  # (causes the tetromino to fall down faster)
+                  succ = current_tetromino.move("down", grid, 1)
+                  down_availability = currentMilis + 50
+                  if succ:
+                     score += 1
             # clear the queue that stores all the keys pressed/typed
             stddraw.clearKeysTyped()
          if stddraw.hasNextKeyReleased():
             keys_released = stddraw.getKeysReleased()
             if "up" in keys_released:
                rotated = False
+            if "space" in keys_released:
+               already_dropped = False
             stddraw.clearKeysReleased()
       else:         
          if (pos + current_tetromino.column_count) > grid.grid_width:
@@ -175,13 +189,13 @@ def start():
          if stddraw.mouseScrollHeldDown():
             if currentMilis > scroll_availability:
                succ = current_tetromino.move("down", grid, 1)
-               scroll_availability = currentMilis + 70
+               scroll_availability = currentMilis + 50
                if succ:
                   score += 1
       
       current_ghost = current_tetromino.copy(ghost=True)
       grid.current_ghost = current_ghost
-
+      
       while True:
          sc = current_ghost.move("down", grid, 1)
 
