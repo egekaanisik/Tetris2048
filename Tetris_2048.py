@@ -57,7 +57,7 @@ def start():
 
    player.play(loop=True)
    # display a simple menu before opening the game
-   display_game_menu(grid_h, grid_w)
+   display_game_menu(grid_h, grid_w,player)
    
    last_mouse_pos = -1
    mouse = False
@@ -213,7 +213,7 @@ def create_tetromino(grid_height, grid_width):
    return tetromino
 
 # Function for displaying a simple menu before starting the game
-def display_game_menu(grid_height, grid_width):
+def display_game_menu(grid_height, grid_width,player):
    # colors used for the menu
    background_color = Color(25, 49, 90)
    button_color = Color(25, 255, 228)
@@ -249,8 +249,8 @@ def display_game_menu(grid_height, grid_width):
 
    slider_start = button3_blc_x+((button_w-slider_w)/2)
    slider_end = slider_start+slider_w
-   slider1location = button_blc_x+(slider_w/2)
-   volume_percent = 0.5
+   slider1location = button_blc_x+(slider_w/20)
+   volume_percent = 5
    availability = 0
    # menu interaction loop
    while True:
@@ -267,17 +267,19 @@ def display_game_menu(grid_height, grid_width):
       mouse_y = stddraw.mouseMotionY() if stddraw.mouseMotionY() is not None else -1
 
       # MOUSE CLICKS ON BUTTONS
-      if stddraw._mouseLeftPressed():
+      if stddraw.mouseLeftPressed():
          if mouse_x >= button_blc_x and mouse_x <= button_blc_x + button_w:
             if mouse_y >= button_blc_y and mouse_y <= button_blc_y + button_h: 
                break # break the loop to end the method and start the game
+               
          if mouse_x >= button3_blc_x and mouse_x <= button3_blc_x + button_w:
             if mouse_y >= button3_blc_y and mouse_y <= button3_blc_y + button_h: 
                print("Work in Progress, Tetris 2048")
          if mouse_x >= slider_start and mouse_x <= slider_end:
             if mouse_y >= 7 and mouse_y < 7.05 + slider_h:
                slider1location = mouse_x
-               volume_percent = (slider1location-slider_start)/(slider_end-slider_start)
+               volume_percent = (slider1location-slider_start)/(slider_end-slider_start)*100
+               player.volume = volume_percent
                print(volume_percent)
 
       
@@ -298,7 +300,7 @@ def display_game_menu(grid_height, grid_width):
       stddraw.setPenColor(RED)
       stddraw.filledCircle(slider1location,7.15,0.3)
       stddraw.setPenColor(text_color)
-      stddraw.text(slider1location,6.5,str(round(volume_percent*100)))
+      stddraw.text(slider1location,6.5,str(round(volume_percent)))
 
       # stddraw.filledRectangle(button_blc_x, button_blc_y, button_w, button_h)
       # stddraw.filledRectangle(button3_blc_x,button3_blc_y,button_w,button_h)
