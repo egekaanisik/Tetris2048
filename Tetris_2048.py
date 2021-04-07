@@ -1,3 +1,11 @@
+import platform
+
+if platform.system() != 'Windows':
+    print("\nThis program is designed to work only on Windows systems.")
+    input("Press \"Enter\" key to terminate the program.")
+    print()
+    exit()
+
 import os
 import pkg_resources
 import subprocess
@@ -41,7 +49,8 @@ if len(not_installed) != 0:
         else:
             print("Please enter a valid answer.")
 
-os.system('cls' if os.name == 'nt' else 'clear')
+import ctypes
+ctypes.windll.user32.ShowWindow(ctypes.windll.kernel32.GetConsoleWindow(), 0)
 
 import stddraw # the stddraw module is used as a basic graphics library
 import random # used for creating tetrominoes with random types/shapes
