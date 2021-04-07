@@ -126,7 +126,7 @@ class GameGrid:
       else:
          False
 
-   def delete_full_lines(self, clear, score, next_tetromino1, next_tetromino2, next_tetromino3, game_over):
+   def delete_full_lines(self, clear, score, next_tetromino1, next_tetromino2, next_tetromino3, game_over, diff):
       paint_indexes = []
       indexes = []
       for i in range(self.grid_height):
@@ -136,7 +136,16 @@ class GameGrid:
 
       if len(indexes) != 0:
          clear.play()
-         score += (1200 if len(indexes) == 4 else (300 if len(indexes) == 3 else (100 if len(indexes) == 2 else 40)))
+
+         if diff == 0:
+            score += (1200 if len(indexes) == 4 else (300 if len(indexes) == 3 else (100 if len(indexes) == 2 else 40)))
+         elif diff == 1:
+            score += (2400 if len(indexes) == 4 else (600 if len(indexes) == 3 else (200 if len(indexes) == 2 else 80)))
+         elif diff == 2:
+            score += (3600 if len(indexes) == 4 else (900 if len(indexes) == 3 else (300 if len(indexes) == 2 else 120)))
+         elif diff == 3:
+            score += (4800 if len(indexes) == 4 else (1200 if len(indexes) == 3 else (400 if len(indexes) == 2 else 160)))
+         
          for color in reversed(range(0, 256, 15)):
             for l in paint_indexes:
                for k in range(self.grid_width):

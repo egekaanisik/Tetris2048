@@ -57,8 +57,9 @@ def start():
 
    player.play(loop=True)
    # display a simple menu before opening the game
-   diff = display_game_menu(grid_h, grid_w,player,rotate,move,place,clear)
-   print(diff)
+   difficulty = display_game_menu(grid_h, grid_w,player,rotate,move,place,clear)
+   
+   ms = (350 if difficulty == 0 else (250 if difficulty == 1 else (125 if difficulty == 2 else 75)))
    
    last_mouse_pos = -1
    mouse = False
@@ -171,9 +172,9 @@ def start():
          
       # move (drop) the tetromino down by 1 at each iteration 
       success=True
-      if currentMilis>availability:
+      if currentMilis > availability:
          success = current_tetromino.move("down", grid, 1)
-         availability=currentMilis+300
+         availability = currentMilis + ms
 
       # place the tetromino on the game grid when it cannot go down anymore
       game_over = False
@@ -186,7 +187,7 @@ def start():
          game_over = grid.update_grid(tiles_to_place)
          # end the main game loop if the game is over
          
-         score = grid.delete_full_lines(clear, score, tetrominos[0], tetrominos[1], tetrominos[2], game_over)
+         score = grid.delete_full_lines(clear, score, tetrominos[0], tetrominos[1], tetrominos[2], game_over, difficulty)
 
          # create the next tetromino to enter the game grid
          # by using the create_tetromino function defined below
