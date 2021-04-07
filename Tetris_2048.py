@@ -215,7 +215,7 @@ def create_tetromino(grid_height, grid_width):
 # Function for displaying a simple menu before starting the game
 def display_game_menu(grid_height, grid_width):
    # colors used for the menu
-   background_color = Color(42, 69, 99)
+   background_color = Color(25, 49, 90)
    button_color = Color(25, 255, 228)
    text_color = Color(31, 160, 239)
    # clear the background canvas to background_color
@@ -225,10 +225,14 @@ def display_game_menu(grid_height, grid_width):
    # path of the image file
    img_file = current_dir + "/images/menu_image.png"
    image_to_display = Picture(img_file)
-   img_file = current_dir + "/images/start.png"
-   start = Picture(img_file)
    img_file = current_dir + "/images/tetris.png"
    tetris= Picture(img_file)
+   img_file = current_dir + "/images/tetris2.png"
+   tetris2= Picture(img_file)
+   img_file = current_dir + "/images/2048.png"
+   i2048 = Picture(img_file)
+   img_file = current_dir + "/images/2048L.png"
+   i2048L = Picture(img_file)
    # center coordinates to display the image
    img_center_x, img_center_y = (17/2)-1,(21/2)-1
    # image is represented using the Picture class
@@ -237,16 +241,21 @@ def display_game_menu(grid_height, grid_width):
    # dimensions of the start game button
    # dimensions of the start game button
    button_w, button_h = (grid_width - 1.5), 2
+   slider_w, slider_h = (grid_width - 2), 0.3
    # coordinates of the bottom left corner of the start game button 
    button_blc_x, button_blc_y = img_center_x-button_w/2, 4 # Tetris Button 
    button3_blc_x, button3_blc_y = img_center_x-button_w/2 , 1 # Tetris 2048 Button
 
+   slider_start = button3_blc_x+((button_w-slider_w)/2)
+   slider_end = slider_start+slider_w
+   slider1location = button_blc_x
 
    availability = 0
    # menu interaction loop
    while True:
 
       tetrisButtonPicture = tetris
+      i2048Picture = i2048
       
       
       # display the menu and wait for a short time (50 ms)
@@ -264,33 +273,39 @@ def display_game_menu(grid_height, grid_width):
          if mouse_x >= button3_blc_x and mouse_x <= button3_blc_x + button_w:
             if mouse_y >= button3_blc_y and mouse_y <= button3_blc_y + button_h: 
                print("Work in Progress, Tetris 2048")
+         if mouse_x >= slider_start and mouse_x <= slider_start + slider_w:
+            if mouse_y >= 7 and mouse_y < 7.05 + slider_h:
+               slider1location = mouse_x
+               # HENÜZ HİÇBİŞEY YAPMIYO EGE
+
       
       # MOUSE LISTENERS ON BUTTONS
       if mouse_x >= button_blc_x and mouse_x <= button_blc_x + button_w:
          if mouse_y >= button_blc_y and mouse_y <= button_blc_y + button_h: 
-            if currentMilis > availability:
-               print("Mouse is on Tetris")
-               availability=currentMilis+50
+            tetrisButtonPicture = tetris2
       if mouse_x >= button3_blc_x and mouse_x <= button3_blc_x + button_w:
          if mouse_y >= button3_blc_y and mouse_y <= button3_blc_y + button_h: 
-            if currentMilis > availability:
-               print("Mouse is on 2048")
-               availability=currentMilis+50
+            i2048Picture = i2048L
 
       # LOGO IMAGE
-      stddraw.picture(image_to_display, img_center_x, img_center_y+3.5)
+      stddraw.picture(image_to_display, img_center_x, img_center_y+6)
       # display the start game button as a filled rectangle
       stddraw.setPenColor(button_color)
+      stddraw.filledRectangle(slider_start,7,slider_w,slider_h)
+      stddraw.setPenColor(RED)
+      stddraw.filledCircle(slider1location,7.15,0.3)
 
-      stddraw.filledRectangle(button_blc_x, button_blc_y, button_w, button_h)
-      stddraw.filledRectangle(button3_blc_x,button3_blc_y,button_w,button_h)
+      # stddraw.filledRectangle(button_blc_x, button_blc_y, button_w, button_h)
+      # stddraw.filledRectangle(button3_blc_x,button3_blc_y,button_w,button_h)
       # display the text on the start game button
       stddraw.setFontFamily("Arial")
       stddraw.setFontSize(25)
       stddraw.setPenColor(text_color)
       # stddraw.picture(tetrisButtonPicture,img_center_x/2, 5)
-      stddraw.text(img_center_x,5,"Start Tetris")
-      stddraw.text(img_center_x,2,"Start 2048")
+      #stddraw.text(img_center_x,5,"Start Tetris")
+      stddraw.picture(tetrisButtonPicture,img_center_x,5)
+      #stddraw.text(img_center_x,2,"Start 2048")
+      stddraw.picture(i2048Picture,img_center_x,2)
 
       stddraw.show(50)
       stddraw.clear(background_color)
