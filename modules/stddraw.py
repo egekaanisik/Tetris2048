@@ -11,7 +11,6 @@ import time
 import os
 import sys
 import modules.color as color
-import string
 
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = 'hide'
 import pygame
@@ -61,6 +60,8 @@ _DEFAULT_CANVAS_SIZE = 512
 _DEFAULT_PEN_RADIUS = .005  # Maybe change this to 0.0 in the future.
 _DEFAULT_PEN_COLOR = color.BLACK
 _DEFAULT_WINDOW_TITLE = 'stddraw window (press s to save)'
+_DEFAULT_CLOSE_ACTION = sys.exit
+_DEFAULT_CLOSE_ARGS = []
 
 _DEFAULT_FONT_FAMILY = 'Helvetica'
 _DEFAULT_FONT_SIZE = 12
@@ -77,6 +78,8 @@ _canvasWidth = float(_DEFAULT_CANVAS_SIZE)
 _canvasHeight = float(_DEFAULT_CANVAS_SIZE)
 _penRadius = None
 _penColor = _DEFAULT_PEN_COLOR
+_close_action = _DEFAULT_CLOSE_ACTION
+_close_args = _DEFAULT_CLOSE_ARGS
 _save_key = 's'
 _keysTyped = []
 _keysReleased = []
@@ -247,6 +250,12 @@ def setFontSize(s=_DEFAULT_FONT_SIZE):
     """
     global _fontSize
     _fontSize = s
+
+def setCloseAction(func=_DEFAULT_CLOSE_ACTION, args=_DEFAULT_CLOSE_ARGS):
+    global _close_action
+    global _close_args
+    _close_action = func
+    _close_args = args
 
 #-----------------------------------------------------------------------
 
@@ -649,6 +658,8 @@ def _checkForEvents():
     """
     global _surface
     global _keysTyped
+    global _close_action
+    global _close_args
     global _keysReleased
     global _save_key
     
@@ -670,7 +681,8 @@ def _checkForEvents():
     _makeSureWindowCreated()
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            sys.exit()
+            func = _close_action
+            func(*_close_args)
         elif (event.type == pygame.KEYUP) and \
             (pygame.key.name(event.key) == _save_key):
             _saveToFile()

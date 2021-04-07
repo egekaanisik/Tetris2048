@@ -76,6 +76,7 @@ def start():
    stddraw.setWindowTitle("OUR PROJECT")
    stddraw.setWindowIcon(current_dir + "/images/icon.png")
    stddraw.setKeyRepeat(1)
+   stddraw.setCloseAction(close)
    
    # create the game grid
    grid = GameGrid(grid_h, grid_w)
@@ -262,6 +263,10 @@ def start():
 
       # display the game grid and as well the current tetromino
       grid.display(score, tetrominos[0], tetrominos[1], tetrominos[2], game_over)
+
+def close():
+   ctypes.windll.user32.ShowWindow(ctypes.windll.kernel32.GetConsoleWindow(), 1)
+   sys.exit()
 
 # Function for creating random shaped tetrominoes to enter the game grid
 def create_tetromino(grid_height, grid_width):
