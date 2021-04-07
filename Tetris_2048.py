@@ -241,6 +241,8 @@ def display_game_menu(grid_height, grid_width,player,rotate,move,place,clear):
    soundOff = Picture(img_file)
    img_file = current_dir + "/images/soundOn.png"
    soundOn = Picture(img_file)
+   menu_sound = current_dir + "/sounds/menu.wav"
+   menu = AudioPlayer(menu_sound)
    # center coordinates to display the image
    img_center_x, img_center_y = (17/2)-1,(21/2)-1
    # image is represented using the Picture class
@@ -261,9 +263,11 @@ def display_game_menu(grid_height, grid_width,player,rotate,move,place,clear):
    slider2location = button_blc_x+(slider_w/4)
    volume_percent = 5
    sound_percent = 25
+   menu.volume = sound_percent
    availability = 0
    musicHold = False
    soundHold = False
+   played = False
    # menu interaction loop
    while True:
 
@@ -312,9 +316,8 @@ def display_game_menu(grid_height, grid_width,player,rotate,move,place,clear):
             move.volume = round(sound_percent)
             place.volume = round(sound_percent)
             clear.volume = round(sound_percent)
+            menu.volume = round(sound_percent)
          
-
-               
       else:
          musicHold = False
          soundHold = False
@@ -329,17 +332,23 @@ def display_game_menu(grid_height, grid_width,player,rotate,move,place,clear):
                print("Work in Progress, Tetris 2048")    
       
       # MOUSE LISTENERS ON BUTTONS
-      if mouse_x >= button_blc_x and mouse_x <= button_blc_x + button_w:
-         if mouse_y >= button_blc_y and mouse_y <= button_blc_y + button_h: 
+      if mouse_x >= button_blc_x and mouse_x <= button_blc_x + button_w and mouse_y >= button_blc_y and mouse_y <= button_blc_y + button_h:
             tetrisButtonPicture = tetris2
-      if mouse_x >= button3_blc_x and mouse_x <= button3_blc_x + button_w:
-         if mouse_y >= button3_blc_y and mouse_y <= button3_blc_y + button_h: 
+            if not played:
+               menu.play()
+               played = True
+      elif mouse_x >= button3_blc_x and mouse_x <= button3_blc_x + button_w and mouse_y >= button3_blc_y and mouse_y <= button3_blc_y + button_h:
             i2048Picture = i2048L
+            if not played:
+               menu.play()
+               played = True
+      else:
+         played = False
       
 
-      if volume_percent is 0:
+      if volume_percent == 0:
          musicButtonPicture=musicOff
-      if sound_percent is 0:
+      if sound_percent == 0:
          soundButtonPicture=soundOff
 
       # LOGO IMAGE
