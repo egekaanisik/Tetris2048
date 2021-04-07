@@ -50,11 +50,11 @@ class GameGrid:
          stddraw.text(13.75, 15, "Next")
          stddraw.text(13.75, 14, "Tetrominoes")
 
-         stddraw.setPenColor(stddraw.DARK_GRAY)
+         stddraw.setPenColor(self.boundary_color)
          stddraw.filledRectangle(12,-0.25,3.5,13.5)
 
          stddraw.setPenRadius(0.001)
-         stddraw.setPenColor(stddraw.GRAY)
+         stddraw.setPenColor(stddraw.DARK_GRAY)
          stddraw.line(12.25, 8.75, 15.25, 8.75)
          stddraw.line(12.25, 4.25, 15.25, 4.25)
          next_tetromino1.copy(blcx=(14.25 - (next_tetromino1.column_count/2)),blcy=9.5 + (4-next_tetromino1.row_count)/2,trim=True).draw()
