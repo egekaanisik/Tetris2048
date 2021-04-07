@@ -149,11 +149,11 @@ class Tetromino:
          self.leftmost = min(columns)
       else:
          self.tile_matrix = grid
-         
+         (nrows, ncols) = grid.shape
          rows = []
          cols = []
-         for i in range(len(self.tile_matrix)):
-            for j in range(len(self.tile_matrix)):
+         for i in range(nrows):
+            for j in range(ncols):
                if self.tile_matrix[i][j] != None:
                   pos = self.tile_matrix[i][j].get_position()
 
@@ -167,9 +167,9 @@ class Tetromino:
        
    # Method for drawing the tetromino on the game grid
    def draw(self):
-      n = len(self.tile_matrix)  # n = number of rows = number of columns
-      for row in range(n):
-         for col in range(n):
+      (nrows, ncols) = self.tile_matrix.shape
+      for row in range(nrows):
+         for col in range(ncols):
             # draw each occupied tile (not equal to None) on the game grid
             if self.tile_matrix[row][col] != None:
                # considering newly entered tetrominoes to the game grid that may 
@@ -332,16 +332,23 @@ class Tetromino:
                   break  # end the inner for loop
       return True  # tetromino can be moved in the given direction
 
-   def copy_grid(self, ghost=False):
-      copy_matrix = self.tile_matrix.copy()
-      new_tile_matrix = np.full((len(copy_matrix), len(copy_matrix)), None)
+   def copy_grid(self, ghost=False, blcx=None, blcy=None, trim=None):
+      matrix = self.tile_matrix if trim is None else self.trim()
 
-      for i in range(len(copy_matrix)):
-         for j in range(len(copy_matrix)):
+      copy_matrix = matrix.copy()
+      new_tile_matrix = np.full(copy_matrix.shape, None)
+
+      blc_x = self.bottom_left_corner.x if blcx is None else blcx
+      blc_y = self.bottom_left_corner.y if blcy is None else blcy
+
+      (nrows, ncols) = copy_matrix.shape
+
+      for i in range(nrows):
+         for j in range(ncols):
             if copy_matrix[i][j] != None:
                position = Point()
-               position.x = self.bottom_left_corner.x + j
-               position.y = self.bottom_left_corner.y + (len(copy_matrix) - 1) - i
+               position.x = blc_x + j
+               position.y = blc_y + (nrows - 1) - i
 
                if ghost:
                   background = Color(0,0,0)
@@ -353,5 +360,22 @@ class Tetromino:
                new_tile_matrix[i][j] = Tile(position, background_color=background, boundary_color=boundaries)
       return new_tile_matrix
 
-   def copy(self, ghost=False):
-      return Tetromino(self.type, self.grid_height, self.grid_width, self.bottom_left_corner.x, self.bottom_left_corner.y, ghost, self.copy_grid(ghost))
+   def copy(self, ghost=False, blcx=None, blcy=None, trim=None):
+      grid = self.copy_grid(ghost, blcx, blcy, trim)
+      return Tetromino(self.type, self.grid_height, self.grid_width, self.bottom_left_corner.x, self.bottom_left_corner.y, ghost, grid)
+
+   def trim(self):
+      new_arr = np.full((self.row_count, self.column_count), None)
+      col = 0
+      for i in range(len(self.tile_matrix)):
+         row = 0
+         empty = True
+         for j in range(len(self.tile_matrix)):
+            if self.tile_matrix[j][i] != None:
+               if empty != False:
+                  empty = False
+               new_arr[row][col] = self.tile_matrix[j][i]
+            row += 1
+         if not empty:
+            col += 1
+      return new_arr

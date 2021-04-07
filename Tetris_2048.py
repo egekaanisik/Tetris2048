@@ -26,7 +26,7 @@ def start():
    grid = GameGrid(grid_h, grid_w)
    # create the first tetromino to enter the game grid 
    # by using the create_tetromino function defined below
-   tetrominos = [create_tetromino(grid_h, grid_w), create_tetromino(grid_h, grid_w)]
+   tetrominos = [create_tetromino(grid_h, grid_w), create_tetromino(grid_h, grid_w), create_tetromino(grid_h, grid_w), create_tetromino(grid_h, grid_w)]
    current_tetromino = tetrominos.pop(0)
    grid.current_tetromino = current_tetromino
 
@@ -185,7 +185,7 @@ def start():
          game_over = grid.update_grid(tiles_to_place)
          # end the main game loop if the game is over
          
-         score = grid.delete_full_lines(clear, score, tetrominos[0], game_over)
+         score = grid.delete_full_lines(clear, score, tetrominos[0], tetrominos[1], tetrominos[2], game_over)
 
          # create the next tetromino to enter the game grid
          # by using the create_tetromino function defined below
@@ -196,13 +196,13 @@ def start():
          grid.current_tetromino = current_tetromino
 
       # display the game grid and as well the current tetromino
-      grid.display(score, tetrominos[0], game_over)
+      grid.display(score, tetrominos[0], tetrominos[1], tetrominos[2], game_over)
 
 # Function for creating random shaped tetrominoes to enter the game grid
 def create_tetromino(grid_height, grid_width):
    # type (shape) of the tetromino is determined randomly
    tetromino_types = [ 'I', 'O', 'Z', 'S', 'L', 'J', 'T' ]
-   #tetromino_types = [ 'Z' ]
+   #tetromino_types = [ 'I' ]
    random_index = random.randint(0, len(tetromino_types) - 1)
    random_type = tetromino_types[random_index]
    n = (4 if random_type == 'I' else (2 if random_type == 'O' else 3))
@@ -252,6 +252,7 @@ def display_game_menu(grid_height, grid_width,player):
    slider1location = button_blc_x+(slider_w/20)
    volume_percent = 5
    availability = 0
+   hold = False
    # menu interaction loop
    while True:
 
@@ -265,23 +266,35 @@ def display_game_menu(grid_height, grid_width,player):
       # mouse_x, mouse_y = float(stddraw.mouseMotionX()), float(stddraw.mouseMotionY())
       mouse_x = stddraw.mouseMotionX() if stddraw.mouseMotionX() is not None else -1
       mouse_y = stddraw.mouseMotionY() if stddraw.mouseMotionY() is not None else -1
+      
+      if stddraw.mouseLeftHeldDown():
+         if mouse_y >= 7 and mouse_y < 7.05 + slider_h:
+            hold = True
+         if hold:
+            if mouse_x >= slider_start and mouse_x <= slider_end:
+               slider1location = mouse_x
+               volume_percent = (slider1location-slider_start)/(slider_end-slider_start)*100
+            elif mouse_x < slider_start:
+               slider1location = slider_start
+               volume_percent = 0
+            else:
+               slider1location = slider_end
+               volume_percent = 100
+
+            player.volume = round(volume_percent)
+            print(volume_percent)
+               
+      else:
+         hold = False
 
       # MOUSE CLICKS ON BUTTONS
       if stddraw.mouseLeftPressed():
          if mouse_x >= button_blc_x and mouse_x <= button_blc_x + button_w:
             if mouse_y >= button_blc_y and mouse_y <= button_blc_y + button_h: 
                break # break the loop to end the method and start the game
-               
          if mouse_x >= button3_blc_x and mouse_x <= button3_blc_x + button_w:
             if mouse_y >= button3_blc_y and mouse_y <= button3_blc_y + button_h: 
-               print("Work in Progress, Tetris 2048")
-         if mouse_x >= slider_start and mouse_x <= slider_end:
-            if mouse_y >= 7 and mouse_y < 7.05 + slider_h:
-               slider1location = mouse_x
-               volume_percent = (slider1location-slider_start)/(slider_end-slider_start)*100
-               player.volume = volume_percent
-               print(volume_percent)
-
+               print("Work in Progress, Tetris 2048")    
       
       # MOUSE LISTENERS ON BUTTONS
       if mouse_x >= button_blc_x and mouse_x <= button_blc_x + button_w:

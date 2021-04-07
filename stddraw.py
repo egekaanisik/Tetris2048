@@ -89,6 +89,7 @@ _windowCreated = False
 
 # Has the mouse been left-clicked since the last time we checked?
 _mouseLeftPressed = False
+_mouseHeld = False
 _mouseRightPressed = False
 _mouseScrollPressed = False
 
@@ -166,7 +167,9 @@ def setCanvasSize(w=_DEFAULT_CANVAS_SIZE, h=_DEFAULT_CANVAS_SIZE):
     _canvasWidth = w
     _canvasHeight = h
     _background = pygame.display.set_mode([w, h])
-    pygame.display.set_caption('stddraw window (press s to save)')
+    pygame.display.set_caption('OUR PROJECT')
+    programIcon = pygame.image.load(os.path.dirname(os.path.realpath(__file__)) + "/images/icon.png")
+    pygame.display.set_icon(programIcon)
     _surface = pygame.Surface((w, h))
     _surface.fill(_pygameColor(WHITE))
     _windowCreated = True
@@ -643,6 +646,7 @@ def _checkForEvents():
     #-------------------------------------------------------------------
     global _mousePos
     global _mouseLeftPressed
+    global _mouseHeld
     global _mouseRightPressed
     global _mouseScrollPressed
     global _mouseTrack
@@ -670,7 +674,11 @@ def _checkForEvents():
         elif (event.type == pygame.MOUSEBUTTONDOWN) and \
             (event.button == 1): 
             _mouseLeftPressed = True
-            _mousePos = event.pos                      
+            _mouseHeld = True
+            _mousePos = event.pos
+        elif (event.type == pygame.MOUSEBUTTONUP) and \
+            (event.button == 1): 
+            _mouseHeld = False                   
         elif (event.type == pygame.MOUSEBUTTONDOWN) and \
             (event.button == 3): 
             _mouseRightPressed = True
@@ -745,6 +753,11 @@ def mouseLeftPressed():
         _mouseLeftPressed = False
         return True
     return False
+
+def mouseLeftHeldDown():
+    global _mouseHeld
+    return _mouseHeld
+
     
 def mouseX():
     """
