@@ -69,7 +69,12 @@ class GameGrid:
          stddraw.text(13.75, 11.5, "Game Over!")
          stddraw.text(13.75, 9.5, "Final Score:")
          stddraw.boldText(13.75, 8.5, str(score))
-         stddraw.show()
+         stddraw.setFontSize(20)
+         stddraw.text(13.75,2,"Press Enter to")
+         #stddraw.boldText(14.5,2.5,"Enter")
+         stddraw.text(13.75,1.5,"return to the")
+         stddraw.text(13.75,1,"main menu.")
+         stddraw.show(0)
          
    # Method for drawing the cells and the lines of the grid
    def draw_grid(self): 

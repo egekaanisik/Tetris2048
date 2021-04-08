@@ -102,7 +102,9 @@ _mouseRightHeld = False
 _mouseScrollHeld = False
 
 # The position of the mouse as of the most recent mouse click
-_mousePos = None
+_mouseLeftPos = None
+_mouseRightPos = None
+_mouseScrollPos = None
 _mouseTrack = None
  
 #-----------------------------------------------------------------------
@@ -666,7 +668,9 @@ def _checkForEvents():
     #-------------------------------------------------------------------
     # Begin added by Alan J. Broder
     #-------------------------------------------------------------------
-    global _mousePos
+    global _mouseLeftPos
+    global _mouseRightPos
+    global _mouseScrollPos
     global _mouseLeftPressed
     global _mouseRightPressed
     global _mouseScrollPressed
@@ -700,7 +704,7 @@ def _checkForEvents():
             (event.button == 1): 
             _mouseLeftPressed = True
             _mouseLeftHeld = True
-            _mousePos = event.pos
+            _mouseLeftPos = event.pos
         elif (event.type == pygame.MOUSEBUTTONUP) and \
             (event.button == 1): 
             _mouseLeftHeld = False                   
@@ -708,6 +712,7 @@ def _checkForEvents():
             (event.button == 3): 
             _mouseRightPressed = True
             _mouseRightHeld = True
+            _mouseRightPos = event.pos
         elif (event.type == pygame.MOUSEBUTTONUP) and \
             (event.button == 3): 
             _mouseRightHeld = False
@@ -715,6 +720,7 @@ def _checkForEvents():
             (event.button == 2): 
             _mouseScrollPressed = True
             _mouseScrollHeld = True
+            _mouseScrollPos = event.pos
         elif (event.type == pygame.MOUSEBUTTONUP) and \
             (event.button == 2): 
             _mouseScrollHeld = False
@@ -813,6 +819,20 @@ def mouseScrollPressed():
         return True
     return False
 
+def clearMousePresses():
+    global _mouseLeftPressed
+    global _mouseRightPressed
+    global _mouseScrollPressed
+    global _mouseLeftPos
+    global _mouseRightPos
+    global _mouseScrollPos
+    _mouseLeftPressed = False
+    _mouseRightPressed = False
+    _mouseScrollPressed = False
+    _mouseLeftPos = None
+    _mouseRightPos = None
+    _mouseScrollPos = None
+
 def mouseLeftHeldDown():
     global _mouseLeftHeld
     return _mouseLeftHeld
@@ -825,29 +845,81 @@ def mouseScrollHeldDown():
     global _mouseScrollHeld
     return _mouseScrollHeld
 
-def mouseX():
+def mouseLeftX():
     """
     Return the x coordinate in user space of the location at
     which the mouse was most recently left-clicked. If a left-click
-    hasn't happened yet, raise an exception, since mouseX() shouldn't
-    be called until mousePressed() returns True.
+    hasn't happened yet, raise an exception, since mouseLeftX() shouldn't
+    be called until mouseLeftPressed() returns True.
     """
-    global _mousePos
-    if _mousePos:
-        return _userX(_mousePos[0])      
+    global _mouseLeftPos
+    if _mouseLeftPos:
+        return _userX(_mouseLeftPos[0])      
     raise Exception(
         "Can't determine mouse position if a click hasn't happened")
     
-def mouseY():
+def mouseLeftY():
     """
     Return the y coordinate in user space of the location at
     which the mouse was most recently left-clicked. If a left-click
-    hasn't happened yet, raise an exception, since mouseY() shouldn't
-    be called until mousePressed() returns True.
+    hasn't happened yet, raise an exception, since mouseLeftY() shouldn't
+    be called until mouseLeftPressed() returns True.
     """
-    global _mousePos
-    if _mousePos:
-        return _userY(_mousePos[1]) 
+    global _mouseLeftPos
+    if _mouseLeftPos:
+        return _userY(_mouseLeftPos[1]) 
+    raise Exception(
+        "Can't determine mouse position if a click hasn't happened")
+
+def mouseRightX():
+    """
+    Return the x coordinate in user space of the location at
+    which the mouse was most recently right-clicked. If a right-click
+    hasn't happened yet, raise an exception, since mouseRightX() shouldn't
+    be called until mouseRightPressed() returns True.
+    """
+    global _mouseRightPos
+    if _mouseRightPos:
+        return _userX(_mouseRightPos[0])      
+    raise Exception(
+        "Can't determine mouse position if a click hasn't happened")
+    
+def mouseRightY():
+    """
+    Return the y coordinate in user space of the location at
+    which the mouse was most recently right-clicked. If a right-click
+    hasn't happened yet, raise an exception, since mouseRightY() shouldn't
+    be called until mouseRightPressed() returns True.
+    """
+    global _mouseRightPos
+    if _mouseRightPos:
+        return _userY(_mouseRightPos[1]) 
+    raise Exception(
+        "Can't determine mouse position if a click hasn't happened")
+
+def mouseScrollX():
+    """
+    Return the x coordinate in user space of the location at
+    which the mouse was most recently scroll-clicked. If a scroll-click
+    hasn't happened yet, raise an exception, since mouseScrollX() shouldn't
+    be called until mouseScrollPressed() returns True.
+    """
+    global _mouseScrollPos
+    if _mouseScrollPos:
+        return _userX(_mouseScrollPos[0])      
+    raise Exception(
+        "Can't determine mouse position if a click hasn't happened")
+    
+def mouseScrollY():
+    """
+    Return the y coordinate in user space of the location at
+    which the mouse was most recently scroll-clicked. If a scroll-click
+    hasn't happened yet, raise an exception, since mouseScrollY() shouldn't
+    be called until mouseScrollPressed() returns True.
+    """
+    global _mouseScrollPos
+    if _mouseScrollPos:
+        return _userY(_mouseScrollPos[1]) 
     raise Exception(
         "Can't determine mouse position if a click hasn't happened")
 
@@ -1020,7 +1092,7 @@ def _regressionTest():
     print('Left click with the mouse or type a key')
     while True:
         if mouseLeftPressed():
-            filledCircle(mouseX(), mouseY(), .02)
+            filledCircle(mouseLeftX(), mouseLeftY(), .02)
         if hasNextKeyTyped():
             print(nextKeyTyped())
         show(0.0)
