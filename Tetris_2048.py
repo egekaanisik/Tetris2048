@@ -362,12 +362,6 @@ def display_game_menu(grid_height, grid_width,player,rotate,move,place,clear):
       
       
       if stddraw.mouseLeftHeldDown():
-         if mouse_y >= 10 and mouse_y < 10.05 + slider_h:
-            musicHold = True
-         elif mouse_y >= 8.5 and mouse_y < 8.55 + slider_h:
-            soundHold = True
-         elif mouse_y >= 7 and mouse_y < 7.05 + slider_h:
-            diffHold = True
          if musicHold:
             if mouse_x >= slider_start and mouse_x <= slider_end:
                slider1location = mouse_x
@@ -415,7 +409,13 @@ def display_game_menu(grid_height, grid_width,player,rotate,move,place,clear):
             else:
                slider3location = slider_end
                diff = 3
-
+         else:
+            if mouse_y >= 10 and mouse_y < 10.05 + slider_h:
+               musicHold = True
+            elif mouse_y >= 8.5 and mouse_y < 8.55 + slider_h:
+               soundHold = True
+            elif mouse_y >= 7 and mouse_y < 7.05 + slider_h:
+               diffHold = True
       else:
          musicHold = False
          soundHold = False
