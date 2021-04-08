@@ -4,7 +4,11 @@ from modules.point import Point # used for tile positions
 import numpy as np # fundamental Python module for scientific computing
 from modules.color import Color
 
-AVAILABILITY = time.time()*1000
+_AVAILABILITY = time.time()*1000
+_left_availability = _AVAILABILITY
+_right_availability = _AVAILABILITY
+_down_availability = _AVAILABILITY
+_standart_availability = _AVAILABILITY
 
 # Class used for representing tetrominoes with 3 out of 7 different types/shapes 
 # as (I, O and Z)
@@ -16,12 +20,6 @@ class Tetromino:
       self.grid_height = grid_height
       self.grid_width = grid_width
       self.type = type
-
-      self._standart_availability = AVAILABILITY
-      self._left_availability = AVAILABILITY
-      self._right_availability = AVAILABILITY
-      self._down_availability = AVAILABILITY
-      
       # initial position of the bottom-left tile in the tile matrix just before 
       # the tetromino enters the game grid
       self.bottom_left_corner = Point()
@@ -257,7 +255,8 @@ class Tetromino:
       n = len(self.tile_matrix)  # n = number of rows = number of columns
       current_mil = time.time()*1000
       if direction == "left":
-         if current_mil > self._left_availability or delay is None:
+         global _left_availability
+         if current_mil > _left_availability or delay is None:
             # check if the tetromino can be moved in the given direction by using the
             # can_be_moved method defined below
             if not(self.can_be_moved(direction, game_grid, amount)):
@@ -270,12 +269,13 @@ class Tetromino:
                   if self.tile_matrix[row][col] != None:
                         self.tile_matrix[row][col].move(-amount, 0)
             if delay is not None:
-               self._left_availability = current_mil + delay
+               _left_availability = current_mil + delay
             return True
          else:
             return None
       elif direction == "right":
-         if current_mil > self._right_availability or delay is None:
+         global _right_availability
+         if current_mil > _right_availability or delay is None:
             # check if the tetromino can be moved in the given direction by using the
             # can_be_moved method defined below
             if not(self.can_be_moved(direction, game_grid, amount)):
@@ -288,12 +288,14 @@ class Tetromino:
                   if self.tile_matrix[row][col] != None:
                      self.tile_matrix[row][col].move(amount, 0)
             if delay is not None:
-               self._right_availability = current_mil + delay
+               _right_availability = current_mil + delay
             return True
          else:
             return None
       elif direction == "down":
-         if current_mil > (self._standart_availability if standart else self._down_availability) or delay is None:
+         global _down_availability
+         global _standart_availability
+         if current_mil > (_standart_availability if standart else _down_availability) or delay is None:
             # check if the tetromino can be moved in the given direction by using the
             # can_be_moved method defined below
             if not(self.can_be_moved(direction, game_grid, amount)):
@@ -305,9 +307,9 @@ class Tetromino:
                      self.tile_matrix[row][col].move(0, -amount)
             if delay is not None:
                if standart:
-                  self._standart_availability = current_mil + delay
+                  _standart_availability = current_mil + delay
                else:
-                  self._down_availability = current_mil + delay
+                  _down_availability = current_mil + delay
             return True
          else:
             return None
