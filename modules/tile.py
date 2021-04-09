@@ -70,40 +70,13 @@ class Tile:
                self.boundary_color = Color(102,0,102)
       else:
          if not ghost:
+            num = None
             if number is None:
-               self.number = random.randint(1,2) * 2
+               num = random.randint(1,2) * 2
             else:
-               self.number = number
+               num = number
             
-            if self.number == 2:
-               self.background_color = Color(239,230,221)
-            elif self.number == 4:
-               self.background_color = Color(239,227,205)
-            elif self.number == 8:
-               self.background_color = Color(245,179,127)
-            elif self.number == 16:
-               self.background_color = Color(247,152,107)
-            elif self.number == 32:
-               self.background_color = Color(247,124,90)
-            elif self.number == 64:
-               self.background_color = Color(247,93,59)
-            elif self.number == 128:
-               self.background_color = Color(239,205,115)
-            elif self.number == 256:
-               self.background_color = Color(239,206,99)
-            elif self.number == 512:
-               self.background_color = Color(239,198,82)
-            elif self.number == 1024:
-               self.background_color = Color(238,198,66)
-            elif self.number == 2048:
-               self.background_color = Color(239,194,49)
-            else:
-               self.background_color = Color(107,201,16)
-
-            if self.number < 8:
-               self.foreground_color = Color(121,114,104)
-            else:
-               self.foreground_color = Color(255,255,255)
+            self.changeNumber(num)
 
             self.boundary_color = Color(188,174,161)
          else:
@@ -127,6 +100,38 @@ class Tile:
    # Method for moving the tile by dx along the x axis and by dy along the y axis
    def move(self, dx, dy):
       self.position.translate(dx, dy)
+
+   def changeNumber(self, number):
+      self.number = number
+      if self.number == 2:
+         self.background_color = Color(239,230,221)
+      elif self.number == 4:
+         self.background_color = Color(239,227,205)
+      elif self.number == 8:
+         self.background_color = Color(245,179,127)
+      elif self.number == 16:
+         self.background_color = Color(247,152,107)
+      elif self.number == 32:
+         self.background_color = Color(247,124,90)
+      elif self.number == 64:
+         self.background_color = Color(247,93,59)
+      elif self.number == 128:
+         self.background_color = Color(239,205,115)
+      elif self.number == 256:
+         self.background_color = Color(239,206,99)
+      elif self.number == 512:
+         self.background_color = Color(239,198,82)
+      elif self.number == 1024:
+         self.background_color = Color(238,198,66)
+      elif self.number == 2048:
+         self.background_color = Color(239,194,49)
+      else:
+         self.background_color = Color(107,201,16)
+
+      if self.number < 8:
+         self.foreground_color = Color(121,114,104)
+      else:
+         self.foreground_color = Color(255,255,255)
 
    # Method for drawing the tile
    def draw(self):
