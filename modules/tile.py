@@ -104,9 +104,11 @@ class Tile:
                self.foreground_color = Color(121,114,104)
             else:
                self.foreground_color = Color(255,255,255)
+
+            self.boundary_color = Color(188,174,161)
          else:
-            self.background_color = Color(188,174,161)
-         self.boundary_color = Color(188,174,161)
+            self.background_color = Color(198,184,171)
+            self.boundary_color = Color(158,138,120) 
 
       self.position = cp.copy(position)
       self.gamemode = gamemode

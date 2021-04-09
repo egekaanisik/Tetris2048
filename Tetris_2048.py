@@ -359,8 +359,8 @@ def create_tetromino(grid_height, grid_width):
    global gamemode
 
    # type (shape) of the tetromino is determined randomly
-   #tetromino_types = [ 'I', 'O', 'Z', 'S', 'L', 'J', 'T' ]
-   tetromino_types = [ 'I' ]
+   tetromino_types = [ 'I', 'O', 'Z', 'S', 'L', 'J', 'T' ]
+   #tetromino_types = [ 'I' ]
    random_index = random.randint(0, len(tetromino_types) - 1)
    random_type = tetromino_types[random_index]
    n = (4 if random_type == 'I' else (2 if random_type == 'O' else 3))

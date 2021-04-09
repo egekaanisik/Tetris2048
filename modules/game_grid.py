@@ -168,17 +168,17 @@ class GameGrid:
 
       if len(indexes) != 0:
          clear.play()
-
-         if diff == 0:
-            score += (1200 if len(indexes) == 4 else (300 if len(indexes) == 3 else (100 if len(indexes) == 2 else 40)))
-         elif diff == 1:
-            score += (2400 if len(indexes) == 4 else (600 if len(indexes) == 3 else (200 if len(indexes) == 2 else 80)))
-         elif diff == 2:
-            score += (3600 if len(indexes) == 4 else (900 if len(indexes) == 3 else (300 if len(indexes) == 2 else 120)))
-         elif diff == 3:
-            score += (4800 if len(indexes) == 4 else (1200 if len(indexes) == 3 else (400 if len(indexes) == 2 else 160)))
          
          if self.gamemode == "tetris":
+            if diff == 0:
+               score += (1200 if len(indexes) == 4 else (300 if len(indexes) == 3 else (100 if len(indexes) == 2 else 40)))
+            elif diff == 1:
+               score += (2400 if len(indexes) == 4 else (600 if len(indexes) == 3 else (200 if len(indexes) == 2 else 80)))
+            elif diff == 2:
+               score += (3600 if len(indexes) == 4 else (900 if len(indexes) == 3 else (300 if len(indexes) == 2 else 120)))
+            elif diff == 3:
+               score += (4800 if len(indexes) == 4 else (1200 if len(indexes) == 3 else (400 if len(indexes) == 2 else 160)))
+
             for color in reversed(range(0, 256, 15)):
                for l in paint_indexes:
                   for k in range(self.grid_width):
@@ -188,10 +188,13 @@ class GameGrid:
                self.display(score, next_tetromino1, next_tetromino2, next_tetromino3, game_over)
          else:
             for l in paint_indexes:
+               line_score = 0
                for k in range(self.grid_width):
+                  line_score += self.tile_matrix[l][k].number
                   self.tile_matrix[l][k].background_color = Color(255,255,255)
                   self.tile_matrix[l][k].boundary_color = Color(255,255,255)
                   self.tile_matrix[l][k].foreground_color = Color(255,255,255)
+               score += (line_score * (diff + 1))
             self.display(score, next_tetromino1, next_tetromino2, next_tetromino3, game_over)
 
             for color in reversed(range(215, 256, 5)):
