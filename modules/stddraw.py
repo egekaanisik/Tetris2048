@@ -952,6 +952,7 @@ def _getFileName():
     root = Tkinter.Tk()
     root.withdraw()
     reply = tkFileDialog.asksaveasfilename(filetypes=[('PNG File', '*.png')], initialdir='.')
+    sys.stdout.reconfigure(encoding='utf-8')
     sys.stdout.write(reply)
     sys.stdout.flush()
     sys.exit()
