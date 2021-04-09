@@ -636,10 +636,7 @@ def _saveToFile():
     if sys.hexversion >= 0x03000000:
         fileName = fileName.decode('utf-8')
 
-    if fileName == '':
-        childProcess = subprocess.Popen(
-            [sys.executable, stddrawPath, 'reportFileSaveError',
-            'Please specify a file name.'])
+    if not fileName:
         return
 
     if not fileName.endswith(('.jpg', '.png')):
