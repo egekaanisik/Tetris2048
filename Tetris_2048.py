@@ -1,6 +1,6 @@
 import platform
 
-from pygame import key
+from pygame import key, mouse
 
 if platform.system() != 'Windows':
     print("\nThis program is designed to work only on Windows systems.")
@@ -389,35 +389,35 @@ def display_game_menu():
    text_color = Color(31, 160, 239)
    # clear the background canvas to background_color
    stddraw.clear(background_color)
-   # get the directory in which this python code file is placed
-   current_dir = os.path.dirname(os.path.realpath(__file__))
    # path of the image file
-   img_file = current_dir + "/images/menu_image.png"
+   img_file = DIR + "/images/menu_image.png"
    image_to_display = Picture(img_file)
-   img_file = current_dir + "/images/tetris.png"
+   img_file = DIR + "/images/tetris.png"
    tetris= Picture(img_file)
-   img_file = current_dir + "/images/tetris2.png"
+   img_file = DIR + "/images/tetris2.png"
    tetris2= Picture(img_file)
-   img_file = current_dir + "/images/2048.png"
+   img_file = DIR + "/images/2048.png"
    i2048 = Picture(img_file)
-   img_file = current_dir + "/images/2048L.png"
+   img_file = DIR + "/images/2048L.png"
    i2048L = Picture(img_file)
-   img_file = current_dir + "/images/musicOn.png"
+   img_file = DIR + "/images/musicOn.png"
    musicOn = Picture(img_file)
-   img_file = current_dir + "/images/musicOff.png"
+   img_file = DIR + "/images/musicOff.png"
    musicOff = Picture(img_file)
-   img_file = current_dir + "/images/soundOff.png"
+   img_file = DIR + "/images/soundOff.png"
    soundOff = Picture(img_file)
-   img_file = current_dir + "/images/soundOn.png"
+   img_file = DIR + "/images/soundOn.png"
    soundOn = Picture(img_file)
-   img_file = current_dir + "/images/easy.png"
+   img_file = DIR + "/images/easy.png"
    easy = Picture(img_file)
-   img_file = current_dir + "/images/medium.png"
+   img_file = DIR + "/images/medium.png"
    medium = Picture(img_file)
-   img_file = current_dir + "/images/hard.png"
+   img_file = DIR + "/images/hard.png"
    hard = Picture(img_file)
-   img_file = current_dir + "/images/extreme.png"
+   img_file = DIR + "/images/extreme.png"
    extreme = Picture(img_file)
+   img_file = DIR + "/images/help.png"
+   help = Picture(img_file)
 
    # center coordinates to display the image
    img_center_x, img_center_y = (17/2)-1,(21/2)-1
@@ -432,6 +432,7 @@ def display_game_menu():
    # coordinates of the bottom left corner of the start game button 
    button_blc_x, button_blc_y = img_center_x-button_w/2, 4 # Tetris Button 
    button3_blc_x, button3_blc_y = img_center_x-button_w/2 , 1 # Tetris 2048 Button
+   help_x, help_y = img_center_x + 7.5, img_center_x + 11.5
 
    slider_start = button3_blc_x+((button_w-slider_w)/2)
    slider_end = slider_start+slider_w
@@ -534,15 +535,20 @@ def display_game_menu():
       
       # MOUSE LISTENERS ON BUTTONS
       if mouse_x >= button_blc_x and mouse_x <= button_blc_x + button_w and mouse_y >= button_blc_y and mouse_y <= button_blc_y + button_h:
-            tetrisButtonPicture = tetris2
-            if not played:
-               menu.play()
-               played = True
+         tetrisButtonPicture = tetris2
+         if not played:
+            menu.play()
+            played = True
       elif mouse_x >= button3_blc_x and mouse_x <= button3_blc_x + button_w and mouse_y >= button3_blc_y and mouse_y <= button3_blc_y + button_h:
-            i2048Picture = i2048L
-            if not played:
-               menu.play()
-               played = True
+         i2048Picture = i2048L
+         if not played:
+            menu.play()
+            played = True
+      elif mouse_x >= help_x - 0.5 and mouse_x <= help_x + 0.5 and mouse_y >= help_y - 0.5 and mouse_y <= help_y + 0.5:
+         if not played:
+            menu.play()
+            played = True
+         display_controls(background_color)
       else:
          played = False
 
@@ -584,8 +590,32 @@ def display_game_menu():
       stddraw.picture(tetrisButtonPicture,img_center_x,5)
       stddraw.picture(i2048Picture,img_center_x,2)
 
+      stddraw.picture(help, help_x, help_y)
+
       stddraw.show(0)
       stddraw.clear(background_color)
+
+def display_controls(background_color):
+   img_file = DIR + "/images/help.png"
+   help = Picture(img_file)
+   img_file = DIR + "/images/controls.png"
+   controls = Picture(img_file)
+   img_center_x, img_center_y = (17/2)-1,(21/2)-1
+   help_x, help_y = img_center_x + 7.5, img_center_x + 11.5
+
+   while True:
+      mouse_x = stddraw.mouseMotionX()
+      mouse_y = stddraw.mouseMotionY()
+
+      if not (mouse_x >= help_x - 0.5 and mouse_x <= help_x + 0.5 and mouse_y >= help_y - 0.5 and mouse_y <= help_y + 0.5):
+         stddraw.clearKeysTyped()
+         stddraw.clearMousePresses()
+         break
+
+      stddraw.clear(background_color)
+      stddraw.picture(controls, img_center_x, img_center_y)
+      stddraw.picture(help, help_x, help_y)
+      stddraw.show(0)
 
 def display_pause_menu():
    global slider1location
@@ -608,25 +638,28 @@ def display_pause_menu():
    text_color = stddraw.LIGHT_GRAY
    # clear the background canvas to background_color
    stddraw.clear(background_color)
-   # get the directory in which this python code file is placed
-   current_dir = os.path.dirname(os.path.realpath(__file__))
    # path of the image file
-   img_file = current_dir + "/images/musicOn.png"
+   img_file = DIR + "/images/musicOn.png"
    musicOn = Picture(img_file)
-   img_file = current_dir + "/images/musicOff.png"
+   img_file = DIR + "/images/musicOff.png"
    musicOff = Picture(img_file)
-   img_file = current_dir + "/images/soundOff.png"
+   img_file = DIR + "/images/soundOff.png"
    soundOff = Picture(img_file)
-   img_file = current_dir + "/images/soundOn.png"
+   img_file = DIR + "/images/soundOn.png"
    soundOn = Picture(img_file)
-   img_file = current_dir + "/images/pause_blur.png"
+   img_file = DIR + "/images/pause_blur.png"
    blur = Picture(img_file)
    canvas = Picture(TEMP_IMAGE)
+   img_file = DIR + "/images/help.png"
+   help = Picture(img_file)
 
    # center coordinates to display the image
    img_center_x, img_center_y = (17/2)-1,(21/2)-1
    # image is represented using the Picture class
    # display the image
+
+   help_x, help_y = img_center_x + 7.5, img_center_x + 11.5
+
    stddraw.setFontFamily("Arial")
 
    # dimensions of the slider
@@ -642,6 +675,7 @@ def display_pause_menu():
    soundHold = False
 
    first = True
+   played = False
    # menu interaction loop
    while True:
       keys_typed = stddraw.getKeysTyped()
@@ -708,6 +742,14 @@ def display_pause_menu():
          musicHold = False
          soundHold = False
 
+      if mouse_x >= help_x - 0.5 and mouse_x <= help_x + 0.5 and mouse_y >= help_y - 0.5 and mouse_y <= help_y + 0.5:
+         if not played:
+            menu.play()
+            played = True
+         display_controls(background_color)
+      else:
+         played = False
+
       if volume_percent == 0:
          musicButtonPicture=musicOff
       if sound_percent == 0:
@@ -742,6 +784,8 @@ def display_pause_menu():
       stddraw.setPenColor(text_color)
       stddraw.boldText(slider2location-0.03,2.5,str(round(sound_percent)))
       stddraw.picture(soundButtonPicture,slider2location-0.01,3+(slider_h/2))
+
+      stddraw.picture(help, help_x, help_y)
 
       # Draw Buttons and Logo
       stddraw.show(0)
