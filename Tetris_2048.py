@@ -508,11 +508,11 @@ def display_game_menu():
                slider3location = slider_end
                difficulty = 3
          else:
-            if mouse_y >= 10 and mouse_y < 10.05 + slider_h:
+            if mouse_y >= 10.5 and mouse_y < 10.55 + slider_h:
                musicHold = True
-            elif mouse_y >= 8.5 and mouse_y < 8.55 + slider_h:
+            elif mouse_y >= 9 and mouse_y < 9.05 + slider_h:
                soundHold = True
-            elif mouse_y >= 7 and mouse_y < 7.05 + slider_h:
+            elif mouse_y >= 7.5 and mouse_y < 7.55 + slider_h:
                diffHold = True
       else:
          musicHold = False
@@ -557,31 +557,31 @@ def display_game_menu():
 
       # MUSIC SLIDER
       stddraw.setPenColor(button_color)
-      stddraw.filledRectangle(slider_start,10,slider_w,slider_h)
+      stddraw.filledRectangle(slider_start,10.5,slider_w,slider_h)
       stddraw.setPenColor(stddraw.WHITE)
-      stddraw.filledCircle(slider1location,10+(slider_h/2),0.3)
+      stddraw.filledCircle(slider1location,10.5+(slider_h/2),0.3)
       stddraw.setPenColor(text_color)
-      stddraw.boldText(slider1location-0.03,9.5,str(round(volume_percent)))
-      stddraw.picture(musicButtonPicture,slider1location-0.03,10+(slider_h/2))
+      stddraw.boldText(slider1location-0.03,10,str(round(volume_percent)))
+      stddraw.picture(musicButtonPicture,slider1location-0.03,10.5+(slider_h/2))
 
       # SOUND SLIDER
       stddraw.setPenColor(button_color)
-      stddraw.filledRectangle(slider_start,8.5,slider_w,slider_h)
+      stddraw.filledRectangle(slider_start,9,slider_w,slider_h)
       stddraw.setPenColor(stddraw.WHITE)
-      stddraw.filledCircle(slider2location,8.5+(slider_h/2),0.3)
+      stddraw.filledCircle(slider2location,9+(slider_h/2),0.3)
       stddraw.setPenColor(text_color)
-      stddraw.boldText(slider2location-0.03,8,str(round(sound_percent)))
-      stddraw.picture(soundButtonPicture,slider2location-0.01,8.5+(slider_h/2))
+      stddraw.boldText(slider2location-0.03,8.5,str(round(sound_percent)))
+      stddraw.picture(soundButtonPicture,slider2location-0.01,9+(slider_h/2))
 
       # DIFFICULTY SLIDER
       stddraw.setPenColor(button_color)
-      stddraw.filledRectangle(slider_start,7,slider_w,slider_h)
+      stddraw.filledRectangle(slider_start,7.5,slider_w,slider_h)
       stddraw.setPenColor(stddraw.WHITE)
-      stddraw.filledCircle(slider3location,7+(slider_h/2),0.3)
+      stddraw.filledCircle(slider3location,7.5+(slider_h/2),0.3)
       stddraw.setPenColor(text_color)
-      stddraw.boldText(slider3location-0.03,6.5,diffStr)
+      stddraw.boldText(slider3location-0.03,7,diffStr)
       gap = -0.025 if difficulty == 3 or difficulty == 1 else(0.025 if difficulty == 0 else 0) 
-      stddraw.picture(speedButtonPicture,slider3location+gap,7+(slider_h/2)+0.02)
+      stddraw.picture(speedButtonPicture,slider3location+gap,7.5+(slider_h/2)+0.02)
 
       # Draw Buttons and Logo
       stddraw.picture(image_to_display, img_center_x, img_center_y+6)
