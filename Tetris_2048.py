@@ -1,5 +1,7 @@
 import platform
 
+from pygame import key
+
 if platform.system() != 'Windows':
     print("\nThis program is designed to work only on Windows systems.")
     input("Press \"Enter\" key to terminate the program.")
@@ -49,19 +51,20 @@ if len(not_installed) != 0:
         else:
             print("Please enter a valid answer.")
 
+DIR = os.path.dirname(os.path.realpath(__file__))
+sys.path.append(DIR + "/modules")
+
 import ctypes
 ctypes.windll.user32.ShowWindow(ctypes.windll.kernel32.GetConsoleWindow(), 0)
-
-import modules.stddraw as stddraw # the stddraw module is used as a basic graphics library
+import stddraw # the stddraw module is used as a basic graphics library
 import random # used for creating tetrominoes with random types/shapes
-from modules.game_grid import GameGrid # class for modeling the game grid
-from modules.tetromino import Tetromino # class for modeling the tetrominoes
-from modules.picture import Picture # used representing images to display
-from modules.color import Color # used for coloring the game menu
+from game_grid import GameGrid # class for modeling the game grid
+from tetromino import Tetromino # class for modeling the tetrominoes
+from picture import Picture # used representing images to display
+from color import Color # used for coloring the game menu
 from audioplayer import AudioPlayer
 import tempfile
 
-DIR = os.path.dirname(os.path.realpath(__file__))
 ICON = DIR + "/images/icon.png"
 PLAYER_DIR = DIR + "/sounds/back.mp3"
 MOVE_DIR = DIR + "/sounds/move.wav"
@@ -118,10 +121,12 @@ def start():
 
    player.play(loop=True)
 
+   restart = False
    while True:
-      # display a simple menu before opening the game
-      display_game_menu()
-      game()
+      if restart == False:
+         # display a simple menu before opening the game
+         display_game_menu()
+      restart = game()
    
    
 def game():
@@ -152,6 +157,7 @@ def game():
    score = 0
    rotated = False
    already_dropped = False
+
    # main game loop (keyboard interaction for moving the tetromino) 
    while True:
       posX = round(stddraw.mouseMotionX())
@@ -164,7 +170,7 @@ def game():
          last_mouse_posX = posX
          last_mouse_posY = posY
       elif stddraw.hasNextKeyTyped():
-         if "up" in keys_typed or "down" in keys_typed or "right" in keys_typed or "left" in keys_typed or "space" in keys_typed or "escape" in keys_typed:
+         if "up" in keys_typed or "down" in keys_typed or "right" in keys_typed or "left" in keys_typed or "space" in keys_typed or "escape" in keys_typed or "w" in keys_typed or "a" in keys_typed or "s" in keys_typed or "d" in keys_typed:
             mouse = False
 
       if not mouse:
@@ -181,51 +187,52 @@ def game():
                dropped = True
                already_dropped = True
                score += count * 2
-         if "up" in keys_typed:
+         if "up" in keys_typed or "w" in keys_typed:
             if not rotated:
                can_rotate = current_tetromino.rotate(grid)
                if can_rotate:
                   rotate.play()
                   rotated = True
          # if the left arrow key has been pressed
-         if "left" in keys_typed:
+         if "left" in keys_typed or "a" in keys_typed:
             # move the tetromino left by one
             can_left = current_tetromino.move("left", grid, 1, delay=100)
             if can_left:
                move.play()
          # if the right arrow key has been pressed
-         if "right" in keys_typed:
+         if "right" in keys_typed or "d" in keys_typed:
             # move the tetromino right by one
             can_right = current_tetromino.move("right", grid, 1, delay=100)
             if can_right:
                move.play()
          # if the down arrow key has been pressed
-         if "down" in keys_typed:
+         if "down" in keys_typed or "s" in keys_typed:
             # move the tetromino down by one 
             # (causes the tetromino to fall down faster)
             succ = current_tetromino.move("down", grid, 1, delay=50)
             if succ:
                score += 1
          if "escape" in keys_typed:
-            menu = display_pause_menu()
+            option = display_pause_menu()
 
-            if menu:
-               return
+            if option == "menu":
+               return False
+            elif option == "restart":
+               return True
          # clear the queue that stores all the keys pressed/typed
-         stddraw.clearKeysTyped()
 
          if stddraw.hasNextKeyReleased():
             keys_released = stddraw.getKeysReleased()
-            if "up" in keys_released:
+            if "up" in keys_released or "w" in keys_released:
                rotated = False
             if "space" in keys_released:
                already_dropped = False
-            stddraw.clearKeysReleased()
       else:         
-         if (posX + current_tetromino.column_count) > grid.grid_width:
-            posX = grid.grid_width - current_tetromino.column_count
+         middle = (0 if current_tetromino.column_count == 1 or current_tetromino.column_count == 2 else 1)
+         if (posX + middle) > grid.grid_width:
+            posX = grid.grid_width - middle
          
-         diff = posX - current_tetromino.leftmost
+         diff = posX - (current_tetromino.leftmost + middle)
 
          if diff < 0:
             for i in range(-diff):
@@ -268,14 +275,19 @@ def game():
                succ = current_tetromino.move("down", grid, 1, delay=50)
                if succ:
                   score += 1
+
+      stddraw.clearMousePresses()
+      stddraw.clearKeysTyped()
+      stddraw.clearKeysReleased()
       
-      current_ghost = current_tetromino.copy(ghost=True)
-      grid.current_ghost = current_ghost
-      
-      while True:
-         sc = current_ghost.move("down", grid, 1)
-         if not sc:
-            break
+      if difficulty != 3:
+         current_ghost = current_tetromino.copy(ghost=True)
+         grid.current_ghost = current_ghost
+         
+         while True:
+            sc = current_ghost.move("down", grid, 1)
+            if not sc:
+               break
          
       # move (drop) the tetromino down by 1 at each iteration 
       success = current_tetromino.move("down", grid, 1, delay=ms, standart=True)
@@ -312,7 +324,10 @@ def game():
       keys_typed = stddraw.getKeysTyped()
       if "enter" in keys_typed or "return" in keys_typed:
          stddraw.clearKeysTyped()
-         break
+         return False
+      elif "r" in keys_typed:
+         stddraw.clearKeysTyped()
+         return True
       stddraw.clearKeysTyped()
       stddraw.show(0)
 
@@ -640,7 +655,13 @@ def display_pause_menu():
             os.remove(TEMP_IMAGE)
          stddraw.setKeyRepeat(1)
          stddraw.clearMousePresses()
-         return True
+         return "menu"
+      elif "r" in keys_typed:
+         if os.path.exists(TEMP_IMAGE):
+            os.remove(TEMP_IMAGE)
+         stddraw.setKeyRepeat(1)
+         stddraw.clearMousePresses()
+         return "restart"
       stddraw.clearKeysTyped()
 
       soundButtonPicture = soundOn
@@ -699,7 +720,8 @@ def display_pause_menu():
 
       stddraw.setFontSize(24)
       stddraw.text(img_center_x, img_center_y, "Press Esc to resume the game,")
-      stddraw.text(img_center_x, img_center_y-0.8, "or press Enter to return to the main menu.")
+      stddraw.text(img_center_x, img_center_y-0.8, "press R to restart the game,")
+      stddraw.text(img_center_x, img_center_y-1.6, "or press Enter to return to the main menu.")
 
       stddraw.setFontSize(20)
       # MUSIC SLIDER

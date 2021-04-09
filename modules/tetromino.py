@@ -1,8 +1,11 @@
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.realpath(__file__)))
 import time
-from modules.tile import Tile # used for representing each tile on the tetromino
-from modules.point import Point # used for tile positions
+from tile import Tile # used for representing each tile on the tetromino
+from point import Point # used for tile positions
 import numpy as np # fundamental Python module for scientific computing
-from modules.color import Color
+from color import Color
 
 _AVAILABILITY = time.time()*1000
 _left_availability = _AVAILABILITY

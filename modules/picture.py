@@ -7,7 +7,9 @@ The picture module defines the Picture class.
 #-----------------------------------------------------------------------
 
 import os
-import modules.color as color
+import sys
+sys.path.append(os.path.dirname(os.path.realpath(__file__)))
+import color
 
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = 'hide'
 import pygame

@@ -1,7 +1,10 @@
-import modules.stddraw as stddraw # the stddraw module is used as a basic graphics library
-from modules.color import Color # used for coloring the game grid
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.realpath(__file__)))
+import stddraw # the stddraw module is used as a basic graphics library
+from color import Color # used for coloring the game grid
 import numpy as np # fundamental Python module for scientific computing
-from modules.tile import Tile
+from tile import Tile
 
 # Class used for modelling the game grid
 class GameGrid:
@@ -70,10 +73,12 @@ class GameGrid:
          stddraw.text(13.75, 9.5, "Final Score:")
          stddraw.boldText(13.75, 8.5, str(score))
          stddraw.setFontSize(20)
-         stddraw.text(13.75,2,"Press Enter to")
+         stddraw.text(13.75,2,"Press R to")
          #stddraw.boldText(14.5,2.5,"Enter")
-         stddraw.text(13.75,1.5,"return to the")
-         stddraw.text(13.75,1,"main menu.")
+         stddraw.text(13.75,1.5,"restart the game,")
+         stddraw.text(13.75,1,"or press Enter to")
+         stddraw.text(13.75,0.5,"return to the")
+         stddraw.text(13.75,0,"main manu.")
          stddraw.show(0)
          
    # Method for drawing the cells and the lines of the grid
