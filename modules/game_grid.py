@@ -170,14 +170,7 @@ class GameGrid:
          clear.play()
          
          if self.gamemode == "tetris":
-            if diff == 0:
-               score += (1200 if len(indexes) == 4 else (300 if len(indexes) == 3 else (100 if len(indexes) == 2 else 40)))
-            elif diff == 1:
-               score += (2400 if len(indexes) == 4 else (600 if len(indexes) == 3 else (200 if len(indexes) == 2 else 80)))
-            elif diff == 2:
-               score += (3600 if len(indexes) == 4 else (900 if len(indexes) == 3 else (300 if len(indexes) == 2 else 120)))
-            elif diff == 3:
-               score += (4800 if len(indexes) == 4 else (1200 if len(indexes) == 3 else (400 if len(indexes) == 2 else 160)))
+            score += (1200 if len(indexes) == 4 else (300 if len(indexes) == 3 else (100 if len(indexes) == 2 else 40))) * (diff+1)
 
             for color in reversed(range(0, 256, 4)):
                for l in paint_indexes:
