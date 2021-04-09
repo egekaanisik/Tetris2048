@@ -91,11 +91,13 @@ slider2location = None
 slider3location = None
 
 difficulty = 1
+gamemode = None
 
 # MAIN FUNCTION OF THE PROGRAM
 #-------------------------------------------------------------------------------
 # Main function where this program starts execution
 def start():
+   global gamemode
    global player
    global move
    global rotate
@@ -124,12 +126,13 @@ def start():
    while True:
       if restart == False:
          # display a simple menu before opening the game
-         display_game_menu()
+         gamemode = display_game_menu()
       restart = game()
    
    
 def game():
    global difficulty
+   global gamemode
    global player
    global move
    global rotate
@@ -143,7 +146,7 @@ def game():
    ms = (350 if difficulty == 0 else (250 if difficulty == 1 else (125 if difficulty == 2 else 75)))
 
    # create the game grid
-   grid = GameGrid(GRID_H, GRID_W)
+   grid = GameGrid(GRID_H, GRID_W, gamemode)
    # create the first tetromino to enter the game grid 
    # by using the create_tetromino function defined below
    tetrominos = [create_tetromino(GRID_H, GRID_W), create_tetromino(GRID_H, GRID_W), create_tetromino(GRID_H, GRID_W), create_tetromino(GRID_H, GRID_W)]
@@ -353,16 +356,18 @@ def close():
 
 # Function for creating random shaped tetrominoes to enter the game grid
 def create_tetromino(grid_height, grid_width):
+   global gamemode
+
    # type (shape) of the tetromino is determined randomly
-   tetromino_types = [ 'I', 'O', 'Z', 'S', 'L', 'J', 'T' ]
-   #tetromino_types = [ 'I' ]
+   #tetromino_types = [ 'I', 'O', 'Z', 'S', 'L', 'J', 'T' ]
+   tetromino_types = [ 'I' ]
    random_index = random.randint(0, len(tetromino_types) - 1)
    random_type = tetromino_types[random_index]
    n = (4 if random_type == 'I' else (2 if random_type == 'O' else 3))
    bottom_x = random.randint(0, grid_width - n)
 
    # create and return the tetromino
-   tetromino = Tetromino(random_type, grid_height, grid_width, bottom_x)
+   tetromino = Tetromino(random_type, grid_height, grid_width, bottom_x, gamemode=gamemode)
    return tetromino
 
 # Function for displaying a simple menu before starting the game
@@ -526,10 +531,10 @@ def display_game_menu():
       if stddraw.mouseLeftPressed():
          if mouse_x >= button_blc_x and mouse_x <= button_blc_x + button_w:
             if mouse_y >= button_blc_y and mouse_y <= button_blc_y + button_h: 
-               break
+               return "tetris"
          if mouse_x >= button3_blc_x and mouse_x <= button3_blc_x + button_w:
             if mouse_y >= button3_blc_y and mouse_y <= button3_blc_y + button_h: 
-               print("Work in Progress, Tetris 2048")    
+               return "2048"   
       
       # MOUSE LISTENERS ON BUTTONS
       if mouse_x >= button_blc_x and mouse_x <= button_blc_x + button_w and mouse_y >= button_blc_y and mouse_y <= button_blc_y + button_h:

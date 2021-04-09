@@ -4,15 +4,15 @@ sys.path.append(os.path.dirname(os.path.realpath(__file__)))
 import stddraw # the stddraw module is used as a basic graphics library
 from color import Color # used for coloring the game grid
 import numpy as np # fundamental Python module for scientific computing
-from tile import Tile
 
 # Class used for modelling the game grid
 class GameGrid:
 	# Constructor for creating the game grid based on the given arguments
-   def __init__(self, grid_h, grid_w):
+   def __init__(self, grid_h, grid_w, gamemode):
       # set the dimensions of the game grid as the given arguments
       self.grid_height = grid_h
       self.grid_width = grid_w
+      self.gamemode = gamemode
       # create the tile matrix to store the tiles placed on the game grid
       self.tile_matrix = np.full((grid_h, grid_w), None)
       # the tetromino that is currently being moved on the game grid
@@ -20,11 +20,20 @@ class GameGrid:
       self.current_ghost = None
       # game_over flag shows whether the game is over/completed or not
       self.game_over = False
-      # set the color used for the empty grid cells
-      self.empty_cell_color = Color(0, 0, 0)
-      # set the colors used for the grid lines and the grid boundaries
-      self.line_color = Color(30, 30, 30) 
-      self.boundary_color = Color(30, 30, 30) 
+      if gamemode == "tetris":
+         # set the color used for the empty grid cells
+         self.empty_cell_color = Color(0, 0, 0)
+         self.background_color = Color(0, 0, 0)
+         # set the colors used for the grid lines and the grid boundaries
+         self.line_color = Color(30, 30, 30) 
+         self.boundary_color = Color(30, 30, 30)
+      else:
+         self.background_color = Color(255,251,239)
+         # set the color used for the empty grid cells
+         self.empty_cell_color = Color(214,205,196)
+         # set the colors used for the grid lines and the grid boundaries
+         self.line_color = Color(188,174,161) 
+         self.boundary_color = Color(158,138,120) 
       # thickness values used for the grid lines and the grid boundaries 
       self.line_thickness = 0.002
       self.box_thickness = 8 * self.line_thickness
@@ -32,7 +41,7 @@ class GameGrid:
    # Method used for displaying the game grid
    def display(self, score, next_tetromino1, next_tetromino2, next_tetromino3, game_over):
       # clear the background canvas to empty_cell_color
-      stddraw.clear(self.empty_cell_color)
+      stddraw.clear(self.background_color)
       # draw the game grid
       self.draw_boundaries()
       self.draw_grid()
@@ -46,7 +55,10 @@ class GameGrid:
       
 
       if not game_over:
-         stddraw.setPenColor(stddraw.WHITE)
+         if self.gamemode == "tetris":
+            stddraw.setPenColor(stddraw.WHITE)
+         else:
+            stddraw.setPenColor(self.boundary_color)
          stddraw.setFontFamily("Arial")
          stddraw.setFontSize(30)
          stddraw.text(13.75, 19, "Score")
@@ -58,7 +70,10 @@ class GameGrid:
          stddraw.filledRectangle(12,-0.25,3.5,13.5)
 
          stddraw.setPenRadius(0.001)
-         stddraw.setPenColor(stddraw.DARK_GRAY)
+         if self.gamemode == "tetris":
+            stddraw.setPenColor(stddraw.DARK_GRAY)
+         else:
+            stddraw.setPenColor(self.empty_cell_color)
          stddraw.line(12.25, 8.75, 15.25, 8.75)
          stddraw.line(12.25, 4.25, 15.25, 4.25)
          next_tetromino1.copy(blcx=(14.25 - (next_tetromino1.column_count/2)),blcy=9.5 + (4-next_tetromino1.row_count)/2,trim=True).draw()
@@ -66,7 +81,10 @@ class GameGrid:
          next_tetromino3.copy(blcx=(14.25 - (next_tetromino3.column_count/2)),blcy=0.5 + (4-next_tetromino3.row_count)/2,trim=True).draw()
          stddraw.show(0)
       else:
-         stddraw.setPenColor(stddraw.WHITE)
+         if self.gamemode == "tetris":
+            stddraw.setPenColor(stddraw.WHITE)
+         else:
+            stddraw.setPenColor(self.boundary_color)
          stddraw.setFontFamily("Arial")
          stddraw.setFontSize(30)
          stddraw.text(13.75, 11.5, "Game Over!")
@@ -160,12 +178,29 @@ class GameGrid:
          elif diff == 3:
             score += (4800 if len(indexes) == 4 else (1200 if len(indexes) == 3 else (400 if len(indexes) == 2 else 160)))
          
-         for color in reversed(range(0, 256, 15)):
+         if self.gamemode == "tetris":
+            for color in reversed(range(0, 256, 15)):
+               for l in paint_indexes:
+                  for k in range(self.grid_width):
+                     self.tile_matrix[l][k].background_color = Color(color, color, color)
+                     self.tile_matrix[l][k].boundary_color = Color(color, color, color)
+                     self.tile_matrix[l][k].foreground_color = Color(color, color, color)
+               self.display(score, next_tetromino1, next_tetromino2, next_tetromino3, game_over)
+         else:
             for l in paint_indexes:
                for k in range(self.grid_width):
-                  self.tile_matrix[l][k].background_color = Color(color, color, color)
-                  self.tile_matrix[l][k].boundary_color = Color(color, color, color)
+                  self.tile_matrix[l][k].background_color = Color(255,255,255)
+                  self.tile_matrix[l][k].boundary_color = Color(255,255,255)
+                  self.tile_matrix[l][k].foreground_color = Color(255,255,255)
             self.display(score, next_tetromino1, next_tetromino2, next_tetromino3, game_over)
+
+            for color in reversed(range(215, 256, 5)):
+               for l in paint_indexes:
+                  for k in range(self.grid_width):
+                     self.tile_matrix[l][k].background_color = Color(color, color-10, color-20)
+                     self.tile_matrix[l][k].boundary_color = Color(color, color-10, color-20)
+                     self.tile_matrix[l][k].foreground_color = Color(color, color-10, color-20)
+               self.display(score, next_tetromino1, next_tetromino2, next_tetromino3, game_over)
 
          for r in indexes:
             self.tile_matrix = np.delete(self.tile_matrix, (r), axis=0)

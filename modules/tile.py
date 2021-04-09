@@ -1,3 +1,4 @@
+import random
 import sys
 import os
 sys.path.append(os.path.dirname(os.path.realpath(__file__)))
@@ -16,15 +17,100 @@ class Tile:
    font_family, font_size = "Arial", 14
 
    # Constructor that creates a tile at a given position with 2 as its number 
-   def __init__(self, position = Point(0, 0), background_color = Color(151, 178, 199), foreground_color = Color(0, 100, 200), boundary_color = Color(0, 100, 200)): # (0, 0) is the default position
-      # assign the number on the tile
-      self.number = 2
-      # set the colors of the tile
-      self.background_color = background_color # background (tile) color
-      self.foreground_color = foreground_color # foreground (number) color
-      self.boundary_color = boundary_color # boundary (box) color
-      # set the position of the tile as the given position
-      self.position = Point(position.x, position.y)
+   def __init__(self, position=Point(0, 0), gamemode=None, ghost=None, number=None, type=None): # (0, 0) is the default position
+      if gamemode == "tetris":
+         if type == 'I':
+            if ghost:
+               self.background_color = Color(0,0,0)
+               self.boundary_color = Color(43,172,226)
+            else:
+               self.background_color = Color(43,172,226)
+               self.boundary_color = Color(0,122,206)
+         elif type == 'O':
+            if ghost:
+               self.background_color = Color(0,0,0)
+               self.boundary_color = Color(253,225,0)
+            else:
+               self.background_color = Color(253,225,0)
+               self.boundary_color = Color(239,170,0)
+         elif type == 'Z':
+            if ghost:
+               self.background_color = Color(0,0,0)
+               self.boundary_color = Color(238,39,51)
+            else:
+               self.background_color = Color(238,39,51)
+               self.boundary_color = Color(153,0,0)
+         elif type == 'S':
+            if ghost:
+               self.background_color = Color(0,0,0)
+               self.boundary_color = Color(78,183,72)
+            else:
+               self.background_color = Color(78,183,72)
+               self.boundary_color = Color(0,153,0)
+         elif type == 'L':
+            if ghost:
+               self.background_color = Color(0,0,0)
+               self.boundary_color = Color(248,150,34)
+            else:
+               self.background_color = Color(248,150,34)
+               self.boundary_color = Color(180,87,0)
+         elif type == 'J':
+            if ghost:
+               self.background_color = Color(0,0,0)
+               self.boundary_color = Color(0,90,157)
+            else:
+               self.background_color = Color(0,90,157)
+               self.boundary_color = Color(0,0,115)
+         elif type == 'T':
+            if ghost:
+               self.background_color = Color(0,0,0)
+               self.boundary_color = Color(146,43,140)
+            else:
+               self.background_color = Color(146,43,140)
+               self.boundary_color = Color(102,0,102)
+      else:
+         if not ghost:
+            if number is None:
+               self.number = random.randint(1,2) * 2
+            else:
+               self.number = number
+            
+            if self.number == 2:
+               self.background_color = Color(239,230,221)
+            elif self.number == 4:
+               self.background_color = Color(239,227,205)
+            elif self.number == 8:
+               self.background_color = Color(245,179,127)
+            elif self.number == 16:
+               self.background_color = Color(247,152,107)
+            elif self.number == 32:
+               self.background_color = Color(247,124,90)
+            elif self.number == 64:
+               self.background_color = Color(247,93,59)
+            elif self.number == 128:
+               self.background_color = Color(239,205,115)
+            elif self.number == 256:
+               self.background_color = Color(239,206,99)
+            elif self.number == 512:
+               self.background_color = Color(239,198,82)
+            elif self.number == 1024:
+               self.background_color = Color(238,198,66)
+            elif self.number == 2048:
+               self.background_color = Color(239,194,49)
+            else:
+               self.background_color = Color(107,201,16)
+
+            if self.number < 8:
+               self.foreground_color = Color(121,114,104)
+            else:
+               self.foreground_color = Color(255,255,255)
+         else:
+            self.background_color = Color(188,174,161)
+         self.boundary_color = Color(188,174,161)
+
+      self.position = cp.copy(position)
+      self.gamemode = gamemode
+      self.ghost = ghost
 
    # Setter method for the position of the tile
    def set_position(self, position):
@@ -50,8 +136,10 @@ class Tile:
       stddraw.setPenRadius(Tile.boundary_thickness)
       stddraw.square(self.position.x, self.position.y, 0.5)
       stddraw.setPenRadius()  # reset the pen radius to its default value
+
       # draw the number on the tile
-      stddraw.setPenColor(self.foreground_color)
-      stddraw.setFontFamily(Tile.font_family)
-      stddraw.setFontSize(Tile.font_size)
-      stddraw.boldText(self.position.x, self.position.y, str(" "))
+      if self.gamemode == "2048" and self.ghost == False:
+         stddraw.setPenColor(self.foreground_color)
+         stddraw.setFontFamily(Tile.font_family)
+         stddraw.setFontSize(Tile.font_size)
+         stddraw.boldText(self.position.x, self.position.y, str(self.number))
