@@ -111,6 +111,7 @@ def start():
    stddraw.setWindowTitle(WINDOW_TITLE)
    stddraw.setWindowIcon(ICON)
    stddraw.setCloseAction(close)
+   stddraw.setSaveKey('y')
 
    player.volume = INITIAL_MUSIC_VOLUME
    move.volume = INITIAL_EFFECT_VOLUME
