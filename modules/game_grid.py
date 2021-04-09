@@ -179,7 +179,7 @@ class GameGrid:
             elif diff == 3:
                score += (4800 if len(indexes) == 4 else (1200 if len(indexes) == 3 else (400 if len(indexes) == 2 else 160)))
 
-            for color in reversed(range(0, 256, 15)):
+            for color in reversed(range(0, 256, 4)):
                for l in paint_indexes:
                   for k in range(self.grid_width):
                      self.tile_matrix[l][k].background_color = Color(color, color, color)
