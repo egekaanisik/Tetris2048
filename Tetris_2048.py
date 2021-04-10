@@ -305,7 +305,15 @@ def game():
          game_over = grid.update_grid(tiles_to_place)
          # end the main game loop if the game is over
          
+         if gamemode == "2048":
+            score = grid.check_line_chain_merge(score, difficulty)
+            grid.move_floating_tiles()
+
          score = grid.delete_full_lines(clear, score, tetrominos[0], tetrominos[1], tetrominos[2], game_over, difficulty)
+
+         if gamemode == "2048":
+            score = grid.check_line_chain_merge(score, difficulty)
+            grid.move_floating_tiles()
 
          # create the next tetromino to enter the game grid
          # by using the create_tetromino function defined below
@@ -359,8 +367,8 @@ def create_tetromino(grid_height, grid_width):
    global gamemode
 
    # type (shape) of the tetromino is determined randomly
-   tetromino_types = [ 'I', 'O', 'Z', 'S', 'L', 'J', 'T' ]
-   #tetromino_types = [ 'I' ]
+   #tetromino_types = [ 'I', 'O', 'Z', 'S', 'L', 'J', 'T' ]
+   tetromino_types = [ 'L' ]
    random_index = random.randint(0, len(tetromino_types) - 1)
    random_type = tetromino_types[random_index]
    n = (4 if random_type == 'I' else (2 if random_type == 'O' else 3))

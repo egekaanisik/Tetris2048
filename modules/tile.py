@@ -76,7 +76,7 @@ class Tile:
             else:
                num = number
             
-            self.changeNumber(num)
+            self.change_number(num)
 
             self.boundary_color = Color(188,174,161)
          else:
@@ -101,7 +101,7 @@ class Tile:
    def move(self, dx, dy):
       self.position.translate(dx, dy)
 
-   def changeNumber(self, number):
+   def change_number(self, number):
       self.number = number
       if self.number == 2:
          self.background_color = Color(239,230,221)

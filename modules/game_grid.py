@@ -209,6 +209,92 @@ class GameGrid:
 
       return score
 
+   def check_line_chain_merge(self, score, diff):
+      matrix = self.tile_matrix.copy()
+      rotated = np.rot90(matrix)
+
+      for i in range(len(rotated)):
+         while True:
+            have_dupes = False
+            for j in range(len(rotated[i]) - 1):
+               if rotated[i][j] != None and rotated[i][j+1] != None:
+                  if rotated[i][j].number == rotated[i][j+1].number:
+                     have_dupes = True
+                     rotated[i][j].change_number(rotated[i][j].number*2)
+                     score += rotated[i][j].number * (diff+1)
+                     line = np.delete(rotated[i], [j+1], axis=0)
+                     line = np.append(line, [None], axis=0)
+
+                     for l in range(j+1, len(rotated[i])):
+                        if line[l] != None:
+                           line[l].move(0, -1)
+                     rotated[i] = line
+                     break
+            if not have_dupes:
+               break
+      self.tile_matrix = np.rot90(rotated, -1)
+      return score
+
+   def move_floating_tiles(self):
+      print(self.tile_matrix[0])
+      for i in range(1, len(self.tile_matrix)):
+         for j in range(len(self.tile_matrix[i])):
+            if self.tile_matrix[i][j] != None:
+               if i == len(self.tile_matrix)-1 and j == 0:
+                  if self.tile_matrix[i][j+1] == None and self.tile_matrix[i-1][j] == None:
+                     index = 1
+                     while True:
+                        if self.tile_matrix[i-index][j] == None:
+                           self.tile_matrix[i-(index-1)][j].move(0, -1)
+                           index += 1
+                        else:
+                           break
+               elif i == len(self.tile_matrix)-1 and j == len(self.tile_matrix[i])-1:
+                  if self.tile_matrix[i][j-1] == None and self.tile_matrix[i-1][j] == None:
+                     index = 1
+                     while True:
+                        if self.tile_matrix[i-index][j] == None:
+                           self.tile_matrix[i-(index-1)][j].move(0, -1)
+                           index += 1
+                        else:
+                           break
+               elif i == len(self.tile_matrix)-1:
+                  if self.tile_matrix[i][j-1] == None and self.tile_matrix[i][j+1] == None and self.tile_matrix[i-1][j] == None:
+                     index = 1
+                     while True:
+                        if self.tile_matrix[i-index][j] == None:
+                           self.tile_matrix[i-(index-1)][j].move(0, -1)
+                           index += 1
+                        else:
+                           break
+               elif j == 0:
+                  if self.tile_matrix[i+1][j] == None and self.tile_matrix[i-1][j] == None and self.tile_matrix[i][j+1] == None:
+                     index = 1
+                     while True:
+                        if self.tile_matrix[i-index][j] == None:
+                           self.tile_matrix[i-(index-1)][j].move(0, -1)
+                           index += 1
+                        else:
+                           break
+               elif j == len(self.tile_matrix)-1:
+                  if self.tile_matrix[i+1][j] == None and self.tile_matrix[i-1][j] == None and self.tile_matrix[i][j-1] == None:
+                     index = 1
+                     while True:
+                        if self.tile_matrix[i-index][j] == None:
+                           self.tile_matrix[i-(index-1)][j].move(0, -1)
+                           index += 1
+                        else:
+                           break
+               else:
+                  if self.tile_matrix[i-1][j] == None and self.tile_matrix[i+1][j] == None and self.tile_matrix[i][j-1] == None and self.tile_matrix[i][j+1] == None:
+                     index = 1
+                     while True:
+                        if self.tile_matrix[i-index][j] == None:
+                           self.tile_matrix[i-(index-1)][j].move(0, -1)
+                           index += 1
+                        else:
+                           break
+               
    # Method for updating the game grid by placing the given tiles of a stopped 
    # tetromino and checking if the game is over due to having tiles above the 
    # topmost game grid row. The method returns True when the game is over and
