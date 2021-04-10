@@ -60,10 +60,10 @@ class GameGrid:
          else:
             stddraw.setPenColor(self.boundary_color)
          stddraw.setFontFamily("Arial")
-         stddraw.setFontSize(30)
+         stddraw.setFontSize(24)
          stddraw.text(13.75, 19, "Score")
          stddraw.boldText(13.75, 17.75, str(score))
-         stddraw.text(13.75, 15, "Next")
+         stddraw.text(13.75, 15, "Upcoming")
          stddraw.text(13.75, 14, "Tetrominoes")
 
          stddraw.setPenColor(self.boundary_color)
@@ -86,11 +86,11 @@ class GameGrid:
          else:
             stddraw.setPenColor(self.boundary_color)
          stddraw.setFontFamily("Arial")
-         stddraw.setFontSize(30)
+         stddraw.setFontSize(24)
          stddraw.text(13.75, 11.5, "Game Over!")
          stddraw.text(13.75, 9.5, "Final Score:")
          stddraw.boldText(13.75, 8.5, str(score))
-         stddraw.setFontSize(20)
+         stddraw.setFontSize(16)
          stddraw.text(13.75,2,"Press R to")
          #stddraw.boldText(14.5,2.5,"Enter")
          stddraw.text(13.75,1.5,"restart the game,")

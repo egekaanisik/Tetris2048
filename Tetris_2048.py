@@ -72,8 +72,8 @@ CLEAR_DIR = DIR + "/sounds/clear.wav"
 MENU_DIR = DIR + "/sounds/menu.wav"
 GRID_H = 20
 GRID_W = 12
-CANVAS_H = 40 * GRID_H + 1
-CANVAS_W = 40 * GRID_W + 160
+CANVAS_H = 35 * GRID_H + 1
+CANVAS_W = 35 * GRID_W + 140
 WINDOW_TITLE = "OUR PROJECT"
 INITIAL_MUSIC_VOLUME = 5
 INITIAL_EFFECT_VOLUME = 25
@@ -198,13 +198,13 @@ def game():
          # if the left arrow key has been pressed
          if "left" in keys_typed or "a" in keys_typed:
             # move the tetromino left by one
-            can_left = current_tetromino.move("left", grid, 1, delay=100)
+            can_left = current_tetromino.move("left", grid, 1, delay=150)
             if can_left:
                move.play()
          # if the right arrow key has been pressed
          if "right" in keys_typed or "d" in keys_typed:
             # move the tetromino right by one
-            can_right = current_tetromino.move("right", grid, 1, delay=100)
+            can_right = current_tetromino.move("right", grid, 1, delay=150)
             if can_right:
                move.play()
          # if the down arrow key has been pressed
