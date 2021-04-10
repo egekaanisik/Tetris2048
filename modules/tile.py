@@ -77,8 +77,6 @@ class Tile:
                num = number
             
             self.change_number(num)
-
-            self.boundary_color = Color(188,174,161)
          else:
             self.background_color = Color(198,184,171)
             self.boundary_color = Color(158,138,120) 
@@ -133,9 +131,13 @@ class Tile:
       else:
          self.foreground_color = Color(255,255,255)
 
+      self.boundary_color = Color(188,174,161)
+
    # Method for drawing the tile
    def draw(self):
       # draw the tile as a filled square
+      if self.background_color == None or self.boundary_color == None:
+         return
       stddraw.setPenColor(self.background_color)
       stddraw.filledSquare(self.position.x, self.position.y, 0.5)
       # draw the bounding box of the tile as a square

@@ -39,7 +39,7 @@ class GameGrid:
       self.box_thickness = 8 * self.line_thickness
 
    # Method used for displaying the game grid
-   def display(self, score, next_tetromino1, next_tetromino2, next_tetromino3, game_over):
+   def display(self, score, next_tetromino1, next_tetromino2, next_tetromino3, game_over, delay=0):
       # clear the background canvas to empty_cell_color
       stddraw.clear(self.background_color)
       # draw the game grid
@@ -79,7 +79,7 @@ class GameGrid:
          next_tetromino1.copy(blcx=(14.25 - (next_tetromino1.column_count/2)),blcy=9.5 + (4-next_tetromino1.row_count)/2,trim=True).draw()
          next_tetromino2.copy(blcx=(14.25 - (next_tetromino2.column_count/2)),blcy=5 + (4-next_tetromino2.row_count)/2,trim=True).draw()
          next_tetromino3.copy(blcx=(14.25 - (next_tetromino3.column_count/2)),blcy=0.5 + (4-next_tetromino3.row_count)/2,trim=True).draw()
-         stddraw.show(0)
+         stddraw.show(delay)
       else:
          if self.gamemode == "tetris":
             stddraw.setPenColor(stddraw.WHITE)
@@ -97,7 +97,7 @@ class GameGrid:
          stddraw.text(13.75,1,"or press Enter to")
          stddraw.text(13.75,0.5,"return to the")
          stddraw.text(13.75,0,"main manu.")
-         stddraw.show(0)
+         stddraw.show(delay)
          
    # Method for drawing the cells and the lines of the grid
    def draw_grid(self): 
@@ -209,7 +209,7 @@ class GameGrid:
 
       return score
 
-   def check_line_chain_merge(self, score, diff):
+   def check_line_chain_merge(self, score, diff, merge, next_tetromino1, next_tetromino2, next_tetromino3, game_over):
       matrix = self.tile_matrix.copy()
       rotated = np.rot90(matrix)
 
@@ -219,81 +219,80 @@ class GameGrid:
             for j in range(len(rotated[i]) - 1):
                if rotated[i][j] != None and rotated[i][j+1] != None:
                   if rotated[i][j].number == rotated[i][j+1].number:
+                     rotated[i][j].background_color = Color(255,255,255)
+                     rotated[i][j].boundary_color = Color(255,255,255)
+                     rotated[i][j].foreground_color = Color(255,255,255)
+                     rotated[i][j+1].background_color = Color(255,255,255)
+                     rotated[i][j+1].boundary_color = Color(255,255,255)
+                     rotated[i][j+1].foreground_color = Color(255,255,255)
+                     self.tile_matrix = np.rot90(rotated, -1)
+                     self.display(score, next_tetromino1, next_tetromino2, next_tetromino3, game_over)
+                     
+                     for color in reversed(range(215, 256, 5)):
+                        rotated[i][j].background_color = Color(color, color-10, color-20)
+                        rotated[i][j].boundary_color = Color(color, color-10, color-20)
+                        rotated[i][j].foreground_color = Color(color, color-10, color-20)
+                        rotated[i][j+1].background_color = Color(color, color-10, color-20)
+                        rotated[i][j+1].boundary_color = Color(color, color-10, color-20)
+                        rotated[i][j+1].foreground_color = Color(color, color-10, color-20)
+                        self.tile_matrix = np.rot90(rotated, -1)
+                        self.display(score, next_tetromino1, next_tetromino2, next_tetromino3, game_over)
+
+                     rotated[i][j+1].background_color = None
+                     rotated[i][j].boundary_color = None
+                     rotated[i][j].foreground_color = None
+                     merge.play()
                      have_dupes = True
                      rotated[i][j].change_number(rotated[i][j].number*2)
                      score += rotated[i][j].number * (diff+1)
-                     line = np.delete(rotated[i], [j+1], axis=0)
-                     line = np.append(line, [None], axis=0)
+                     rotated[i] = np.append(np.delete(rotated[i], [j+1], axis=0), [None], axis=0)
+                     self.tile_matrix = np.rot90(rotated, -1)
+                     self.display(score, next_tetromino1, next_tetromino2, next_tetromino3, game_over)
 
                      for l in range(j+1, len(rotated[i])):
-                        if line[l] != None:
-                           line[l].move(0, -1)
-                     rotated[i] = line
+                        if rotated[i][l] != None:
+                           rotated[i][l].move(0, -1)
+                     self.tile_matrix = np.rot90(rotated, -1)
+                     self.display(score, next_tetromino1, next_tetromino2, next_tetromino3, game_over, delay=150)
                      break
             if not have_dupes:
                break
-      self.tile_matrix = np.rot90(rotated, -1)
       return score
 
-   def move_floating_tiles(self):
-      print(self.tile_matrix[0])
+   def move_floating_tiles(self, score, next_tetromino1, next_tetromino2, next_tetromino3, game_over):
       for i in range(1, len(self.tile_matrix)):
          for j in range(len(self.tile_matrix[i])):
             if self.tile_matrix[i][j] != None:
                if i == len(self.tile_matrix)-1 and j == 0:
                   if self.tile_matrix[i][j+1] == None and self.tile_matrix[i-1][j] == None:
-                     index = 1
-                     while True:
-                        if self.tile_matrix[i-index][j] == None:
-                           self.tile_matrix[i-(index-1)][j].move(0, -1)
-                           index += 1
-                        else:
-                           break
+                     self.move_tile_down(i, j, score, next_tetromino1, next_tetromino2, next_tetromino3, game_over)
                elif i == len(self.tile_matrix)-1 and j == len(self.tile_matrix[i])-1:
                   if self.tile_matrix[i][j-1] == None and self.tile_matrix[i-1][j] == None:
-                     index = 1
-                     while True:
-                        if self.tile_matrix[i-index][j] == None:
-                           self.tile_matrix[i-(index-1)][j].move(0, -1)
-                           index += 1
-                        else:
-                           break
+                     self.move_tile_down(i, j, score, next_tetromino1, next_tetromino2, next_tetromino3, game_over)
                elif i == len(self.tile_matrix)-1:
                   if self.tile_matrix[i][j-1] == None and self.tile_matrix[i][j+1] == None and self.tile_matrix[i-1][j] == None:
-                     index = 1
-                     while True:
-                        if self.tile_matrix[i-index][j] == None:
-                           self.tile_matrix[i-(index-1)][j].move(0, -1)
-                           index += 1
-                        else:
-                           break
+                     self.move_tile_down(i, j, score, next_tetromino1, next_tetromino2, next_tetromino3, game_over)
                elif j == 0:
                   if self.tile_matrix[i+1][j] == None and self.tile_matrix[i-1][j] == None and self.tile_matrix[i][j+1] == None:
-                     index = 1
-                     while True:
-                        if self.tile_matrix[i-index][j] == None:
-                           self.tile_matrix[i-(index-1)][j].move(0, -1)
-                           index += 1
-                        else:
-                           break
+                     self.move_tile_down(i, j, score, next_tetromino1, next_tetromino2, next_tetromino3, game_over)
                elif j == len(self.tile_matrix)-1:
                   if self.tile_matrix[i+1][j] == None and self.tile_matrix[i-1][j] == None and self.tile_matrix[i][j-1] == None:
-                     index = 1
-                     while True:
-                        if self.tile_matrix[i-index][j] == None:
-                           self.tile_matrix[i-(index-1)][j].move(0, -1)
-                           index += 1
-                        else:
-                           break
+                     self.move_tile_down(i, j, score, next_tetromino1, next_tetromino2, next_tetromino3, game_over)
                else:
                   if self.tile_matrix[i-1][j] == None and self.tile_matrix[i+1][j] == None and self.tile_matrix[i][j-1] == None and self.tile_matrix[i][j+1] == None:
-                     index = 1
-                     while True:
-                        if self.tile_matrix[i-index][j] == None:
-                           self.tile_matrix[i-(index-1)][j].move(0, -1)
-                           index += 1
-                        else:
-                           break
+                     self.move_tile_down(i, j, score, next_tetromino1, next_tetromino2, next_tetromino3, game_over)
+
+   def move_tile_down(self, i, j, score, next_tetromino1, next_tetromino2, next_tetromino3, game_over):
+      index = 0
+      while True:
+         if self.tile_matrix[i-(index+1)][j] == None and i-index != 0:
+            self.tile_matrix[i-index][j].move(0, -1)
+            self.tile_matrix[i-(index+1)][j] = self.tile_matrix[i-index][j]
+            self.tile_matrix[i-index][j] = None
+            self.display(score, next_tetromino1, next_tetromino2, next_tetromino3, game_over, delay=300)
+            index += 1
+         else:
+            break
                
    # Method for updating the game grid by placing the given tiles of a stopped 
    # tetromino and checking if the game is over due to having tiles above the 

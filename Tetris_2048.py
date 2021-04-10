@@ -70,6 +70,7 @@ ROTATE_DIR = DIR + "/sounds/rotate.wav"
 PLACE_DIR = DIR + "/sounds/place.wav"
 CLEAR_DIR = DIR + "/sounds/clear.wav"
 MENU_DIR = DIR + "/sounds/menu.wav"
+MERGE_DIR = DIR + "/sounds/merge.wav"
 GRID_H = 20
 GRID_W = 12
 CANVAS_H = 35 * GRID_H + 1
@@ -85,6 +86,7 @@ rotate = AudioPlayer(ROTATE_DIR)
 place = AudioPlayer(PLACE_DIR)
 clear = AudioPlayer(CLEAR_DIR)
 menu = AudioPlayer(MENU_DIR)
+merge = AudioPlayer(MERGE_DIR)
 
 slider1location = None
 slider2location = None
@@ -98,6 +100,7 @@ gamemode = None
 # Main function where this program starts execution
 def start():
    global gamemode
+   global merge
    global player
    global move
    global rotate
@@ -119,6 +122,7 @@ def start():
    place.volume = INITIAL_EFFECT_VOLUME
    clear.volume = INITIAL_EFFECT_VOLUME
    menu.volume = INITIAL_EFFECT_VOLUME
+   merge.volume = INITIAL_EFFECT_VOLUME
 
    player.play(loop=True)
 
@@ -138,6 +142,7 @@ def game():
    global rotate
    global place
    global clear
+   global merge
 
    stddraw.setKeyRepeat(1)
    stddraw.clearKeysTyped()
@@ -306,14 +311,14 @@ def game():
          # end the main game loop if the game is over
          
          if gamemode == "2048":
-            score = grid.check_line_chain_merge(score, difficulty)
-            grid.move_floating_tiles()
+            score = grid.check_line_chain_merge(score, difficulty, merge, tetrominos[0], tetrominos[1], tetrominos[2], game_over)
+            grid.move_floating_tiles(score, tetrominos[0], tetrominos[1], tetrominos[2], game_over)
 
          score = grid.delete_full_lines(clear, score, tetrominos[0], tetrominos[1], tetrominos[2], game_over, difficulty)
 
          if gamemode == "2048":
-            score = grid.check_line_chain_merge(score, difficulty)
-            grid.move_floating_tiles()
+            score = grid.check_line_chain_merge(score, difficulty, merge, tetrominos[0], tetrominos[1], tetrominos[2], game_over)
+            grid.move_floating_tiles(score, tetrominos[0], tetrominos[1], tetrominos[2], game_over)
 
          # create the next tetromino to enter the game grid
          # by using the create_tetromino function defined below
@@ -348,6 +353,7 @@ def close():
    global place
    global clear
    global menu
+   global merge
 
    if os.path.exists(TEMP_IMAGE):
       os.remove(TEMP_IMAGE)
@@ -358,6 +364,7 @@ def close():
    place.close()
    clear.close()
    menu.close()
+   merge.close()
 
    ctypes.windll.user32.ShowWindow(ctypes.windll.kernel32.GetConsoleWindow(), 1)
    sys.exit()
@@ -390,6 +397,7 @@ def display_game_menu():
    global place
    global clear
    global menu
+   global merge
 
    stddraw.clearKeysTyped()
    stddraw.clearMousePresses()
@@ -500,6 +508,7 @@ def display_game_menu():
             place.volume = round(sound_percent)
             clear.volume = round(sound_percent)
             menu.volume = round(sound_percent)
+            merge.volume = round(sound_percent)
          elif diffHold:
             if mouse_x >= slider_start and mouse_x <= slider_end:
                if mouse_x < slider_start + (slider_w / 6) * 1:
@@ -637,6 +646,7 @@ def display_pause_menu():
    global place
    global clear
    global menu
+   global merge
 
    stddraw.clearMousePresses()
    stddraw.setKeyRepeat()
@@ -744,6 +754,7 @@ def display_pause_menu():
             place.volume = round(sound_percent)
             clear.volume = round(sound_percent)
             menu.volume = round(sound_percent)
+            merge.volume = round(sound_percent)
          else:
             if mouse_y >= 4.5 and mouse_y < 4.55 + slider_h:
                musicHold = True
