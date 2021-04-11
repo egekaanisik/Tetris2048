@@ -115,6 +115,7 @@ def start():
    stddraw.setWindowIcon(ICON)
    stddraw.setCloseAction(close)
    stddraw.setSaveKey('y')
+   stddraw.enableDoubleBuffering()
 
    player.volume = INITIAL_MUSIC_VOLUME
    move.volume = INITIAL_EFFECT_VOLUME
