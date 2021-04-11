@@ -270,35 +270,22 @@ class GameGrid:
       return score
 
    def move_floating_tiles(self, score, next_tetromino1, next_tetromino2, next_tetromino3, game_over):
-      have_floating = False
-      for i in range(1, len(self.tile_matrix)):
-         for j in range(len(self.tile_matrix[i])):
-            if self.tile_matrix[i][j] != None:
-               if i == len(self.tile_matrix)-1 and j == 0:
-                  if self.tile_matrix[i][j+1] == None and self.tile_matrix[i-1][j] == None:
-                     have_floating = True
-                     self.move_tile_down(i, j, score, next_tetromino1, next_tetromino2, next_tetromino3, game_over)
-               elif i == len(self.tile_matrix)-1 and j == len(self.tile_matrix[i])-1:
-                  if self.tile_matrix[i][j-1] == None and self.tile_matrix[i-1][j] == None:
-                     have_floating = True
-                     self.move_tile_down(i, j, score, next_tetromino1, next_tetromino2, next_tetromino3, game_over)
-               elif i == len(self.tile_matrix)-1:
-                  if self.tile_matrix[i][j-1] == None and self.tile_matrix[i][j+1] == None and self.tile_matrix[i-1][j] == None:
-                     have_floating = True
-                     self.move_tile_down(i, j, score, next_tetromino1, next_tetromino2, next_tetromino3, game_over)
-               elif j == 0:
-                  if self.tile_matrix[i+1][j] == None and self.tile_matrix[i-1][j] == None and self.tile_matrix[i][j+1] == None:
-                     have_floating = True
-                     self.move_tile_down(i, j, score, next_tetromino1, next_tetromino2, next_tetromino3, game_over)
-               elif j == len(self.tile_matrix[i])-1:
-                  if self.tile_matrix[i+1][j] == None and self.tile_matrix[i-1][j] == None and self.tile_matrix[i][j-1] == None:
-                     have_floating = True
-                     self.move_tile_down(i, j, score, next_tetromino1, next_tetromino2, next_tetromino3, game_over)
-               else:
-                  if self.tile_matrix[i-1][j] == None and self.tile_matrix[i+1][j] == None and self.tile_matrix[i][j-1] == None and self.tile_matrix[i][j+1] == None:
-                     have_floating = True
-                     self.move_tile_down(i, j, score, next_tetromino1, next_tetromino2, next_tetromino3, game_over)
-      return have_floating
+      arr = self.binarize_tile_matrix()
+      array, labels = self.label_array(arr)
+      first_line_removed = np.delete(array, 0, axis=0)
+      base_line_removed = np.delete(first_line_removed, 0, axis=0)
+      last_line_removed = np.delete(base_line_removed, base_line_removed.shape[0]-1, axis=0)
+      first_column_removed = np.delete(last_line_removed, 0, axis=1)
+      trimmed = np.delete(first_column_removed, first_column_removed.shape[1]-1, axis=1)
+
+      (nrows, ncols) = trimmed.shape
+
+      for i in range(nrows):
+         for j in range(ncols):
+            if trimmed[i][j] != 1 and trimmed[i][j] != 0:
+               self.move_tile_down(i, j, score, next_tetromino1, next_tetromino2, next_tetromino3, game_over)
+
+      return True if len(labels) > 1 else False
 
    def move_tile_down(self, i, j, score, next_tetromino1, next_tetromino2, next_tetromino3, game_over):
       index = 0
@@ -307,7 +294,7 @@ class GameGrid:
             self.tile_matrix[i-index][j].move(0, -1)
             self.tile_matrix[i-(index+1)][j] = self.tile_matrix[i-index][j]
             self.tile_matrix[i-index][j] = None
-            self.display(score, next_tetromino1, next_tetromino2, next_tetromino3, game_over, delay=150)
+            self.display(score, next_tetromino1, next_tetromino2, next_tetromino3, game_over, delay=50)
             index += 1
          else:
             break
@@ -331,3 +318,102 @@ class GameGrid:
                   self.game_over = True
       # return the game_over flag
       return self.game_over
+
+   def binarize_tile_matrix(self):
+      (nrows, ncols) = self.tile_matrix.shape
+      arr = np.full((nrows+3, ncols+2), 0)
+      arr[1] = np.full((1,ncols+2), 1)
+      arr[1][0] = 0
+      arr[1][ncols+1] = 0
+      for i in range(nrows):
+         for j in range(ncols):
+            if self.tile_matrix[i][j] != None:
+               arr[i+2][j+1] = 1
+      return arr
+
+   def label_array(self, binarized):
+      max_label = int(10000)
+      nrow = binarized.shape[0]
+      ncol = binarized.shape[1]
+
+      # Creates a new array that will hold the labels and that has the same shape with the binarized array
+      im = np.full(shape=(nrow,ncol), dtype = int, fill_value=max_label)
+
+      # Creates an label holder array
+      a = np.arange(0,max_label, dtype = int)
+
+      k = 0
+      # Starts labeling by checking connected pixels
+      for i in range(1, nrow - 1):
+         for j in range(1, ncol - 1):
+            # Gets the related pixels
+            c   = binarized[i][j]
+            label_u  = im[i-1][j]
+            label_l  = im[i][j-1]
+
+            # Checks the pixel for being white
+            if c == 1:
+               # Gets the minimum labeled pixel around the current one
+               min_label = min(label_u, label_l)
+                    
+               # If the minimum labeled pixel has the maximum label value, give it a temp value
+               # Else, update the array with the label
+               if min_label == max_label:  # u = l = 0
+                  k += 1
+                  im[i][j] = k
+               else:
+                  im[i][j] = min_label
+                  if min_label != label_u and label_u != max_label:
+                     self.update_labeled_array(a, min_label, label_u)
+
+                  if min_label != label_l and label_l != max_label:
+                     self.update_labeled_array(a, min_label, label_l)
+
+
+      # Initializes an array for labels
+      labels = []
+
+      # Final reduction in the label array, also adds the labels into the label list
+      for i in range(k+1):
+         index = i
+         while a[index] != index:
+            index = a[index]
+         a[i] = a[index]
+         labels.append(a[i])
+
+      # Removes duplicates drom the list
+      labels = list(dict.fromkeys(labels))
+      labels.pop(0)
+   
+      # Second pass to resolve labels and give every cell the label colors
+      for i in range(nrow):
+         for j in range(ncol):
+            if binarized[i][j] == 1 and im[i][j] != max_label:
+                im[i][j] = a[im[i][j]]
+            else:
+                im[i][j] = 0
+
+      # Returns the labeled array, label list, and the colored image
+      return im, labels
+
+   def update_labeled_array(self, a, label1, label2):
+      index = lab_small = lab_large = 0
+      if label1 < label2 :
+         lab_small = label1
+         lab_large = label2
+      else:
+         lab_small = label2
+         lab_large = label1
+      index = lab_large
+      while index > 1 and a[index] != lab_small:
+         if a[index] < lab_small:
+            temp = index
+            index = lab_small
+            lab_small = a[temp]
+         elif a[index] > lab_small:
+            temp = a[index]
+            a[index] = lab_small
+            index = temp
+         else:
+            break
+      
