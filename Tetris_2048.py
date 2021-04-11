@@ -446,14 +446,14 @@ def display_game_menu():
    stddraw.setFontSize(20)
    # dimensions of the start game button
    # dimensions of the start game button
-   button_w, button_h = (GRID_W - 1.5), 2
-   slider_w, slider_h = (GRID_W - 2), 0.2
+   button_w, button_h = GRID_W, 2.30
+   slider_w, slider_h = GRID_W, 0.2
    # coordinates of the bottom left corner of the start game button 
-   button_blc_x, button_blc_y = img_center_x-button_w/2, 4 # Tetris Button 
-   button3_blc_x, button3_blc_y = img_center_x-button_w/2 , 1 # Tetris 2048 Button
+   button_blc_x, button_blc_y = img_center_x-button_w/2, 3.875 # Tetris Button 
+   button3_blc_x, button3_blc_y = img_center_x-button_w/2, 0.875 # Tetris 2048 Button
    help_x, help_y = img_center_x + 7.5, img_center_x + 11.5
 
-   slider_start = button3_blc_x+((button_w-slider_w)/2)
+   slider_start = img_center_x-button_w/2
    slider_end = slider_start+slider_w
 
    if slider1location == None and slider2location == None and slider3location == None:
@@ -530,11 +530,11 @@ def display_game_menu():
                slider3location = slider_end
                difficulty = 3
          else:
-            if mouse_y >= 10.5 and mouse_y < 10.55 + slider_h:
+            if mouse_y >= 10.52 and mouse_y < 10.54 + slider_h and mouse_x >= slider_start and mouse_x <= slider_end:
                musicHold = True
-            elif mouse_y >= 9 and mouse_y < 9.05 + slider_h:
+            elif mouse_y >= 9.02 and mouse_y < 9.04 + slider_h and mouse_x >= slider_start and mouse_x <= slider_end:
                soundHold = True
-            elif mouse_y >= 7.5 and mouse_y < 7.55 + slider_h:
+            elif mouse_y >= 7.52 and mouse_y < 7.54 + slider_h and mouse_x >= slider_start and mouse_x <= slider_end:
                diffHold = True
       else:
          musicHold = False
@@ -564,7 +564,7 @@ def display_game_menu():
          if not played:
             menu.play()
             played = True
-      elif mouse_x >= help_x - 0.5 and mouse_x <= help_x + 0.5 and mouse_y >= help_y - 0.5 and mouse_y <= help_y + 0.5:
+      elif mouse_x >= help_x - 0.6 and mouse_x <= help_x + 0.6 and mouse_y >= help_y - 0.6 and mouse_y <= help_y + 0.6:
          if not played:
             menu.play()
             played = True
@@ -627,7 +627,7 @@ def display_controls(background_color):
       mouse_x = stddraw.mouseMotionX()
       mouse_y = stddraw.mouseMotionY()
 
-      if not (mouse_x >= help_x - 0.5 and mouse_x <= help_x + 0.5 and mouse_y >= help_y - 0.5 and mouse_y <= help_y + 0.5):
+      if not (mouse_x >= help_x - 0.6 and mouse_x <= help_x + 0.6 and mouse_y >= help_y - 0.6 and mouse_y <= help_y + 0.6):
          stddraw.clearKeysTyped()
          stddraw.clearMousePresses()
          break
@@ -684,9 +684,9 @@ def display_pause_menu():
    stddraw.setFontFamily("Arial")
 
    # dimensions of the slider
-   slider_w, slider_h = (GRID_W - 2), 0.2
+   slider_w, slider_h = GRID_W, 0.2
 
-   slider_start = img_center_x-(GRID_W - 1.5)/2+(((GRID_W - 1.5)-slider_w)/2)
+   slider_start = img_center_x-GRID_W/2
    slider_end = slider_start+slider_w
    
    volume_percent = player.volume
@@ -756,15 +756,15 @@ def display_pause_menu():
             menu.volume = round(sound_percent)
             merge.volume = round(sound_percent)
          else:
-            if mouse_y >= 4.5 and mouse_y < 4.55 + slider_h:
+            if mouse_y >= 4.52 and mouse_y < 4.54 + slider_h and mouse_x >= slider_start and mouse_x <= slider_end:
                musicHold = True
-            elif mouse_y >= 3 and mouse_y < 3.05 + slider_h:
+            elif mouse_y >= 3.02 and mouse_y < 3.04 + slider_h and mouse_x >= slider_start and mouse_x <= slider_end:
                soundHold = True
       else:
          musicHold = False
          soundHold = False
 
-      if mouse_x >= help_x - 0.5 and mouse_x <= help_x + 0.5 and mouse_y >= help_y - 0.5 and mouse_y <= help_y + 0.5:
+      if mouse_x >= help_x - 0.6 and mouse_x <= help_x + 0.6 and mouse_y >= help_y - 0.6 and mouse_y <= help_y + 0.6:
          if not played:
             menu.play()
             played = True
