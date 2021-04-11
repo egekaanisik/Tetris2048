@@ -254,6 +254,7 @@ class GameGrid:
                            rotated[i][l].move(0, -1)
                      self.tile_matrix = np.rot90(rotated, -1)
                      self.display(score, next_tetromino1, next_tetromino2, next_tetromino3, game_over, delay=150)
+                     self.move_floating_tiles(score, next_tetromino1, next_tetromino2, next_tetromino3, game_over)
                      break
             if not have_dupes:
                break
@@ -289,7 +290,7 @@ class GameGrid:
             self.tile_matrix[i-index][j].move(0, -1)
             self.tile_matrix[i-(index+1)][j] = self.tile_matrix[i-index][j]
             self.tile_matrix[i-index][j] = None
-            self.display(score, next_tetromino1, next_tetromino2, next_tetromino3, game_over, delay=300)
+            self.display(score, next_tetromino1, next_tetromino2, next_tetromino3, game_over, delay=150)
             index += 1
          else:
             break

@@ -312,13 +312,11 @@ def game():
          
          if gamemode == "2048":
             score = grid.check_line_chain_merge(score, difficulty, merge, tetrominos[0], tetrominos[1], tetrominos[2], game_over)
-            grid.move_floating_tiles(score, tetrominos[0], tetrominos[1], tetrominos[2], game_over)
 
          score = grid.delete_full_lines(clear, score, tetrominos[0], tetrominos[1], tetrominos[2], game_over, difficulty)
 
          if gamemode == "2048":
             score = grid.check_line_chain_merge(score, difficulty, merge, tetrominos[0], tetrominos[1], tetrominos[2], game_over)
-            grid.move_floating_tiles(score, tetrominos[0], tetrominos[1], tetrominos[2], game_over)
 
          # create the next tetromino to enter the game grid
          # by using the create_tetromino function defined below
