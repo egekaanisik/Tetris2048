@@ -143,6 +143,7 @@ class Tetromino:
    def rotate(self, grid):
       not_rotated_copy_matrix = self.tile_matrix.copy()
       copy_matrix = np.rot90(self.tile_matrix.copy())
+      new_tile_matrix = np.full((len(copy_matrix), len(copy_matrix)), None)
       rightmost = 0
       leftmost = 0
       bottommost = 0
@@ -158,7 +159,7 @@ class Tetromino:
                if grid.is_occupied(position.y, position.x):
                   return False
 
-               copy_matrix[i][j].set_position(position)
+               new_tile_matrix[i][j] = copy_matrix[i][j].copy(position)
 
                if position.x > self.grid_width - 1 and position.x - (self.grid_width - 1) > rightmost:
                   rightmost = position.x - (self.grid_width - 1)
@@ -168,7 +169,7 @@ class Tetromino:
                if position.y < bottommost:
                   bottommost = position.y
       
-      self.tile_matrix = copy_matrix
+      self.tile_matrix = new_tile_matrix
 
       if bottommost < 0:
          success = self.move("up", grid, -bottommost)
@@ -191,10 +192,10 @@ class Tetromino:
             self.tile_matrix = not_rotated_copy_matrix
             return False
       
-      for i in range(len(copy_matrix)):
-         for j in range(len(copy_matrix)):
-            if copy_matrix[i][j] != None:
-               pos = copy_matrix[i][j].get_position()
+      for i in range(len(new_tile_matrix)):
+         for j in range(len(new_tile_matrix)):
+            if new_tile_matrix[i][j] != None:
+               pos = new_tile_matrix[i][j].get_position()
 
                if pos.x not in columns:
                   columns.append(pos.x)

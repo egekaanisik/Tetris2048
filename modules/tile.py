@@ -68,6 +68,7 @@ class Tile:
             else:
                self.background_color = Color(146,43,140)
                self.boundary_color = Color(102,0,102)
+         self.number = None
       else:
          if not ghost:
             num = None
@@ -84,6 +85,7 @@ class Tile:
       self.position = cp.copy(position)
       self.gamemode = gamemode
       self.ghost = ghost
+      self.type = type
 
    # Setter method for the position of the tile
    def set_position(self, position):
@@ -152,3 +154,9 @@ class Tile:
          stddraw.setFontFamily(Tile.font_family)
          stddraw.setFontSize(Tile.font_size)
          stddraw.boldText(self.position.x, self.position.y, str(self.number))
+   
+   def copy(self, position=None):
+      if position == None:
+         return Tile(self.position, self.gamemode, self.ghost, self.number, self.type)
+      else:
+         return Tile(position, self.gamemode, self.ghost, self.number, self.type)
