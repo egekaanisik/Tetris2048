@@ -197,6 +197,10 @@ class GameGrid:
                      self.tile_matrix[l][k].boundary_color = Color(color, color-10, color-20)
                      self.tile_matrix[l][k].foreground_color = Color(color, color-10, color-20)
                self.display(score, next_tetromino1, next_tetromino2, next_tetromino3, game_over)
+            
+            for l in paint_indexes:
+                  for k in range(self.grid_width):
+                     self.tile_matrix[l][k].background_color = None
 
          for r in indexes:
             self.tile_matrix = np.delete(self.tile_matrix, (r), axis=0)
@@ -239,8 +243,8 @@ class GameGrid:
                         self.display(score, next_tetromino1, next_tetromino2, next_tetromino3, game_over)
 
                      rotated[i][j+1].background_color = None
-                     rotated[i][j].boundary_color = None
-                     rotated[i][j].foreground_color = None
+                     rotated[i][j+1].boundary_color = None
+                     rotated[i][j+1].foreground_color = None
                      merge.play()
                      have_dupes = True
                      rotated[i][j].change_number(rotated[i][j].number*2)
@@ -276,7 +280,7 @@ class GameGrid:
                elif j == 0:
                   if self.tile_matrix[i+1][j] == None and self.tile_matrix[i-1][j] == None and self.tile_matrix[i][j+1] == None:
                      self.move_tile_down(i, j, score, next_tetromino1, next_tetromino2, next_tetromino3, game_over)
-               elif j == len(self.tile_matrix)-1:
+               elif j == len(self.tile_matrix[i])-1:
                   if self.tile_matrix[i+1][j] == None and self.tile_matrix[i-1][j] == None and self.tile_matrix[i][j-1] == None:
                      self.move_tile_down(i, j, score, next_tetromino1, next_tetromino2, next_tetromino3, game_over)
                else:
