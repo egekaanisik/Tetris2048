@@ -218,10 +218,6 @@ def setWindowIcon(path=None):
     programIcon = pygame.image.load(path)
     pygame.display.set_icon(programIcon)
 
-def enableDoubleBuffering():
-    global _background
-    _background = pygame.display.set_mode([_canvasWidth, _canvasHeight], flags=pygame.DOUBLEBUF)
-
 def setPenRadius(r=_DEFAULT_PEN_RADIUS):
     """
     Set the pen radius to r, thus affecting the subsequent drawing
