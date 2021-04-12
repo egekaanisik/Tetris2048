@@ -250,13 +250,7 @@ class GameGrid:
                         have_dupes = True
                         rotated[i][j].change_number(rotated[i][j].number*2)
                         score += rotated[i][j].number * (diff+1)
-                        rotated[i] = np.append(np.delete(rotated[i], [j+1], axis=0), [None], axis=0)
-                        self.tile_matrix = np.rot90(rotated, -1)
-                        self.display(score, next_tetromino1, next_tetromino2, next_tetromino3, game_over)
-
-                        for l in range(j+1, len(rotated[i])):
-                           if rotated[i][l] != None:
-                              rotated[i][l].move(0, -1)
+                        rotated[i][j+1] = None
                         self.tile_matrix = np.rot90(rotated, -1)
                         self.display(score, next_tetromino1, next_tetromino2, next_tetromino3, game_over, delay=150)
                         break
