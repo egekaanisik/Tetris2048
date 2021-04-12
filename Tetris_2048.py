@@ -1,5 +1,7 @@
 import platform
 
+from numpy import diff
+
 if platform.system() != 'Windows':
     print("\nThis program is designed to work only on Windows systems.")
     input("Press \"Enter\" key to terminate the program.")
@@ -23,31 +25,31 @@ package_list = sorted([i.key for i in packages])
 not_installed = []
 
 for i in dependencies:
-    if i.casefold() not in package_list:
-        not_installed.append(i)
+   if i.casefold() not in package_list:
+      not_installed.append(i)
 
 # If there are some missing modules, prompt user.
 if len(not_installed) != 0:
-    print("There are some modules that are required to run this program.\n\nThese modules are not installed on your computer:")
-    for i in not_installed:
-        print("[*] " + i)
+   print("There are some modules that are required to run this program.\n\nThese modules are not installed on your computer:")
+   for i in not_installed:
+      print("[*] " + i)
     
-    # Keeps asking until there is a valid answer
-    while True:
-        yes_no = input("\nDo you want to install them? (y/n): ")
+   # Keeps asking until there is a valid answer
+   while True:
+      yes_no = input("\nDo you want to install them? (y/n): ")
 
-        if yes_no.casefold() == "yes" or yes_no.casefold() == 'y':
-            # Installs every module one-by-one by calling a "pip install" command
-            for i in not_installed:
-                print("\n____________________________________________________________________________________________________\n\nInstalling " + i + "...\n____________________________________________________________________________________________________\n")
-                subprocess.check_call([sys.executable, "-m", "pip", "install", i])
-            print("\n____________________________________________________________________________________________________\n\nDone installing the modules. Launching the program...\n____________________________________________________________________________________________________\n")
-            time.sleep(1)
-            break
-        elif yes_no.casefold() == "no" or yes_no.casefold() == 'n':
-            exit()
-        else:
-            print("Please enter a valid answer.")
+      if yes_no.casefold() == "yes" or yes_no.casefold() == 'y':
+         # Installs every module one-by-one by calling a "pip install" command
+         for i in not_installed:
+            print("\n____________________________________________________________________________________________________\n\nInstalling " + i + "...\n____________________________________________________________________________________________________\n")
+            subprocess.check_call([sys.executable, "-m", "pip", "install", i])
+         print("\n____________________________________________________________________________________________________\n\nDone installing the modules. Launching the program...\n____________________________________________________________________________________________________\n")
+         time.sleep(1)
+         break
+      elif yes_no.casefold() == "no" or yes_no.casefold() == 'n':
+         exit()
+      else:
+         print("Please enter a valid answer.")
 
 DIR = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(DIR + "/modules")
@@ -63,7 +65,39 @@ from color import Color # used for coloring the game menu
 import base64
 from data import DATAS
 from audioplayer import AudioPlayer
+from configparser import ConfigParser
 import tempfile
+
+config = ConfigParser()
+config.read("config.ini")
+
+if not config.has_section("GAME"):
+   config.add_section("GAME")
+   config.set('GAME', "difficulty", "1")
+else:
+   if not config.has_option("GAME", "difficulty"):
+      config.set('GAME', "difficulty", "1")
+
+if not config.has_section("SOUND"):
+   config.add_section("SOUND")
+   config.set('SOUND', "music_volume", "5")
+   config.set('SOUND', "effects_volume", "25")
+else:
+   if not config.has_option("SOUND", "music_volume"):
+      config.set('SOUND', "music_volume", "5")
+   if not config.has_option("SOUND", "effects_volume"):
+      config.set('SOUND', "effects_volume", "25")
+
+for i in config.sections():
+   if i == 'SOUND' or i == 'GAME':
+      for j in config.options(i):
+         if j != "music_volume" and j != "effects_volume" and j != "difficulty":
+            config.remove_option(i, j)
+   else:
+      config.remove_section(i)
+
+with open('config.ini', 'w') as f:
+   config.write(f)
 
 ICON = DIR + "/images/icon.png"
 PLAYER_DIR = DIR + "/sounds/back.mp3"
@@ -78,8 +112,6 @@ GRID_W = 12
 CANVAS_H = 35 * GRID_H + 1
 CANVAS_W = 35 * GRID_W + 140
 WINDOW_TITLE = "Tetris 2048"
-INITIAL_MUSIC_VOLUME = 5
-INITIAL_EFFECT_VOLUME = 25
 TEMP_FILE = tempfile.gettempdir()
 TEMP_IMAGE = TEMP_FILE + "/canvas.png"
 TEMP_INFO = TEMP_FILE + "/image.png"
@@ -92,11 +124,9 @@ clear = AudioPlayer(CLEAR_DIR)
 menu = AudioPlayer(MENU_DIR)
 merge = AudioPlayer(MERGE_DIR)
 
-slider1location = None
-slider2location = None
-slider3location = None
-
-difficulty = 1
+difficulty = int(config.get("GAME", "difficulty"))
+music_volume = int(config.get("SOUND", "music_volume"))
+effects_volume = int(config.get("SOUND", "effects_volume"))
 gamemode = None
 
 # MAIN FUNCTION OF THE PROGRAM
@@ -104,13 +134,15 @@ gamemode = None
 # Main function where this program starts execution
 def start():
    global gamemode
-   global merge
+   global music_volume
+   global effects_volume
    global player
    global move
    global rotate
    global place
    global clear
    global menu
+   global merge
 
    stddraw.setCanvasSize(CANVAS_W, CANVAS_H) 
    stddraw.setXscale(-1, GRID_W + 4) # 17
@@ -119,13 +151,13 @@ def start():
    stddraw.setWindowIcon(ICON)
    stddraw.setCloseAction(close)
 
-   player.volume = INITIAL_MUSIC_VOLUME
-   move.volume = INITIAL_EFFECT_VOLUME
-   rotate.volume = INITIAL_EFFECT_VOLUME
-   place.volume = INITIAL_EFFECT_VOLUME
-   clear.volume = INITIAL_EFFECT_VOLUME
-   menu.volume = INITIAL_EFFECT_VOLUME
-   merge.volume = INITIAL_EFFECT_VOLUME
+   player.volume = music_volume
+   move.volume = effects_volume
+   rotate.volume = effects_volume
+   place.volume = effects_volume
+   clear.volume = effects_volume
+   menu.volume = effects_volume
+   merge.volume = effects_volume
 
    player.play(loop=True)
 
@@ -136,14 +168,9 @@ def start():
          gamemode = display_game_menu()
       restart = game()
    
-   
 def game():
    global difficulty
    global gamemode
-   global player
-   global move
-   global rotate
-   global place
    global clear
    global merge
 
@@ -356,6 +383,7 @@ def game():
       stddraw.show(0)
 
 def close():
+   global config
    global player
    global move
    global rotate
@@ -363,6 +391,9 @@ def close():
    global clear
    global menu
    global merge
+
+   with open('config.ini', 'w') as f:
+      config.write(f)
 
    if os.path.exists(TEMP_IMAGE):
       os.remove(TEMP_IMAGE)
@@ -398,17 +429,9 @@ def create_tetromino(grid_height, grid_width):
 
 # Function for displaying a simple menu before starting the game
 def display_game_menu():
-   global slider1location
-   global slider2location
-   global slider3location
    global difficulty
-   global player
-   global move
-   global rotate
-   global place
-   global clear
-   global menu
-   global merge
+   global music_volume
+   global effects_volume
 
    stddraw.clearKeysTyped()
    stddraw.clearMousePresses()
@@ -469,13 +492,9 @@ def display_game_menu():
    slider_start = img_center_x-button_w/2
    slider_end = slider_start+slider_w
 
-   if slider1location == None and slider2location == None and slider3location == None:
-      slider1location = slider_start + (slider_w/20)
-      slider2location = slider_start + (slider_w/4)
-      slider3location = slider_start + (slider_w / 6) * 2
-   
-   volume_percent = player.volume
-   sound_percent = menu.volume
+   slider1location = slider_start + (0 if music_volume == 0 else (slider_w/(100/music_volume)))
+   slider2location = slider_start + (0 if effects_volume == 0 else (slider_w/(100/effects_volume)))
+   slider3location = slider_start + ((slider_w / 3) * difficulty)
 
    musicHold = False
    soundHold = False
@@ -511,8 +530,7 @@ def display_game_menu():
             else:
                slider1location = slider_end
                volume_percent = 100
-
-            player.volume = round(volume_percent)
+            set_music_volume(round(volume_percent))
          elif soundHold:
             if mouse_x >= slider_start and mouse_x <= slider_end:
                slider2location = mouse_x
@@ -523,12 +541,7 @@ def display_game_menu():
             else:
                slider2location = slider_end
                sound_percent = 100
-            rotate.volume = round(sound_percent)
-            move.volume = round(sound_percent)
-            place.volume = round(sound_percent)
-            clear.volume = round(sound_percent)
-            menu.volume = round(sound_percent)
-            merge.volume = round(sound_percent)
+            set_effects_volume(round(sound_percent))
          elif diffHold:
             if mouse_x >= slider_start and mouse_x <= slider_end:
                if mouse_x < slider_start + (slider_w / 6) * 1:
@@ -549,6 +562,7 @@ def display_game_menu():
             else:
                slider3location = slider_end
                difficulty = 3
+            set_difficulty(difficulty)
          else:
             if mouse_y >= 10.52 and mouse_y < 10.54 + slider_h and mouse_x >= slider_start and mouse_x <= slider_end:
                musicHold = True
@@ -593,9 +607,9 @@ def display_game_menu():
       else:
          played = False
 
-      if volume_percent == 0:
+      if music_volume == 0:
          musicButtonPicture=musicOff
-      if sound_percent == 0:
+      if effects_volume == 0:
          soundButtonPicture=soundOff
 
       # MUSIC SLIDER
@@ -604,7 +618,7 @@ def display_game_menu():
       stddraw.setPenColor(stddraw.WHITE)
       stddraw.filledCircle(slider1location,10.5+(slider_h/2),0.3)
       stddraw.setPenColor(text_color)
-      stddraw.boldText(slider1location-0.03,10,str(round(volume_percent)))
+      stddraw.boldText(slider1location-0.03,10,str(music_volume))
       stddraw.picture(musicButtonPicture,slider1location-0.03,10.5+(slider_h/2))
 
       # SOUND SLIDER
@@ -613,7 +627,7 @@ def display_game_menu():
       stddraw.setPenColor(stddraw.WHITE)
       stddraw.filledCircle(slider2location,9+(slider_h/2),0.3)
       stddraw.setPenColor(text_color)
-      stddraw.boldText(slider2location-0.03,8.5,str(round(sound_percent)))
+      stddraw.boldText(slider2location-0.03,8.5,str(effects_volume))
       stddraw.picture(soundButtonPicture,slider2location-0.01,9+(slider_h/2))
 
       # DIFFICULTY SLIDER
@@ -662,15 +676,8 @@ def display_controls(background_color):
       stddraw.show(0)
 
 def display_pause_menu():
-   global slider1location
-   global slider2location
-   global player
-   global move
-   global rotate
-   global place
-   global clear
-   global menu
-   global merge
+   global music_volume
+   global effects_volume
 
    stddraw.clearMousePresses()
    stddraw.setKeyRepeat()
@@ -712,9 +719,9 @@ def display_pause_menu():
 
    slider_start = img_center_x-GRID_W/2
    slider_end = slider_start+slider_w
-   
-   volume_percent = player.volume
-   sound_percent = menu.volume
+
+   slider1location = slider_start + (0 if music_volume == 0 else (slider_w/(100/music_volume)))
+   slider2location = slider_start + (0 if effects_volume == 0 else (slider_w/(100/effects_volume)))
 
    musicHold = False
    soundHold = False
@@ -761,8 +768,7 @@ def display_pause_menu():
             else:
                slider1location = slider_end
                volume_percent = 100
-
-            player.volume = round(volume_percent)
+            set_music_volume(round(volume_percent))
          elif soundHold:
             if mouse_x >= slider_start and mouse_x <= slider_end:
                slider2location = mouse_x
@@ -773,12 +779,7 @@ def display_pause_menu():
             else:
                slider2location = slider_end
                sound_percent = 100
-            rotate.volume = round(sound_percent)
-            move.volume = round(sound_percent)
-            place.volume = round(sound_percent)
-            clear.volume = round(sound_percent)
-            menu.volume = round(sound_percent)
-            merge.volume = round(sound_percent)
+            set_effects_volume(round(sound_percent))
          else:
             if mouse_y >= 4.52 and mouse_y < 4.54 + slider_h and mouse_x >= slider_start and mouse_x <= slider_end:
                musicHold = True
@@ -796,9 +797,9 @@ def display_pause_menu():
       else:
          played = False
 
-      if volume_percent == 0:
+      if music_volume == 0:
          musicButtonPicture=musicOff
-      if sound_percent == 0:
+      if effects_volume == 0:
          soundButtonPicture=soundOff
 
       stddraw.picture(canvas,img_center_x,img_center_y)
@@ -819,7 +820,7 @@ def display_pause_menu():
       stddraw.setPenColor(stddraw.WHITE)
       stddraw.filledCircle(slider1location,4.5+(slider_h/2),0.3)
       stddraw.setPenColor(text_color)
-      stddraw.boldText(slider1location-0.03,4,str(round(volume_percent)))
+      stddraw.boldText(slider1location-0.03,4,str(music_volume))
       stddraw.picture(musicButtonPicture,slider1location-0.03,4.5+(slider_h/2))
 
       # SOUND SLIDER
@@ -828,7 +829,7 @@ def display_pause_menu():
       stddraw.setPenColor(stddraw.WHITE)
       stddraw.filledCircle(slider2location,3+(slider_h/2),0.3)
       stddraw.setPenColor(text_color)
-      stddraw.boldText(slider2location-0.03,2.5,str(round(sound_percent)))
+      stddraw.boldText(slider2location-0.03,2.5,str(effects_volume))
       stddraw.picture(soundButtonPicture,slider2location-0.01,3+(slider_h/2))
 
       stddraw.picture(help, help_x, help_y)
@@ -884,7 +885,38 @@ def display_info():
       stddraw.show(0)
       stddraw.clear()
 
-      
+def set_music_volume(volume):
+   global config
+   global music_volume
+   global player
+   music_volume = volume
+   player.volume = volume
+   config.set("SOUND", "music_volume", str(volume))
+
+def set_effects_volume(volume):
+   global config
+   global effects_volume
+   global move
+   global rotate
+   global place
+   global clear
+   global menu
+   global merge
+   effects_volume = volume
+   move.volume = volume
+   rotate.volume = volume
+   place.volume = volume
+   clear.volume = volume
+   menu.volume = volume
+   merge.volume = volume
+   config.set("SOUND", "effects_volume", str(volume))
+
+def set_difficulty(index):
+   global config
+   global difficulty
+   difficulty = index
+   config.set("GAME", "difficulty", str(index))
+
 # start() function is specified as the entry point (main function) from which 
 # the program starts execution
 if __name__== '__main__':
