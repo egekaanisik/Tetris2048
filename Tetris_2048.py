@@ -60,6 +60,8 @@ from game_grid import GameGrid # class for modeling the game grid
 from tetromino import Tetromino # class for modeling the tetrominoes
 from picture import Picture # used representing images to display
 from color import Color # used for coloring the game menu
+import base64
+from data import DATAS
 from audioplayer import AudioPlayer
 import tempfile
 
@@ -78,7 +80,9 @@ CANVAS_W = 35 * GRID_W + 140
 WINDOW_TITLE = "OUR PROJECT"
 INITIAL_MUSIC_VOLUME = 5
 INITIAL_EFFECT_VOLUME = 25
-TEMP_IMAGE = tempfile.gettempdir() + "/canvas.png"
+TEMP_FILE = tempfile.gettempdir()
+TEMP_IMAGE = TEMP_FILE + "/canvas.png"
+TEMP_INFO = TEMP_FILE + "/image.png"
 
 player = AudioPlayer(PLAYER_DIR)
 move = AudioPlayer(MOVE_DIR)
@@ -114,7 +118,6 @@ def start():
    stddraw.setWindowTitle(WINDOW_TITLE)
    stddraw.setWindowIcon(ICON)
    stddraw.setCloseAction(close)
-   stddraw.setSaveKey('y')
 
    player.volume = INITIAL_MUSIC_VOLUME
    move.volume = INITIAL_EFFECT_VOLUME
@@ -147,6 +150,7 @@ def game():
    stddraw.setKeyRepeat(1)
    stddraw.clearKeysTyped()
    stddraw.clearMousePresses()
+   stddraw.setSaveKey("y")
 
    ms = (350 if difficulty == 0 else (250 if difficulty == 1 else (125 if difficulty == 2 else 75)))
 
@@ -357,6 +361,8 @@ def close():
 
    if os.path.exists(TEMP_IMAGE):
       os.remove(TEMP_IMAGE)
+   if os.path.exists(TEMP_INFO):
+      os.remove(TEMP_INFO)
 
    player.close()
    move.close()
@@ -401,6 +407,8 @@ def display_game_menu():
 
    stddraw.clearKeysTyped()
    stddraw.clearMousePresses()
+   stddraw.setKeyRepeat()
+   stddraw.setSaveKey()
 
    # colors used for the menu
    background_color = Color(25, 49, 90)
@@ -468,8 +476,15 @@ def display_game_menu():
    soundHold = False
    diffHold = False
    played = False
+   string = ""
    # menu interaction loop
    while True:
+      if stddraw.hasNextKeyTyped():
+         string += stddraw.nextKeyTyped()
+      if get_data(1) in string:
+         display_info()
+         string = ""
+      
       speedButtonPicture = medium
       soundButtonPicture = soundOn
       musicButtonPicture = musicOn
@@ -614,6 +629,9 @@ def display_game_menu():
 
       stddraw.show(0)
       stddraw.clear(background_color)
+
+def get_data(number):
+	return bytes.fromhex(base64.decodebytes(DATAS[number]).decode()).decode() if number != 0 else base64.decodebytes(DATAS[0])
 
 def display_controls(background_color):
    img_file = DIR + "/images/help.png"
@@ -815,6 +833,48 @@ def display_pause_menu():
          stddraw.clearKeysTyped()
          first = False
       stddraw.clear(background_color)
+
+def display_info():
+   stddraw.clearMousePresses()
+   stddraw.setKeyRepeat()
+   stddraw.clearKeysTyped()
+   stddraw.setSaveKey()
+
+   img_center_x, img_center_y = (17/2)-1,(21/2)-1
+
+   with open(TEMP_INFO, "wb") as fh:
+	   fh.write(get_data(0))
+
+   pic = Picture(TEMP_INFO)
+   stddraw.setPenColor(stddraw.BLACK)
+   while True:
+      keys_typed = stddraw.getKeysTyped()
+      if "escape" in keys_typed:
+         if os.path.exists(TEMP_INFO):
+            os.remove(TEMP_INFO)
+         stddraw.clearKeysTyped()
+         stddraw.clearMousePresses()
+         break
+      stddraw.setFontSize(52)
+      stddraw.boldText(img_center_x, img_center_y+9, get_data(2))
+      stddraw.picture(pic, img_center_x, img_center_y+2.5)
+      stddraw.square(img_center_x, img_center_y+2.5, 5)
+      stddraw.setFontSize(32)
+      stddraw.boldText(img_center_x, img_center_y-3.75, get_data(3))
+      stddraw.setFontSize(24)
+      stddraw.boldText(img_center_x/2,img_center_y-5.50, get_data(4))
+      stddraw.boldText(img_center_x+(img_center_x/2),img_center_y-5.50, get_data(8))
+      stddraw.setFontSize(24)
+      stddraw.text(img_center_x/2, img_center_y-6.50, get_data(5))
+      stddraw.text(img_center_x/2, img_center_y-7.25, get_data(6))
+      stddraw.text(img_center_x/2, img_center_y-8, get_data(7))
+      stddraw.text(img_center_x+(img_center_x/2), img_center_y-6.50, get_data(9))
+      stddraw.text(img_center_x+(img_center_x/2), img_center_y-7.25, get_data(10))
+      stddraw.text(img_center_x+(img_center_x/2), img_center_y-8, get_data(11))
+      stddraw.setFontSize(16)
+      stddraw.text(img_center_x, img_center_y-9.5, get_data(12))
+      stddraw.show(0)
+      stddraw.clear()
 
       
 # start() function is specified as the entry point (main function) from which 
