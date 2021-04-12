@@ -155,17 +155,19 @@ def game():
    ms = (350 if difficulty == 0 else (250 if difficulty == 1 else (125 if difficulty == 2 else 75)))
 
    # create the game grid
-   grid = GameGrid(GRID_H, GRID_W, gamemode)
+   grid = GameGrid(GRID_H, GRID_W, gamemode, difficulty)
    # create the first tetromino to enter the game grid 
    # by using the create_tetromino function defined below
    tetrominos = [create_tetromino(GRID_H, GRID_W), create_tetromino(GRID_H, GRID_W), create_tetromino(GRID_H, GRID_W), create_tetromino(GRID_H, GRID_W)]
    current_tetromino = tetrominos.pop(0)
    grid.current_tetromino = current_tetromino
+   grid.next_tetromino1 = tetrominos[0]
+   grid.next_tetromino2 = tetrominos[1]
+   grid.next_tetromino3 = tetrominos[2]
    
    last_mouse_posX = -1
    last_mouse_posY = -1
    mouse = None
-   score = 0
    rotated = False
    already_dropped = False
 
@@ -197,7 +199,7 @@ def game():
                      count += 1
                dropped = True
                already_dropped = True
-               score += count * 2
+               grid.score += count * 2
          if "up" in keys_typed or "w" in keys_typed:
             if not rotated:
                can_rotate = current_tetromino.rotate(grid)
@@ -222,7 +224,7 @@ def game():
             # (causes the tetromino to fall down faster)
             succ = current_tetromino.move("down", grid, 1, delay=50)
             if succ:
-               score += 1
+               grid.score += 1
          if "escape" in keys_typed:
             option = display_pause_menu()
 
@@ -280,12 +282,12 @@ def game():
                   else:
                      count += 1
                dropped = True
-               score += count * 2
+               grid.score += count * 2
          if stddraw.mouseScrollHeldDown():
             if grid.is_inside(round(stddraw.mouseScrollY()), round(stddraw.mouseScrollX())):
                succ = current_tetromino.move("down", grid, 1, delay=50)
                if succ:
-                  score += 1
+                  grid.score += 1
 
       stddraw.clearMousePresses()
       stddraw.clearKeysTyped()
@@ -316,25 +318,28 @@ def game():
          
          if gamemode == "2048":
             while True:
-               score = grid.check_line_chain_merge(score, difficulty, merge, tetrominos[0], tetrominos[1], tetrominos[2], game_over)
-               score_before_line_delete = score
-               score = grid.delete_full_lines(clear, score, tetrominos[0], tetrominos[1], tetrominos[2], game_over, difficulty)
-               if score_before_line_delete == score:
+               grid.check_line_chain_merge(merge)
+               score_before_line_delete = grid.score
+               grid.delete_full_lines(clear)
+               if score_before_line_delete == grid.score:
                   break
          else:
-            score = grid.delete_full_lines(clear, score, tetrominos[0], tetrominos[1], tetrominos[2], game_over, difficulty)
+            score = grid.delete_full_lines(clear)
 
          # create the next tetromino to enter the game grid
          # by using the create_tetromino function defined below
          tetromino = create_tetromino(GRID_H, GRID_W)
          tetrominos.append(tetromino)
-
          current_tetromino = tetrominos.pop(0)
+         grid.next_tetromino1 = tetrominos[0]
+         grid.next_tetromino2 = tetrominos[1]
+         grid.next_tetromino3 = tetrominos[2]
          grid.current_tetromino = current_tetromino
 
       # display the game grid and as well the current tetromino
-      grid.display(score, tetrominos[0], tetrominos[1], tetrominos[2], game_over)
-      if game_over:
+      grid.display()
+
+      if grid.game_over:
          break
    
    stddraw.setKeyRepeat()

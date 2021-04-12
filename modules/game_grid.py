@@ -8,11 +8,12 @@ import numpy as np # fundamental Python module for scientific computing
 # Class used for modelling the game grid
 class GameGrid:
 	# Constructor for creating the game grid based on the given arguments
-   def __init__(self, grid_h, grid_w, gamemode):
+   def __init__(self, grid_h, grid_w, gamemode, difficulty):
       # set the dimensions of the game grid as the given arguments
       self.grid_height = grid_h
       self.grid_width = grid_w
       self.gamemode = gamemode
+      self.difficulty = difficulty
       # create the tile matrix to store the tiles placed on the game grid
       self.tile_matrix = np.full((grid_h, grid_w), None)
       # the tetromino that is currently being moved on the game grid
@@ -20,6 +21,10 @@ class GameGrid:
       self.current_ghost = None
       # game_over flag shows whether the game is over/completed or not
       self.game_over = False
+      self.score = 0
+      self.next_tetromino1 = None
+      self.next_tetromino2 = None
+      self.next_tetromino3 = None
       if gamemode == "tetris":
          # set the color used for the empty grid cells
          self.empty_cell_color = Color(0, 0, 0)
@@ -33,13 +38,14 @@ class GameGrid:
          self.empty_cell_color = Color(214,205,196)
          # set the colors used for the grid lines and the grid boundaries
          self.line_color = Color(188,174,161) 
-         self.boundary_color = Color(158,138,120) 
+         self.boundary_color = Color(158,138,120)
+         self.reached_2048 = False
       # thickness values used for the grid lines and the grid boundaries 
       self.line_thickness = 0.002
       self.box_thickness = 8 * self.line_thickness
 
    # Method used for displaying the game grid
-   def display(self, score, next_tetromino1, next_tetromino2, next_tetromino3, game_over, delay=0):
+   def display(self, delay=0):
       # clear the background canvas to empty_cell_color
       stddraw.clear(self.background_color)
       # draw the game grid
@@ -54,15 +60,20 @@ class GameGrid:
       # draw a box around the game grid 
       
 
-      if not game_over:
+      if not self.game_over:
          if self.gamemode == "tetris":
             stddraw.setPenColor(stddraw.WHITE)
          else:
             stddraw.setPenColor(self.boundary_color)
          stddraw.setFontFamily("Arial")
          stddraw.setFontSize(24)
-         stddraw.text(13.75, 19, "Score")
-         stddraw.boldText(13.75, 17.75, str(score))
+         if self.gamemode == "2048" and self.reached_2048:
+            stddraw.boldText(13.75, 19, "Congrats!")
+            stddraw.text(13.75, 17.50, "Score")
+            stddraw.boldText(13.75, 16.50, str(self.score))
+         else:
+            stddraw.text(13.75, 19, "Score")
+            stddraw.boldText(13.75, 18, str(self.score))
          stddraw.text(13.75, 15, "Upcoming")
          stddraw.text(13.75, 14, "Tetrominoes")
 
@@ -76,9 +87,9 @@ class GameGrid:
             stddraw.setPenColor(self.empty_cell_color)
          stddraw.line(12.25, 8.75, 15.25, 8.75)
          stddraw.line(12.25, 4.25, 15.25, 4.25)
-         next_tetromino1.copy(blcx=(14.25 - (next_tetromino1.column_count/2)),blcy=9.5 + (4-next_tetromino1.row_count)/2,trim=True).draw()
-         next_tetromino2.copy(blcx=(14.25 - (next_tetromino2.column_count/2)),blcy=5 + (4-next_tetromino2.row_count)/2,trim=True).draw()
-         next_tetromino3.copy(blcx=(14.25 - (next_tetromino3.column_count/2)),blcy=0.5 + (4-next_tetromino3.row_count)/2,trim=True).draw()
+         self.next_tetromino1.copy(blcx=(14.25 - (self.next_tetromino1.column_count/2)),blcy=9.5 + (4-self.next_tetromino1.row_count)/2,trim=True).draw()
+         self.next_tetromino2.copy(blcx=(14.25 - (self.next_tetromino2.column_count/2)),blcy=5 + (4-self.next_tetromino2.row_count)/2,trim=True).draw()
+         self.next_tetromino3.copy(blcx=(14.25 - (self.next_tetromino3.column_count/2)),blcy=0.5 + (4-self.next_tetromino3.row_count)/2,trim=True).draw()
          stddraw.show(delay)
       else:
          if self.gamemode == "tetris":
@@ -89,7 +100,7 @@ class GameGrid:
          stddraw.setFontSize(24)
          stddraw.text(13.75, 11.5, "Game Over!")
          stddraw.text(13.75, 9.5, "Final Score:")
-         stddraw.boldText(13.75, 8.5, str(score))
+         stddraw.boldText(13.75, 8.5, str(self.score))
          stddraw.setFontSize(16)
          stddraw.text(13.75,2,"Press R to")
          #stddraw.boldText(14.5,2.5,"Enter")
@@ -158,7 +169,7 @@ class GameGrid:
       else:
          False
 
-   def delete_full_lines(self, clear, score, next_tetromino1, next_tetromino2, next_tetromino3, game_over, diff):
+   def delete_full_lines(self, clear):
       paint_indexes = []
       indexes = []
       for i in range(self.grid_height):
@@ -170,7 +181,7 @@ class GameGrid:
          clear.play()
          
          if self.gamemode == "tetris":
-            score += (1200 if len(indexes) == 4 else (300 if len(indexes) == 3 else (100 if len(indexes) == 2 else 40))) * (diff+1)
+            self.score += (1200 if len(indexes) == 4 else (300 if len(indexes) == 3 else (100 if len(indexes) == 2 else 40))) * (self.difficulty+1)
 
             for color in reversed(range(0, 256, 4)):
                for l in paint_indexes:
@@ -178,7 +189,7 @@ class GameGrid:
                      self.tile_matrix[l][k].background_color = Color(color, color, color)
                      self.tile_matrix[l][k].boundary_color = Color(color, color, color)
                      self.tile_matrix[l][k].foreground_color = Color(color, color, color)
-               self.display(score, next_tetromino1, next_tetromino2, next_tetromino3, game_over)
+               self.display()
          else:
             for l in paint_indexes:
                line_score = 0
@@ -187,8 +198,8 @@ class GameGrid:
                   self.tile_matrix[l][k].background_color = Color(255,255,255)
                   self.tile_matrix[l][k].boundary_color = Color(255,255,255)
                   self.tile_matrix[l][k].foreground_color = Color(255,255,255)
-               score += (line_score * (diff + 1))
-            self.display(score, next_tetromino1, next_tetromino2, next_tetromino3, game_over)
+               self.score += (line_score * (self.difficulty + 1))
+            self.display()
 
             for color in reversed(range(215, 256, 5)):
                for l in paint_indexes:
@@ -196,7 +207,7 @@ class GameGrid:
                      self.tile_matrix[l][k].background_color = Color(color, color-10, color-20)
                      self.tile_matrix[l][k].boundary_color = Color(color, color-10, color-20)
                      self.tile_matrix[l][k].foreground_color = Color(color, color-10, color-20)
-               self.display(score, next_tetromino1, next_tetromino2, next_tetromino3, game_over)
+               self.display()
             
             for l in paint_indexes:
                   for k in range(self.grid_width):
@@ -211,9 +222,7 @@ class GameGrid:
                   if self.tile_matrix[i][j] != None:
                      self.tile_matrix[i][j].move(0, -1)
 
-      return score
-
-   def check_line_chain_merge(self, score, diff, merge, next_tetromino1, next_tetromino2, next_tetromino3, game_over):
+   def check_line_chain_merge(self, merge):
       matrix = self.tile_matrix.copy()
       rotated = np.rot90(matrix)
 
@@ -232,7 +241,7 @@ class GameGrid:
                         rotated[i][j+1].boundary_color = Color(255,255,255)
                         rotated[i][j+1].foreground_color = Color(255,255,255)
                         self.tile_matrix = np.rot90(rotated, -1)
-                        self.display(score, next_tetromino1, next_tetromino2, next_tetromino3, game_over)
+                        self.display()
                         
                         for color in reversed(range(215, 256, 5)):
                            rotated[i][j].background_color = Color(color, color-10, color-20)
@@ -242,28 +251,29 @@ class GameGrid:
                            rotated[i][j+1].boundary_color = Color(color, color-10, color-20)
                            rotated[i][j+1].foreground_color = Color(color, color-10, color-20)
                            self.tile_matrix = np.rot90(rotated, -1)
-                           self.display(score, next_tetromino1, next_tetromino2, next_tetromino3, game_over)
+                           self.display()
 
                         rotated[i][j+1].background_color = None
                         rotated[i][j+1].boundary_color = None
                         rotated[i][j+1].foreground_color = None
                         have_dupes = True
                         rotated[i][j].change_number(rotated[i][j].number*2)
-                        score += rotated[i][j].number * (diff+1)
+                        self.score += rotated[i][j].number * (self.difficulty+1)
+                        if rotated[i][j].number == 2048:
+                           self.reached_2048 = True
                         rotated[i][j+1] = None
                         self.tile_matrix = np.rot90(rotated, -1)
-                        self.display(score, next_tetromino1, next_tetromino2, next_tetromino3, game_over, delay=150)
+                        self.display()
                         break
                if not have_dupes:
                   break
-         have_floating = self.move_floating_tiles(score, next_tetromino1, next_tetromino2, next_tetromino3, game_over)
+         have_floating = self.move_floating_tiles()
          if not have_floating:
             break
       stddraw.clearKeysTyped()
       stddraw.clearMousePresses()
-      return score
 
-   def move_floating_tiles(self, score, next_tetromino1, next_tetromino2, next_tetromino3, game_over):
+   def move_floating_tiles(self):
       arr = self.binarize_tile_matrix()
       array, labels = self.label_array(arr)
       first_line_removed = np.delete(array, 0, axis=0)
@@ -277,18 +287,18 @@ class GameGrid:
       for i in range(nrows):
          for j in range(ncols):
             if trimmed[i][j] != 1 and trimmed[i][j] != 0:
-               self.move_tile_down(i, j, score, next_tetromino1, next_tetromino2, next_tetromino3, game_over)
+               self.move_tile_down(i, j)
 
       return True if len(labels) > 1 else False
 
-   def move_tile_down(self, i, j, score, next_tetromino1, next_tetromino2, next_tetromino3, game_over):
+   def move_tile_down(self, i, j):
       index = 0
       while True:
          if self.tile_matrix[i-(index+1)][j] == None and i-index != 0:
             self.tile_matrix[i-index][j].move(0, -1)
             self.tile_matrix[i-(index+1)][j] = self.tile_matrix[i-index][j]
             self.tile_matrix[i-index][j] = None
-            self.display(score, next_tetromino1, next_tetromino2, next_tetromino3, game_over, delay=50)
+            self.display(delay=50)
             index += 1
          else:
             break
@@ -310,8 +320,6 @@ class GameGrid:
                # the game is over if any placed tile is out of the game grid
                else:
                   self.game_over = True
-      # return the game_over flag
-      return self.game_over
 
    def binarize_tile_matrix(self):
       (nrows, ncols) = self.tile_matrix.shape

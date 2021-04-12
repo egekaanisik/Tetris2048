@@ -14,7 +14,7 @@ class Tile:
    # value used for the thickness of the boxes (boundaries) around the tiles
    boundary_thickness = 0.004
    # font family and size used for displaying the tile number
-   font_family, font_size = "Arial", 14
+   font_family, font_size = "Arial", 12
 
    # Constructor that creates a tile at a given position with 2 as its number 
    def __init__(self, position=Point(0, 0), gamemode=None, ghost=None, number=None, type=None): # (0, 0) is the default position
@@ -126,7 +126,7 @@ class Tile:
       elif self.number == 2048:
          self.background_color = Color(239,194,49)
       else:
-         self.background_color = Color(107,201,16)
+         self.background_color = Color(61,58,51)
 
       if self.number < 8:
          self.foreground_color = Color(121,114,104)
