@@ -69,8 +69,8 @@ class GameGrid:
          stddraw.setFontSize(24)
          if self.gamemode == "2048" and self.reached_2048:
             stddraw.boldText(13.75, 19, "Congrats!")
-            stddraw.text(13.75, 17.50, "Score")
-            stddraw.boldText(13.75, 16.50, str(self.score))
+            stddraw.text(13.75, 17.75, "Score")
+            stddraw.boldText(13.75, 16.75, str(self.score))
          else:
             stddraw.text(13.75, 19, "Score")
             stddraw.boldText(13.75, 18, str(self.score))
