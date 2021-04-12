@@ -306,15 +306,18 @@ def game():
       success = current_tetromino.move("down", grid, 1, delay=ms, standart=True)
 
       # place the tetromino on the game grid when it cannot go down anymore
-      game_over = False
       if success == False or dropped:
          place.play()
          # get the tile matrix of the tetromino
          tiles_to_place = current_tetromino.tile_matrix
          # update the game grid by adding the tiles of the tetromino
          grid.current_ghost = None
-         game_over = grid.update_grid(tiles_to_place)
+         grid.update_grid(tiles_to_place)
          # end the main game loop if the game is over
+
+         if grid.game_over:
+            grid.display()
+            break
          
          if gamemode == "2048":
             while True:
@@ -324,7 +327,7 @@ def game():
                if score_before_line_delete == grid.score:
                   break
          else:
-            score = grid.delete_full_lines(clear)
+            grid.delete_full_lines(clear)
 
          # create the next tetromino to enter the game grid
          # by using the create_tetromino function defined below
@@ -338,9 +341,6 @@ def game():
 
       # display the game grid and as well the current tetromino
       grid.display()
-
-      if grid.game_over:
-         break
    
    stddraw.setKeyRepeat()
 
