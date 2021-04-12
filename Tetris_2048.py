@@ -94,6 +94,24 @@ for i in config.sections():
    else:
       config.remove_section(i)
 
+try:
+   if int(config.get("GAME", "difficulty")) < 0 or int(config.get("GAME", "difficulty")) > 3:
+      config.set('GAME', "difficulty", "1")
+except ValueError:
+   config.set('GAME', "difficulty", "1")
+
+try:
+   if int(config.get("SOUND", "music_volume")) < 0 or int(config.get("SOUND", "music_volume")) > 100:
+      config.set('SOUND', "music_volume", "5")
+except ValueError:
+   config.set('SOUND', "music_volume", "5")
+
+try:
+   if int(config.get("SOUND", "effects_volume")) < 0 or int(config.get("SOUND", "effects_volume")) > 100:
+      config.set('SOUND', "effects_volume", "25")
+except ValueError:
+   config.set('SOUND', "effects_volume", "25")
+
 with open('config.ini', 'w') as f:
    config.write(f)
 
