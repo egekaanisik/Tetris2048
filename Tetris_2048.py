@@ -442,8 +442,8 @@ def display_game_menu():
    soundOn = Picture(img_file)
    img_file = DIR + "/images/easy.png"
    easy = Picture(img_file)
-   img_file = DIR + "/images/medium.png"
-   medium = Picture(img_file)
+   img_file = DIR + "/images/normal.png"
+   normal = Picture(img_file)
    img_file = DIR + "/images/hard.png"
    hard = Picture(img_file)
    img_file = DIR + "/images/extreme.png"
@@ -490,7 +490,7 @@ def display_game_menu():
          display_info()
          string = ""
       
-      speedButtonPicture = medium
+      speedButtonPicture = normal
       soundButtonPicture = soundOn
       musicButtonPicture = musicOn
       tetrisButtonPicture = tetris
@@ -561,8 +561,8 @@ def display_game_menu():
          soundHold = False
          diffHold = False
 
-      diffStr = "Easy" if difficulty == 0 else ("Medium" if difficulty == 1 else ("Hard" if difficulty == 2 else "Extreme"))
-      speedButtonPicture = easy if difficulty == 0 else (medium if difficulty == 1 else (hard if difficulty == 2 else extreme))
+      diffStr = "Easy" if difficulty == 0 else ("Normal" if difficulty == 1 else ("Hard" if difficulty == 2 else "Extreme"))
+      speedButtonPicture = easy if difficulty == 0 else (normal if difficulty == 1 else (hard if difficulty == 2 else extreme))
 
       # MOUSE CLICKS ON BUTTONS
       if stddraw.mouseLeftPressed():

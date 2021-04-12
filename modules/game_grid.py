@@ -275,7 +275,7 @@ class GameGrid:
 
    def move_floating_tiles(self):
       arr = self.binarize_tile_matrix()
-      array, labels = self.label_array(arr)
+      array, label_count = self.label_array(arr)
       first_line_removed = np.delete(array, 0, axis=0)
       base_line_removed = np.delete(first_line_removed, 0, axis=0)
       last_line_removed = np.delete(base_line_removed, base_line_removed.shape[0]-1, axis=0)
@@ -289,7 +289,7 @@ class GameGrid:
             if trimmed[i][j] != 1 and trimmed[i][j] != 0:
                self.move_tile_down(i, j)
 
-      return True if len(labels) > 1 else False
+      return True if label_count > 1 else False
 
    def move_tile_down(self, i, j):
       index = 0
@@ -396,7 +396,7 @@ class GameGrid:
                 im[i][j] = 0
 
       # Returns the labeled array, label list, and the colored image
-      return im, labels
+      return im, len(labels)
 
    def update_labeled_array(self, a, label1, label2):
       index = lab_small = lab_large = 0
