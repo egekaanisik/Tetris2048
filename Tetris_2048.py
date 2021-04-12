@@ -464,7 +464,7 @@ def display_game_menu():
    # coordinates of the bottom left corner of the start game button 
    button_blc_x, button_blc_y = img_center_x-button_w/2, 3.875 # Tetris Button 
    button3_blc_x, button3_blc_y = img_center_x-button_w/2, 0.875 # Tetris 2048 Button
-   help_x, help_y = img_center_x + 7.5, img_center_x + 11.5
+   help_x, help_y = img_center_x + 7.75, img_center_x + 11.75
 
    slider_start = img_center_x-button_w/2
    slider_end = slider_start+slider_w
@@ -584,7 +584,7 @@ def display_game_menu():
          if not played:
             menu.play()
             played = True
-      elif mouse_x >= help_x - 0.6 and mouse_x <= help_x + 0.6 and mouse_y >= help_y - 0.6 and mouse_y <= help_y + 0.6:
+      elif mouse_x >= help_x - 0.5 and mouse_x <= help_x + 0.5 and mouse_y >= help_y - 0.5 and mouse_y <= help_y + 0.5:
          if not played:
             menu.play()
             played = True
@@ -645,13 +645,13 @@ def display_controls(background_color):
    img_file = DIR + "/images/controls.png"
    controls = Picture(img_file)
    img_center_x, img_center_y = (17/2)-1,(21/2)-1
-   help_x, help_y = img_center_x + 7.5, img_center_x + 11.5
+   help_x, help_y = img_center_x + 7.75, img_center_x + 11.75
 
    while True:
       mouse_x = stddraw.mouseMotionX()
       mouse_y = stddraw.mouseMotionY()
 
-      if not (mouse_x >= help_x - 0.6 and mouse_x <= help_x + 0.6 and mouse_y >= help_y - 0.6 and mouse_y <= help_y + 0.6):
+      if not (mouse_x >= help_x - 0.5 and mouse_x <= help_x + 0.5 and mouse_y >= help_y - 0.5 and mouse_y <= help_y + 0.5):
          stddraw.clearKeysTyped()
          stddraw.clearMousePresses()
          break
@@ -703,7 +703,7 @@ def display_pause_menu():
    # image is represented using the Picture class
    # display the image
 
-   help_x, help_y = img_center_x + 7.5, img_center_x + 11.5
+   help_x, help_y = img_center_x + 7.75, img_center_x + 11.75
 
    stddraw.setFontFamily("Arial")
 
@@ -788,7 +788,7 @@ def display_pause_menu():
          musicHold = False
          soundHold = False
 
-      if mouse_x >= help_x - 0.6 and mouse_x <= help_x + 0.6 and mouse_y >= help_y - 0.6 and mouse_y <= help_y + 0.6:
+      if mouse_x >= help_x - 0.5 and mouse_x <= help_x + 0.5 and mouse_y >= help_y - 0.5 and mouse_y <= help_y + 0.5:
          if not played:
             menu.play()
             played = True
