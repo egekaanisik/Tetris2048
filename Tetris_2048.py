@@ -855,6 +855,7 @@ def display_info():
             os.remove(TEMP_INFO)
          stddraw.clearKeysTyped()
          stddraw.clearMousePresses()
+         stddraw.setWindowTitle(WINDOW_TITLE)
          break
       stddraw.setFontSize(52)
       stddraw.boldText(img_center_x, img_center_y+9, get_data(2))
