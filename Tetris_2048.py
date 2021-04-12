@@ -584,6 +584,7 @@ def display_game_menu():
             menu.play()
             played = True
          display_controls(background_color)
+         string = ""
       else:
          played = False
 
