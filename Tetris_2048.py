@@ -839,6 +839,7 @@ def display_info():
    stddraw.setKeyRepeat()
    stddraw.clearKeysTyped()
    stddraw.setSaveKey()
+   stddraw.setWindowTitle(get_data(2))
 
    img_center_x, img_center_y = (17/2)-1,(21/2)-1
 
@@ -862,17 +863,17 @@ def display_info():
       stddraw.setFontSize(32)
       stddraw.boldText(img_center_x, img_center_y-3.75, get_data(3))
       stddraw.setFontSize(24)
-      stddraw.boldText(img_center_x/2,img_center_y-5.50, get_data(4))
-      stddraw.boldText(img_center_x+(img_center_x/2),img_center_y-5.50, get_data(8))
+      stddraw.boldText(img_center_x/2,img_center_y-5.25, get_data(4))
+      stddraw.boldText(img_center_x+(img_center_x/2),img_center_y-5.25, get_data(8))
       stddraw.setFontSize(24)
-      stddraw.text(img_center_x/2, img_center_y-6.50, get_data(5))
+      stddraw.text(img_center_x/2, img_center_y-6.25, get_data(5))
       stddraw.text(img_center_x/2, img_center_y-7.25, get_data(6))
-      stddraw.text(img_center_x/2, img_center_y-8, get_data(7))
-      stddraw.text(img_center_x+(img_center_x/2), img_center_y-6.50, get_data(9))
+      stddraw.text(img_center_x/2, img_center_y-8.25, get_data(7))
+      stddraw.text(img_center_x+(img_center_x/2), img_center_y-6.25, get_data(9))
       stddraw.text(img_center_x+(img_center_x/2), img_center_y-7.25, get_data(10))
-      stddraw.text(img_center_x+(img_center_x/2), img_center_y-8, get_data(11))
+      stddraw.text(img_center_x+(img_center_x/2), img_center_y-8.25, get_data(11))
       stddraw.setFontSize(16)
-      stddraw.text(img_center_x, img_center_y-9.5, get_data(12))
+      stddraw.text(img_center_x, img_center_y-9.75, get_data(12))
       stddraw.show(0)
       stddraw.clear()
 
