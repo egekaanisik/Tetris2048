@@ -1,7 +1,5 @@
 import platform
 
-from numpy import diff
-
 if platform.system() != 'Windows':
     print("\nThis program is designed to work only on Windows systems.")
     input("Press \"Enter\" key to terminate the program.")
