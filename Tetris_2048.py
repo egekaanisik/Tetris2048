@@ -86,10 +86,38 @@ else:
    if not config.has_option("SOUND", "effects_volume"):
       config.set('SOUND', "effects_volume", "25")
 
+if not config.has_section("LEADERBOARD"):
+   config.add_section('LEADERBOARD')
+   config.set('LEADERBOARD', "hs_tetris_easy", "0")
+   config.set('LEADERBOARD', "hs_tetris_normal", "0")
+   config.set('LEADERBOARD', "hs_tetris_hard", "0")
+   config.set('LEADERBOARD', "hs_tetris_extreme", "0")
+   config.set('LEADERBOARD', "hs_2048_easy", "0")
+   config.set('LEADERBOARD', "hs_2048_normal", "0")
+   config.set('LEADERBOARD', "hs_2048_hard", "0")
+   config.set('LEADERBOARD', "hs_2048_extreme", "0")
+else:
+   if not config.has_option("LEADERBOARD", "hs_tetris_easy"):
+      config.set('LEADERBOARD', "hs_tetris_easy", "0")
+   if not config.has_option("LEADERBOARD", "hs_tetris_normal"):
+      config.set('LEADERBOARD', "hs_tetris_normal", "0")
+   if not config.has_option("LEADERBOARD", "hs_tetris_hard"):
+      config.set('LEADERBOARD', "hs_tetris_hard", "0")
+   if not config.has_option("LEADERBOARD", "hs_tetris_extreme"):
+      config.set('LEADERBOARD', "hs_tetris_extreme", "0")
+   if not config.has_option("LEADERBOARD", "hs_2048_easy"):
+      config.set('LEADERBOARD', "hs_2048_easy", "0")
+   if not config.has_option("LEADERBOARD", "hs_2048_normal"):
+      config.set('LEADERBOARD', "hs_2048_normal", "0")
+   if not config.has_option("LEADERBOARD", "hs_2048_hard"):
+      config.set('LEADERBOARD', "hs_2048_hard", "0")
+   if not config.has_option("LEADERBOARD", "hs_2048_extreme"):
+      config.set('LEADERBOARD', "hs_2048_extreme", "0")
+
 for i in config.sections():
-   if i == 'SOUND' or i == 'GAME':
+   if i == 'SOUND' or i == 'GAME' or i == 'LEADERBOARD':
       for j in config.options(i):
-         if j != "music_volume" and j != "effects_volume" and j != "difficulty":
+         if (i == 'SOUND' and j != "music_volume" and j != "effects_volume") or (i == 'GAME' and j != "difficulty") or (i == 'LEADERBOARD' and j != "hs_tetris_easy" and j != "hs_tetris_normal" and j != "hs_tetris_hard" and j != "hs_tetris_extreme" and j != "hs_2048_easy" and j != "hs_2048_normal" and j != "hs_2048_hard" and j != "hs_2048_extreme"):
             config.remove_option(i, j)
    else:
       config.remove_section(i)
@@ -111,6 +139,54 @@ try:
       config.set('SOUND', "effects_volume", "25")
 except ValueError:
    config.set('SOUND', "effects_volume", "25")
+
+try:
+   if int(config.get("LEADERBOARD", "hs_tetris_easy")) < 0:
+      config.set('LEADERBOARD', "hs_tetris_easy", "0")
+except ValueError:
+   config.set('LEADERBOARD', "hs_tetris_easy", "0")
+
+try:
+   if int(config.get("LEADERBOARD", "hs_tetris_normal")) < 0:
+      config.set('LEADERBOARD', "hs_tetris_normal", "0")
+except ValueError:
+   config.set('LEADERBOARD', "hs_tetris_normal", "0")
+
+try:
+   if int(config.get("LEADERBOARD", "hs_tetris_hard")) < 0:
+      config.set('LEADERBOARD', "hs_tetris_hard", "0")
+except ValueError:
+   config.set('LEADERBOARD', "hs_tetris_hard", "0")
+
+try:
+   if int(config.get("LEADERBOARD", "hs_tetris_extreme")) < 0:
+      config.set('LEADERBOARD', "hs_tetris_extreme", "0")
+except ValueError:
+   config.set('LEADERBOARD', "hs_tetris_extreme", "0")
+
+try:
+   if int(config.get("LEADERBOARD", "hs_2048_easy")) < 0:
+      config.set('LEADERBOARD', "hs_2048_easy", "0")
+except ValueError:
+   config.set('LEADERBOARD', "hs_2048_easy", "0")
+
+try:
+   if int(config.get("LEADERBOARD", "hs_2048_normal")) < 0:
+      config.set('LEADERBOARD', "hs_2048_normal", "0")
+except ValueError:
+   config.set('LEADERBOARD', "hs_2048_normal", "0")
+
+try:
+   if int(config.get("LEADERBOARD", "hs_2048_hard")) < 0:
+      config.set('LEADERBOARD', "hs_2048_hard", "0")
+except ValueError:
+   config.set('LEADERBOARD', "hs_2048_hard", "0")
+
+try:
+   if int(config.get("LEADERBOARD", "hs_2048_extreme")) < 0:
+      config.set('LEADERBOARD', "hs_2048_extreme", "0")
+except ValueError:
+   config.set('LEADERBOARD', "hs_2048_extreme", "0")
 
 with open('config.ini', 'w') as f:
    config.write(f)
@@ -141,6 +217,14 @@ menu = AudioPlayer(MENU_DIR)
 merge = AudioPlayer(MERGE_DIR)
 
 difficulty = int(config.get("GAME", "difficulty"))
+hs_tetris_easy = int(config.get("LEADERBOARD", "hs_tetris_easy"))
+hs_tetris_normal = int(config.get("LEADERBOARD", "hs_tetris_normal"))
+hs_tetris_hard = int(config.get("LEADERBOARD", "hs_tetris_hard"))
+hs_tetris_extreme = int(config.get("LEADERBOARD", "hs_tetris_extreme"))
+hs_2048_easy = int(config.get("LEADERBOARD", "hs_2048_easy"))
+hs_2048_normal = int(config.get("LEADERBOARD", "hs_2048_normal"))
+hs_2048_hard = int(config.get("LEADERBOARD", "hs_2048_hard"))
+hs_2048_extreme = int(config.get("LEADERBOARD", "hs_2048_extreme"))
 music_volume = int(config.get("SOUND", "music_volume"))
 effects_volume = int(config.get("SOUND", "effects_volume"))
 gamemode = None
@@ -185,7 +269,16 @@ def start():
       restart = game()
    
 def game():
+   global config
    global difficulty
+   global hs_tetris_easy
+   global hs_tetris_normal
+   global hs_tetris_hard
+   global hs_tetris_extreme
+   global hs_2048_easy
+   global hs_2048_normal
+   global hs_2048_hard
+   global hs_2048_extreme
    global gamemode
    global clear
    global merge
@@ -207,6 +300,10 @@ def game():
    grid.next_tetromino1 = tetrominos[0]
    grid.next_tetromino2 = tetrominos[1]
    grid.next_tetromino3 = tetrominos[2]
+   if gamemode == "tetris":
+      grid.old_high_score = (hs_tetris_easy if difficulty == 0 else (hs_tetris_normal if difficulty == 1 else (hs_tetris_hard if difficulty == 2 else hs_tetris_extreme)))
+   else:
+      grid.old_high_score = (hs_2048_easy if difficulty == 0 else (hs_2048_normal if difficulty == 1 else (hs_2048_hard if difficulty == 2 else hs_2048_extreme)))
    
    last_mouse_posX = -1
    last_mouse_posY = -1
@@ -360,6 +457,33 @@ def game():
 
          if grid.game_over:
             grid.display()
+            if grid.new_high_score is not None:
+               if gamemode == "tetris":
+                  if difficulty == 0:
+                     config.set("LEADERBOARD", "hs_tetris_easy", str(grid.new_high_score))
+                     hs_tetris_easy = grid.new_high_score
+                  elif difficulty == 1:
+                     config.set("LEADERBOARD", "hs_tetris_normal", str(grid.new_high_score))
+                     hs_tetris_normal = grid.new_high_score
+                  elif difficulty == 2:
+                     config.set("LEADERBOARD", "hs_tetris_hard", str(grid.new_high_score))
+                     hs_tetris_hard = grid.new_high_score
+                  else:
+                     config.set("LEADERBOARD", "hs_tetris_extreme", str(grid.new_high_score))
+                     hs_tetris_extreme = grid.new_high_score
+               else:
+                  if difficulty == 0:
+                     config.set("LEADERBOARD", "hs_2048_easy", str(grid.new_high_score))
+                     hs_2048_easy = grid.new_high_score
+                  elif difficulty == 1:
+                     config.set("LEADERBOARD", "hs_2048_normal", str(grid.new_high_score))
+                     hs_2048_normal = grid.new_high_score
+                  elif difficulty == 2:
+                     config.set("LEADERBOARD", "hs_2048_hard", str(grid.new_high_score))
+                     hs_2048_hard = grid.new_high_score
+                  else:
+                     config.set("LEADERBOARD", "hs_2048_extreme", str(grid.new_high_score))
+                     hs_2048_extreme = grid.new_high_score
             break
          
          if gamemode == "2048":

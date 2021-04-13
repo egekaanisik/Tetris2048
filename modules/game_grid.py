@@ -14,6 +14,7 @@ class GameGrid:
       self.grid_width = grid_w
       self.gamemode = gamemode
       self.difficulty = difficulty
+      self.old_high_score = None
       # create the tile matrix to store the tiles placed on the game grid
       self.tile_matrix = np.full((grid_h, grid_w), None)
       # the tetromino that is currently being moved on the game grid
@@ -22,6 +23,7 @@ class GameGrid:
       # game_over flag shows whether the game is over/completed or not
       self.game_over = False
       self.score = 0
+      self.new_high_score = None
       self.next_tetromino1 = None
       self.next_tetromino2 = None
       self.next_tetromino3 = None
@@ -98,12 +100,19 @@ class GameGrid:
             stddraw.setPenColor(self.boundary_color)
          stddraw.setFontFamily("Arial")
          stddraw.setFontSize(24)
-         stddraw.text(13.75, 11.5, "Game Over!")
-         stddraw.text(13.75, 9.5, "Final Score:")
-         stddraw.boldText(13.75, 8.5, str(self.score))
+         stddraw.text(13.75, 12, "Game Over!")
+         stddraw.text(13.75, 10, "Final Score:")
+         stddraw.boldText(13.75, 9, str(self.score))
+         stddraw.setFontSize(18)
+         if self.score > self.old_high_score:
+            stddraw.text(13.75, 7.75, "New High Score!")
+            self.new_high_score = self.score
+            print(self.new_high_score)
+         else:
+            stddraw.text(13.75, 7.75, "High Score:")
+            stddraw.boldText(13.75, 7, str(self.old_high_score))
          stddraw.setFontSize(16)
          stddraw.text(13.75,2,"Press R to")
-         #stddraw.boldText(14.5,2.5,"Enter")
          stddraw.text(13.75,1.5,"restart the game,")
          stddraw.text(13.75,1,"or press Enter to")
          stddraw.text(13.75,0.5,"return to the")
