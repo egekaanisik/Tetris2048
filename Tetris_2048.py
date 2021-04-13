@@ -244,6 +244,11 @@ def start():
    global menu
    global merge
 
+   if os.path.exists(TEMP_IMAGE):
+      os.remove(TEMP_IMAGE)
+   if os.path.exists(TEMP_INFO):
+      os.remove(TEMP_INFO)
+
    stddraw.setCanvasSize(CANVAS_W, CANVAS_H) 
    stddraw.setXscale(-1, GRID_W + 4) # 17
    stddraw.setYscale(-1, GRID_H) # 21
@@ -729,13 +734,9 @@ def display_game_menu():
       if stddraw.mouseLeftPressed():
          if mouse_x >= button_blc_x and mouse_x <= button_blc_x + button_w:
             if mouse_y >= button_blc_y and mouse_y <= button_blc_y + button_h:
-               with open('config.ini', 'w') as f:
-                  config.write(f)
                return "tetris"
          if mouse_x >= button3_blc_x and mouse_x <= button3_blc_x + button_w:
             if mouse_y >= button3_blc_y and mouse_y <= button3_blc_y + button_h:
-               with open('config.ini', 'w') as f:
-                  config.write(f)
                return "2048"   
       
       # MOUSE LISTENERS ON BUTTONS
@@ -896,8 +897,6 @@ def display_pause_menu():
          stddraw.setKeyRepeat(1)
          stddraw.clearKeysTyped()
          stddraw.clearMousePresses()
-         with open('config.ini', 'w') as f:
-            config.write(f)
          break
       elif "enter" in keys_typed or "return" in keys_typed:
          if os.path.exists(TEMP_IMAGE):
@@ -905,8 +904,6 @@ def display_pause_menu():
          stddraw.setKeyRepeat(1)
          stddraw.clearKeysTyped()
          stddraw.clearMousePresses()
-         with open('config.ini', 'w') as f:
-            config.write(f)
          return "menu"
       elif "r" in keys_typed:
          if os.path.exists(TEMP_IMAGE):
@@ -914,8 +911,6 @@ def display_pause_menu():
          stddraw.setKeyRepeat(1)
          stddraw.clearKeysTyped()
          stddraw.clearMousePresses()
-         with open('config.ini', 'w') as f:
-            config.write(f)
          return "restart"
       stddraw.clearKeysTyped()
 
@@ -1060,6 +1055,8 @@ def set_music_volume(volume):
    music_volume = volume
    player.volume = volume
    config.set("SOUND", "music_volume", str(volume))
+   with open('config.ini', 'w') as f:
+      config.write(f)
 
 def set_effects_volume(volume):
    global config
@@ -1078,12 +1075,16 @@ def set_effects_volume(volume):
    menu.volume = volume
    merge.volume = volume
    config.set("SOUND", "effects_volume", str(volume))
+   with open('config.ini', 'w') as f:
+      config.write(f)
 
 def set_difficulty(index):
    global config
    global difficulty
    difficulty = index
    config.set("GAME", "difficulty", str(index))
+   with open('config.ini', 'w') as f:
+      config.write(f)
 
 def display_scores():
    global config

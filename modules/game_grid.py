@@ -107,7 +107,6 @@ class GameGrid:
          if self.score > self.old_high_score:
             stddraw.text(13.75, 7.75, "New High Score!")
             self.new_high_score = self.score
-            print(self.new_high_score)
          else:
             stddraw.text(13.75, 7.75, "High Score:")
             stddraw.boldText(13.75, 7, str(self.old_high_score))
