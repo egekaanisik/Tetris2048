@@ -842,6 +842,7 @@ def display_pause_menu():
    stddraw.clearMousePresses()
    stddraw.setKeyRepeat()
    stddraw.clearKeysTyped()
+   stddraw.setSaveKey()
    stddraw.save(TEMP_IMAGE)
 
    # colors used for the menu
@@ -897,6 +898,7 @@ def display_pause_menu():
          stddraw.setKeyRepeat(1)
          stddraw.clearKeysTyped()
          stddraw.clearMousePresses()
+         stddraw.setSaveKey("y")
          break
       elif "enter" in keys_typed or "return" in keys_typed:
          if os.path.exists(TEMP_IMAGE):
