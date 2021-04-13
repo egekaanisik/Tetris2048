@@ -484,6 +484,9 @@ def game():
                   else:
                      config.set("LEADERBOARD", "hs_2048_extreme", str(grid.new_high_score))
                      hs_2048_extreme = grid.new_high_score
+               
+               with open('config.ini', 'w') as f:
+                  config.write(f)
             break
          
          if gamemode == "2048":
@@ -569,6 +572,7 @@ def create_tetromino(grid_height, grid_width):
 
 # Function for displaying a simple menu before starting the game
 def display_game_menu():
+   global config
    global difficulty
    global music_volume
    global effects_volume
@@ -613,6 +617,8 @@ def display_game_menu():
    extreme = Picture(img_file)
    img_file = DIR + "/images/help.png"
    help = Picture(img_file)
+   img_file = DIR + "/images/scores.png"
+   scores = Picture(img_file)
 
    # center coordinates to display the image
    img_center_x, img_center_y = (17/2)-1,(21/2)-1
@@ -627,7 +633,8 @@ def display_game_menu():
    # coordinates of the bottom left corner of the start game button 
    button_blc_x, button_blc_y = img_center_x-button_w/2, 3.875 # Tetris Button 
    button3_blc_x, button3_blc_y = img_center_x-button_w/2, 0.875 # Tetris 2048 Button
-   help_x, help_y = img_center_x + 7.75, img_center_x + 11.75
+   help_x, help_y = img_center_x + 7.75, img_center_y + 9.75
+   scores_x, scores_y = img_center_x - 7.75, img_center_y + 9.75
 
    slider_start = img_center_x-button_w/2
    slider_end = slider_start+slider_w
@@ -721,10 +728,14 @@ def display_game_menu():
       # MOUSE CLICKS ON BUTTONS
       if stddraw.mouseLeftPressed():
          if mouse_x >= button_blc_x and mouse_x <= button_blc_x + button_w:
-            if mouse_y >= button_blc_y and mouse_y <= button_blc_y + button_h: 
+            if mouse_y >= button_blc_y and mouse_y <= button_blc_y + button_h:
+               with open('config.ini', 'w') as f:
+                  config.write(f)
                return "tetris"
          if mouse_x >= button3_blc_x and mouse_x <= button3_blc_x + button_w:
-            if mouse_y >= button3_blc_y and mouse_y <= button3_blc_y + button_h: 
+            if mouse_y >= button3_blc_y and mouse_y <= button3_blc_y + button_h:
+               with open('config.ini', 'w') as f:
+                  config.write(f)
                return "2048"   
       
       # MOUSE LISTENERS ON BUTTONS
@@ -743,6 +754,12 @@ def display_game_menu():
             menu.play()
             played = True
          display_controls(background_color)
+         string = ""
+      elif mouse_x >= scores_x - 0.5 and mouse_x <= scores_x + 0.5 and mouse_y >= scores_y - 0.5 and mouse_y <= scores_y + 0.5:
+         if not played:
+            menu.play()
+            played = True
+         display_scores()
          string = ""
       else:
          played = False
@@ -786,6 +803,7 @@ def display_game_menu():
       stddraw.picture(i2048Picture,img_center_x,2)
 
       stddraw.picture(help, help_x, help_y)
+      stddraw.picture(scores, scores_x, scores_y)
 
       stddraw.show(0)
       stddraw.clear(background_color)
@@ -799,7 +817,7 @@ def display_controls(background_color):
    img_file = DIR + "/images/controls.png"
    controls = Picture(img_file)
    img_center_x, img_center_y = (17/2)-1,(21/2)-1
-   help_x, help_y = img_center_x + 7.75, img_center_x + 11.75
+   help_x, help_y = img_center_x + 7.75, img_center_y + 9.75
 
    while True:
       mouse_x = stddraw.mouseMotionX()
@@ -816,6 +834,7 @@ def display_controls(background_color):
       stddraw.show(0)
 
 def display_pause_menu():
+   global config
    global music_volume
    global effects_volume
 
@@ -850,7 +869,7 @@ def display_pause_menu():
    # image is represented using the Picture class
    # display the image
 
-   help_x, help_y = img_center_x + 7.75, img_center_x + 11.75
+   help_x, help_y = img_center_x + 7.75, img_center_y + 9.75
 
    stddraw.setFontFamily("Arial")
 
@@ -875,19 +894,28 @@ def display_pause_menu():
          if os.path.exists(TEMP_IMAGE):
             os.remove(TEMP_IMAGE)
          stddraw.setKeyRepeat(1)
+         stddraw.clearKeysTyped()
          stddraw.clearMousePresses()
+         with open('config.ini', 'w') as f:
+            config.write(f)
          break
       elif "enter" in keys_typed or "return" in keys_typed:
          if os.path.exists(TEMP_IMAGE):
             os.remove(TEMP_IMAGE)
          stddraw.setKeyRepeat(1)
+         stddraw.clearKeysTyped()
          stddraw.clearMousePresses()
+         with open('config.ini', 'w') as f:
+            config.write(f)
          return "menu"
       elif "r" in keys_typed:
          if os.path.exists(TEMP_IMAGE):
             os.remove(TEMP_IMAGE)
          stddraw.setKeyRepeat(1)
+         stddraw.clearKeysTyped()
          stddraw.clearMousePresses()
+         with open('config.ini', 'w') as f:
+            config.write(f)
          return "restart"
       stddraw.clearKeysTyped()
 
@@ -1056,6 +1084,86 @@ def set_difficulty(index):
    global difficulty
    difficulty = index
    config.set("GAME", "difficulty", str(index))
+
+def display_scores():
+   global config
+   global hs_tetris_easy
+   global hs_tetris_normal
+   global hs_tetris_hard
+   global hs_tetris_extreme
+   global hs_2048_easy
+   global hs_2048_normal
+   global hs_2048_hard
+   global hs_2048_extreme
+
+   img_file = DIR + "/images/scores.png"
+   scores = Picture(img_file)
+   img_center_x, img_center_y = (17/2)-1,(21/2)-1
+   scores_x, scores_y = img_center_x - 7.75, img_center_y + 9.75
+   background_color = Color(25, 49, 90)
+   stddraw.setFontFamily("Arial")
+   stddraw.setPenColor(stddraw.WHITE)
+   while True:
+      mouse_x = stddraw.mouseMotionX()
+      mouse_y = stddraw.mouseMotionY()
+
+      if not (mouse_x >= scores_x - 0.5 and mouse_x <= scores_x + 0.5 and mouse_y >= scores_y - 0.5 and mouse_y <= scores_y + 0.5):
+         stddraw.clearKeysTyped()
+         stddraw.clearMousePresses()
+         stddraw.setFontSize(20)
+         break
+
+      keys_typed = stddraw.getKeysTyped()
+      if "backspace" in keys_typed:
+         hs_tetris_easy = 0
+         hs_tetris_normal = 0
+         hs_tetris_hard = 0
+         hs_tetris_extreme = 0
+         hs_2048_easy = 0
+         hs_2048_normal = 0
+         hs_2048_hard = 0
+         hs_2048_extreme = 0
+         config.set('LEADERBOARD', "hs_tetris_easy", "0")
+         config.set('LEADERBOARD', "hs_tetris_normal", "0")
+         config.set('LEADERBOARD', "hs_tetris_hard", "0")
+         config.set('LEADERBOARD', "hs_tetris_extreme", "0")
+         config.set('LEADERBOARD', "hs_2048_easy", "0")
+         config.set('LEADERBOARD', "hs_2048_normal", "0")
+         config.set('LEADERBOARD', "hs_2048_hard", "0")
+         config.set('LEADERBOARD', "hs_2048_extreme", "0")
+         with open('config.ini', 'w') as f:
+            config.write(f)
+
+      stddraw.clearKeysTyped()
+      stddraw.clear(background_color)
+      stddraw.picture(scores, scores_x, scores_y)
+      stddraw.setFontSize(42)
+      stddraw.boldText(img_center_x, img_center_y+8.5, "High Scores")
+      stddraw.setFontSize(36)
+      stddraw.boldText(img_center_x, img_center_y+6, "Classic Tetris")
+      stddraw.boldText(img_center_x, img_center_y-1.25, "Tetris 2048")
+      stddraw.setFontSize(24)
+      stddraw.text(img_center_x-4, img_center_y+4.25, "Easy")
+      stddraw.boldText(img_center_x-4, img_center_y+3.25, str(hs_tetris_easy))
+      stddraw.text(img_center_x+4, img_center_y+4.25, "Normal")
+      stddraw.boldText(img_center_x+4, img_center_y+3.25, str(hs_tetris_normal))
+      stddraw.text(img_center_x-4, img_center_y+2, "Hard")
+      stddraw.boldText(img_center_x-4, img_center_y+1, str(hs_tetris_hard))
+      stddraw.text(img_center_x+4, img_center_y+2, "Extreme")
+      stddraw.boldText(img_center_x+4, img_center_y+1, str(hs_tetris_extreme))
+
+      stddraw.text(img_center_x-4, img_center_y-3, "Easy")
+      stddraw.boldText(img_center_x-4, img_center_y-4, str(hs_2048_easy))
+      stddraw.text(img_center_x+4, img_center_y-3, "Normal")
+      stddraw.boldText(img_center_x+4, img_center_y-4, str(hs_2048_normal))
+      stddraw.text(img_center_x-4, img_center_y-5.25, "Hard")
+      stddraw.boldText(img_center_x-4, img_center_y-6.25, str(hs_2048_hard))
+      stddraw.text(img_center_x+4, img_center_y-5.25, "Extreme")
+      stddraw.boldText(img_center_x+4, img_center_y-6.25, str(hs_2048_extreme))
+      stddraw.setFontSize(20)
+      stddraw.text(img_center_x, img_center_y-9, "Press Backspace to reset high scores.")
+
+      stddraw.show(0)
 
 # start() function is specified as the entry point (main function) from which 
 # the program starts execution
