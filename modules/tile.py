@@ -1,10 +1,16 @@
-import random
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 import sys
 import os
+
+# add the current directory to the system path
 sys.path.append(os.path.dirname(os.path.realpath(__file__)))
+
 import stddraw # the stddraw module is used as a basic graphics library
 from color import Color # used for coloring the tile and the number on it
 from point import Point # used for representing the position of the tile
+import random # used for getting random objects
 import copy as cp # the copy module is used for copying tile positions
 
 # Class used for representing numbered tiles as in 2048
@@ -16,9 +22,11 @@ class Tile:
    # font family and size used for displaying the tile number
    font_family, font_size = "Arial", 12
 
-   # Constructor that creates a tile at a given position with 2 as its number 
+   # Constructor that creates a tile at a given position, game mode, number, and type. Tile can be a ghost as well.
    def __init__(self, position=Point(0, 0), gamemode=None, ghost=None, number=None, type=None): # (0, 0) is the default position
+      # set the background and boundary color if the game mode is classic tetris
       if gamemode == "tetris":
+         # set the colors based on the tetromino shape
          if type == 'I':
             if ghost:
                self.background_color = Color(0,0,0)
@@ -68,20 +76,28 @@ class Tile:
             else:
                self.background_color = Color(146,43,140)
                self.boundary_color = Color(102,0,102)
+         # set the number to None
          self.number = None
+      # set all the colors and number if the game mode is tetris 2048
       else:
+         # give number to the tile if tile is not ghost
          if not ghost:
+            # if there is no number specified in construction of tile, give it a random number
+            # which can be 2 or 4 only
             num = None
             if number is None:
                num = random.randint(1,2) * 2
             else:
                num = number
             
+            # change number as well as its colors
             self.change_number(num)
+         # give only a background color and boundary color if the tile is ghost
          else:
             self.background_color = Color(198,184,171)
             self.boundary_color = Color(158,138,120) 
 
+      # set the fields
       self.position = cp.copy(position)
       self.gamemode = gamemode
       self.ghost = ghost
@@ -101,8 +117,12 @@ class Tile:
    def move(self, dx, dy):
       self.position.translate(dx, dy)
 
+   # Method for changing the number on the tile as well as its colors. (2048 mode only.)
    def change_number(self, number):
+      # change the number
       self.number = number
+
+      # change the background color based on the number
       if self.number == 2:
          self.background_color = Color(239,230,221)
       elif self.number == 4:
@@ -128,11 +148,13 @@ class Tile:
       else:
          self.background_color = Color(61,58,51)
 
+      # change the foreground color based on the number
       if self.number < 8:
          self.foreground_color = Color(121,114,104)
       else:
          self.foreground_color = Color(255,255,255)
 
+      # change the boundary color
       self.boundary_color = Color(188,174,161)
 
    # Method for drawing the tile
@@ -155,8 +177,10 @@ class Tile:
          stddraw.setFontSize(Tile.font_size)
          stddraw.boldText(self.position.x, self.position.y, str(self.number))
    
-   def copy(self, position=None):
+   # Method for copying the tile, user can specify a new position to the copied tile 
+   def copy(self, position=None, ghost=None):
+      gh = ghost if ghost is not None else self.ghost
       if position == None:
-         return Tile(self.position, self.gamemode, self.ghost, self.number, self.type)
+         return Tile(self.position, self.gamemode, gh, self.number, self.type)
       else:
-         return Tile(position, self.gamemode, self.ghost, self.number, self.type)
+         return Tile(position, self.gamemode, gh, self.number, self.type)

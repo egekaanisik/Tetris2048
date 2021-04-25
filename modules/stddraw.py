@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 """
 stddraw.py
 
@@ -7,11 +10,14 @@ in the window.  As a convenience, the module also imports the
 commonly used Color objects defined in the color module.
 """
 
-import time
 import os
 import sys
+
+# Adds the current directory to the system path
 sys.path.append(os.path.dirname(os.path.realpath(__file__)))
+
 import color
+import time
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = 'hide'
 import pygame
 import pygame.gfxdraw
@@ -211,12 +217,35 @@ def setYscale(min=_DEFAULT_YMIN, max=_DEFAULT_YMAX):
     _ymin = min - _BORDER * size
     _ymax = max + _BORDER * size
 
+#-----------------------------------------------------------------------
+# Begin added by Ege Kaan Isik
+#-----------------------------------------------------------------------
+
 def setWindowTitle(title=_DEFAULT_WINDOW_TITLE):
+    """
+    Set the title of canvas window.
+    """
     pygame.display.set_caption(title)
 
 def setWindowIcon(path=None):
+    """
+    Set the icon of canvas window.
+    """
     programIcon = pygame.image.load(path)
     pygame.display.set_icon(programIcon)
+
+def setCloseAction(func=_DEFAULT_CLOSE_ACTION, args=_DEFAULT_CLOSE_ARGS):
+    """
+    Set what is going to happen after the termination of canvas window.
+    """
+    global _close_action
+    global _close_args
+    _close_action = func
+    _close_args = args
+
+#-----------------------------------------------------------------------
+# End added by Ege Kaan Isik
+#-----------------------------------------------------------------------
 
 def setPenRadius(r=_DEFAULT_PEN_RADIUS):
     """
@@ -252,12 +281,6 @@ def setFontSize(s=_DEFAULT_FONT_SIZE):
     """
     global _fontSize
     _fontSize = s
-
-def setCloseAction(func=_DEFAULT_CLOSE_ACTION, args=_DEFAULT_CLOSE_ARGS):
-    global _close_action
-    global _close_args
-    _close_action = func
-    _close_args = args
 
 #-----------------------------------------------------------------------
 
@@ -692,7 +715,7 @@ def _checkForEvents():
             _keysReleased = [pygame.key.name(event.key)] + _keysReleased
             
         #---------------------------------------------------------------
-        # Begin added by Alan J. Broder
+        # Begin added by Ege Kaan Isik
         #---------------------------------------------------------------
         # Every time the mouse button is pressed, remember
         # the mouse position as of that press.
@@ -724,17 +747,27 @@ def _checkForEvents():
             _mouseTrack = event.pos
         
         #---------------------------------------------------------------
-        # End added by Alan J. Broder
+        # End added by Ege Kaan Isik
         #---------------------------------------------------------------
 
 #-----------------------------------------------------------------------
 
 # Functions for retrieving keys
 
+#---------------------------------------------------------------
+# Begin added by Ege Kaan Isik
+#---------------------------------------------------------------
+
 def setKeyRepeat(delay=0):
+    """
+    Set the key read delay in milliseconds to make the key can send multiple events.
+    """
     pygame.key.set_repeat(delay)
 
 def setSaveKey(key=None):
+    """
+    Set the key for saving the canvas as an image.
+    """
     global _save_key
     _save_key = key
 
@@ -747,6 +780,10 @@ def hasNextKeyTyped():
     return _keysTyped != []
 
 def hasNextKeyReleased():
+    """
+    Return True if the queue of the keys the user released is not empty.
+    Otherwise return False.
+    """
     global _keysReleased
     return _keysReleased != []
 
@@ -760,7 +797,7 @@ def nextKeyTyped():
 
 def nextKeyReleased():
     """
-    Remove the first key from the queue of the keys that the user typed,
+    Remove the first key from the queue of the keys that the user released,
     and return that key.
     """
     global _keysReleased
@@ -775,26 +812,32 @@ def clearKeysTyped():
 
 def clearKeysReleased():
     """
-    Clear all the keys in the queue of the keys that the user typed.
+    Clear all the keys in the queue of the keys that the user released.
     """
     global _keysReleased
     _keysReleased = []
 
 def getKeysTyped():
+    """
+    Return all the keys in the queue of the keys that the user typed.
+    """
     global _keysTyped
     return _keysTyped
 
 def getKeysReleased():
+    """
+    Return all the keys in the queue of the keys that the user released.
+    """
     global _keysReleased
     return _keysReleased
-
-#-----------------------------------------------------------------------
-# Begin added by Alan J. Broder
-#-----------------------------------------------------------------------
 
 # Functions for dealing with mouse clicks
 
 def mouseLeftPressed():
+    """
+    Return if the mouse left button is pressed, and if it is pressed, clear
+    the mouse press.
+    """
     global _mouseLeftPressed
     if _mouseLeftPressed:
         _mouseLeftPressed = False
@@ -802,6 +845,10 @@ def mouseLeftPressed():
     return False
 
 def mouseRightPressed():
+    """
+    Return if the mouse right button is pressed, and if it is pressed, clear
+    the mouse press.
+    """
     global _mouseRightPressed
     if _mouseRightPressed:
         _mouseRightPressed = False
@@ -809,6 +856,10 @@ def mouseRightPressed():
     return False
 
 def mouseScrollPressed():
+    """
+    Return if the mouse scroll button is pressed, and if it is pressed, clear
+    the mouse press.
+    """
     global _mouseScrollPressed
     if _mouseScrollPressed:
         _mouseScrollPressed = False
@@ -816,25 +867,37 @@ def mouseScrollPressed():
     return False
 
 def clearMousePresses():
+    """
+    Clear all the mouse presses.
+    """
     global _mouseLeftPressed
     global _mouseRightPressed
     global _mouseScrollPressed
-    global _mouseLeftPos
-    global _mouseRightPos
-    global _mouseScrollPos
     _mouseLeftPressed = False
     _mouseRightPressed = False
     _mouseScrollPressed = False
 
 def mouseLeftHeldDown():
+    """
+    Return if the mouse left button is pressed and not released. To clear the event as well,
+    use mouseLeftPressed() instead.
+    """
     global _mouseLeftHeld
     return _mouseLeftHeld
 
 def mouseRightHeldDown():
+    """
+    Return if the mouse right button is pressed and not released. To clear the event as well,
+    use mouseRightPressed() instead.
+    """
     global _mouseRightHeld
     return _mouseRightHeld
 
 def mouseScrollHeldDown():
+    """
+    Return if the mouse scroll button is pressed and not released. To clear the event as well,
+    use mouseScrollPressed() instead.
+    """
     global _mouseScrollHeld
     return _mouseScrollHeld
 
@@ -917,19 +980,25 @@ def mouseScrollY():
         "Can't determine mouse position if a click hasn't happened")
 
 def mouseMotionX():
+    """
+    Return the x coordinate of current mouse position.
+    """
     global _mouseTrack
     if _mouseTrack is not None:
         return _userX(_mouseTrack[0])
     else: return None
 
 def mouseMotionY():
+    """
+    Return the y coordinate of current mouse position.
+    """
     global _mouseTrack
     if _mouseTrack is not None:
         return _userY(_mouseTrack[1])
     else: return None
     
 #-----------------------------------------------------------------------
-# End added by Alan J. Broder
+# End added by Ege Kaan Isik
 #-----------------------------------------------------------------------
 
 #-----------------------------------------------------------------------

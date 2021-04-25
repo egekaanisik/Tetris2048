@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 # A class for representing a point as a location in 2D space
 class Point:
    # constructor that creates a point at the given (x, y) location

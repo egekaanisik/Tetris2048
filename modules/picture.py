@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 """
 picture.py
 
@@ -8,7 +11,10 @@ The picture module defines the Picture class.
 
 import os
 import sys
+
+# Adds the current directory to the system path
 sys.path.append(os.path.dirname(os.path.realpath(__file__)))
+
 import color
 
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = 'hide'

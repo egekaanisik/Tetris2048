@@ -1475,9 +1475,9 @@ def display_scores():
 # Returns whether the program can open a URL, which means being connected to the internet.
 
 def can_connect():
-   # Tries to open the URL, if it can, returns true
+   # Tries to open the URL in 5 seconds, if it can, returns true
     try:
-        urllib.request.urlopen('https://mrpanda.dev')
+        urllib.request.urlopen('https://mrpanda.dev', timeout=5)
         return True
    # Else, returns false
     except:
