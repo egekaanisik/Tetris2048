@@ -14,7 +14,6 @@
 # ------------------------------
 # Ege Kaan Isik (041901042)
 # Davud Duran (041901049)
-# Okan Ova (041501040)
 
 
 # PLATFORM CONTROL
@@ -1279,16 +1278,15 @@ def display_info():
       stddraw.boldText(CENTER_X, CENTER_Y-3.75, get_data(3))
       stddraw.setFontSize(24)
       stddraw.boldText(CENTER_X/2,CENTER_Y-5.25, get_data(4))
-      stddraw.boldText(CENTER_X+(CENTER_X/2),CENTER_Y-5.25, get_data(8))
+      stddraw.boldText(CENTER_X+(CENTER_X/2),CENTER_Y-5.25, get_data(7))
       stddraw.setFontSize(24)
       stddraw.text(CENTER_X/2, CENTER_Y-6.25, get_data(5))
       stddraw.text(CENTER_X/2, CENTER_Y-7.25, get_data(6))
-      stddraw.text(CENTER_X/2, CENTER_Y-8.25, get_data(7))
-      stddraw.text(CENTER_X+(CENTER_X/2), CENTER_Y-6.25, get_data(9))
-      stddraw.text(CENTER_X+(CENTER_X/2), CENTER_Y-7.25, get_data(10))
-      stddraw.text(CENTER_X+(CENTER_X/2), CENTER_Y-8.25, get_data(11))
+      stddraw.text(CENTER_X+(CENTER_X/2), CENTER_Y-6.25, get_data(8))
+      stddraw.text(CENTER_X+(CENTER_X/2), CENTER_Y-7.25, get_data(9))
+      stddraw.text(CENTER_X+(CENTER_X/2), CENTER_Y-8.25, get_data(10))
       stddraw.setFontSize(16)
-      stddraw.text(CENTER_X, CENTER_Y-9.75, get_data(12))
+      stddraw.text(CENTER_X, CENTER_Y-9.75, get_data(11))
 
       # Shows and clears the canvas
       stddraw.show(0)
