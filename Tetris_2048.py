@@ -103,9 +103,9 @@ from data import DATAS # Imports some secret data
 from audioplayer import AudioPlayer # Used for playing music and sound effects
 from configparser import ConfigParser # Used for getting the user configuration
 import tempfile # Used for getting the user temporary file
-from pypresence import Presence
-from threading import Timer
-import urllib.request
+from pypresence import Presence # Used for connecting to the Discord Rich Presence
+from threading import Timer # Class for executing a method with a delay
+import urllib.request # Used for sending a connection request to a website
 
 # Gets the config file
 config = ConfigParser()
