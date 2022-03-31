@@ -104,6 +104,7 @@ from audioplayer import AudioPlayer # Used for playing music and sound effects
 from configparser import ConfigParser # Used for getting the user configuration
 import tempfile # Used for getting the user temporary file
 from pypresence import Presence # Used for connecting to the Discord Rich Presence
+from pypresence.exceptions import DiscordNotFound
 from threading import Timer # Class for executing a method with a delay
 import urllib.request # Used for sending a connection request to a website
 
@@ -251,7 +252,11 @@ with open('config.ini', 'w') as f:
 
 # Initializes constants
 CLIENT_ID = '833177459209535538'
-RPC = Presence(CLIENT_ID)
+try:
+   RPC = Presence(CLIENT_ID)
+   is_discord_open = True
+except DiscordNotFound:
+   is_discord_open = False
 TEMP_FILE = tempfile.gettempdir()
 ICON = DIR + "/images/icon.png"
 TEMP_IMAGE = TEMP_FILE + "/canvas.png"
@@ -661,7 +666,6 @@ def close():
    # Gets the globals
    global config
    global timer
-   global is_connected
    global player
    global move
    global rotate
@@ -726,6 +730,7 @@ def display_game_menu():
    # Gets the globals
    global config
    global is_connected
+   global is_discord_open
    global difficulty
    global music_volume
    global effects_volume
@@ -820,7 +825,7 @@ def display_game_menu():
       musicButtonPicture = musicOn
       tetrisButtonPicture = tetris
       i2048Picture = i2048
-      status_image = connected if is_connected else disconnected
+      status_image = connected if (is_connected or is_discord_open) else disconnected
    
       # Gets the x and y positions of mouse
       mouse_x = stddraw.mouseMotionX() if stddraw.mouseMotionX() is not None else -1
@@ -941,7 +946,7 @@ def display_game_menu():
          string = ""
       # If the mouse is on status hover, shows status string
       elif mouse_x >= status_x - 0.25 and mouse_x <= status_x + 0.25 and mouse_y >= status_y - 0.25 and mouse_y <= status_y + 0.25:
-         if not is_connected:
+         if not is_connected or not is_discord_open:
             stddraw.setPenColor(stddraw.WHITE)
             stddraw.setFontSize(16)
             stddraw.text(status_x + 2.85, status_y, "Failed to connect Discord.")
@@ -1474,12 +1479,12 @@ def display_scores():
 
 def can_connect():
    # Tries to open the URL in 5 seconds, if it can, returns true
-    try:
-        urllib.request.urlopen('https://mrpanda.dev', timeout=5)
-        return True
+   try:
+      urllib.request.urlopen('https://mrpanda.dev', timeout=5)
+      return True
    # Else, returns false
-    except:
-        return False
+   except:
+      return False
 
 
 # CONNECT PRESENCE
@@ -1490,10 +1495,11 @@ def can_connect():
 def connect_presence():
    # Gets the global
    global is_connected
+   global is_discord_open
 
    # If connected to the internet and not connected to the server, tries to connect
    if can_connect():
-      if not is_connected:
+      if is_discord_open and not is_connected:
          try:
             RPC.connect()
             is_connected = True
@@ -1528,9 +1534,10 @@ def update_presence(state=None, details=None, large_image=None, start=None, dela
 def update_thread(state=None, details=None, large_image=None, start=None):
    # Gets the global
    global is_connected
+   global is_discord_open
 
    # Tries to update Rich Presence if connected to the server
-   if is_connected:
+   if is_connected and is_discord_open:
       try:
          RPC.update(state=state, details=details, large_image=large_image, start=start)
       except:
